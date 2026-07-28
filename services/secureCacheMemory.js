@@ -51,11 +51,12 @@ function SecureCacheMemory(protectedMemory) {
   });
 
   //wake up the background page and get a pipe to send/receive messages:
-  exports.get = function (key) {
+  exports.get = function (key, storageType) {
     ready.then(function (port) {
       port.postMessage({
         action: 'get',
         key: key,
+        storageType: storageType || 'session',
       });
     });
 
@@ -76,13 +77,14 @@ function SecureCacheMemory(protectedMemory) {
     });
   };
 
-  exports.save = function (key, value) {
+  exports.save = function (key, value, storageType) {
     return ready.then(function (port) {
       var serializedValue = protectedMemory.serialize(value);
       port.postMessage({
         action: 'save',
         key: key,
         value: serializedValue,
+        storageType: storageType || 'session',
       });
     });
   };

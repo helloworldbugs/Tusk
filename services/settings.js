@@ -138,8 +138,15 @@ function Settings(secureCache) {
 
   exports.cacheMasterPassword = function (pw, args) {
     return exports.getCurrentMasterPasswordCacheKey().then((key) => {
-      return secureCache.save(key, pw).then((nil) => {
-        let forgetTime = args['forgetTime'];
+      let forgetTime = args['forgetTime'];
+      let savePromise;
+      if (forgetTime === -1) {
+        // Forever: store in local storage for persistence
+        savePromise = secureCache.save(key, pw, 'local');
+      } else {
+        savePromise = secureCache.save(key, pw);
+      }
+      return savePromise.then(() => {
         return exports.setForgetTime(key, forgetTime);
       });
     });
@@ -230,9 +237,16 @@ function Settings(secureCache) {
         var key = info.passwordFile.title + '__' + info.providerKey;
         var usage = usages[key] || {};
 
-        return secureCache.get(key + '.password').then((value) => {
-          usage['passwordKey'] = value;
-          return usage;
+        return secureCache.get(key + '.password').then(function (value) {
+          if (value !== undefined) {
+            usage['passwordKey'] = value;
+            return usage;
+          }
+          // Try local storage for forever passwords
+          return secureCache.get(key + '.password', 'local').then(function (localValue) {
+            usage['passwordKey'] = localValue;
+            return usage;
+          });
         });
       });
     });

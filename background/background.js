@@ -11,7 +11,7 @@ import { ProtectedMemory } from '$services/protectedMemory';
 import { Settings } from '$services/settings.js';
 import { Notifications } from '$services/notifications';
 
-function Background(protectedMemory, settings, notifications) {
+function Background(protectedMemory, localMemory, settings, notifications) {
   console.log('Background worker registered.');
   chrome.runtime.onInstalled.addListener(settings.upgrade);
   chrome.runtime.onStartup.addListener(forgetStuff);
@@ -26,10 +26,10 @@ function Background(protectedMemory, settings, notifications) {
           protectedMemory.clearData(msg.key);
           break;
         case 'save':
-          protectedMemory.setData(msg.key, msg.value);
+          (msg.storageType === 'local' ? localMemory : protectedMemory).setData(msg.key, msg.value);
           break;
         case 'get':
-          protectedMemory.getData(msg.key).then(function (value) {
+          (msg.storageType === 'local' ? localMemory : protectedMemory).getData(msg.key).then(function (value) {
             port.postMessage(value);
           });
           break;
@@ -209,6 +209,7 @@ function Background(protectedMemory, settings, notifications) {
 
 const settings = new Settings();
 const notifications = new Notifications(settings);
-const protectedMemory = new ProtectedMemory();
+const protectedMemory = new ProtectedMemory('session');
+const localMemory = new ProtectedMemory('local');
 
-Background(protectedMemory, settings, notifications);
+Background(protectedMemory, localMemory, settings, notifications);

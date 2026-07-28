@@ -1,7 +1,7 @@
 'use strict';
 
 /**
- * Storage in storage.local, just not in the clear.  Purpose is to prevent seeing the
+ * Storage in storage.session or storage.local, just not in the clear.
  * contents in a casual scan of RAM.  Does not prevent an attacker with direct
  * access to the code from reading the contents. Kind of performative, TBH.
  */
@@ -9,14 +9,15 @@
 import * as Base64 from 'base64-arraybuffer';
 import browser from 'webextension-polyfill';
 
-function ProtectedMemory() {
+function ProtectedMemory(storageType: 'session' | 'local' = 'session') {
+  var storage = storageType === 'local' ? browser.storage.local : browser.storage.session;
   var my = {
     getData: getData,
     setData: setData,
     clearData: clearData,
-    serialize: serialize, //not encrypted
-    deserialize: deserialize, //not encrypted
-    hydrate: deserialize, //not encrypted
+    serialize: serialize,
+    deserialize: deserialize,
+    hydrate: deserialize,
   };
 
   // Static initialization vector. Again, the point is to prevent casual scanning.
@@ -26,7 +27,7 @@ function ProtectedMemory() {
   };
 
   async function getCryptoKey() {
-    const key = (await browser.storage.local.get('__key__'))['__key__'];
+    const key = (await storage.get('__key__'))['__key__'];
     if (key === undefined) {
       const newKey = await globalThis.crypto.subtle.generateKey(
         {
@@ -38,7 +39,7 @@ function ProtectedMemory() {
       );
       const exported = await globalThis.crypto.subtle.exportKey('raw', newKey);
       const serialized = serialize(exported);
-      await browser.storage.local.set({ __key__: serialized });
+      await storage.set({ __key__: serialized });
       console.log('Generated protected memory key');
       return newKey;
     }
@@ -51,7 +52,7 @@ function ProtectedMemory() {
   }
 
   async function getData(key: string) {
-    var encData = (await browser.storage.local.get(key))[key];
+    var encData = (await storage.get(key))[key];
     if (encData === undefined || typeof encData !== 'string') {
       console.log('Cache miss for ' + key);
       return Promise.resolve(undefined);
@@ -81,16 +82,16 @@ function ProtectedMemory() {
       })
       .then(function (encData) {
         var dataString = Base64.encode(encData);
-        return browser.storage.local.set({ [key]: dataString });
+        return storage.set({ [key]: dataString });
       });
   }
 
   function clearData(key: string) {
     console.log('Clear protected memory.');
     if (key !== undefined) {
-      return browser.storage.local.remove(key);
+      return storage.remove(key);
     } else {
-      return browser.storage.local.clear();
+      return storage.clear();
     }
   }
 
