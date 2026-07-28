@@ -78,6 +78,7 @@ function chromeManifestV3(): Manifest.WebExtensionManifest {
       scopes: ['https://www.googleapis.com/auth/drive.file'],
     },
     permissions,
+    host_permissions: hostPermissions,
     content_security_policy: {
       extension_pages: isDev
         ? // this is required on dev for Vite script to load
@@ -92,7 +93,6 @@ function chromeManifestV3(): Manifest.WebExtensionManifest {
     background: {
       service_worker: backgroundScript,
     },
-    optional_host_permissions: hostPermissions,
   });
 }
 
