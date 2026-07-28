@@ -21,9 +21,6 @@ jobs:
       - name: Install dependencies
         run: npm install --legacy-peer-deps
 
-      - name: Install sass explicitly
-        run: npm install sass --legacy-peer-deps
-
       - name: Generate manifest
         run: npx esno ./scripts/manifest.ts
 
