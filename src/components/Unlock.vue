@@ -74,6 +74,10 @@ export default defineComponent({
           time: -1,
           text: 'Until browser exits.',
         },
+        {
+          time: -2,
+          text: 'Remember forever.',
+        },
       ],
       slider_int: 0,
     };
@@ -301,9 +305,16 @@ export default defineComponent({
               if (this.rememberPeriod !== 0) {
                 let check_time = 60000 * this.rememberPeriod; // milliseconds / min
                 // Save the password in memory independently.
-                this.settings.cacheMasterPassword(passwordKey, {
-                  forgetTime: check_time > 0 ? Date.now() + check_time : check_time,
-                });
+                if (this.rememberPeriod === -2) {
+                  // Forever - don't set forgetTime
+                  this.settings.cacheMasterPassword(passwordKey, {
+                    forgetTime: null,
+                  });
+                } else {
+                  this.settings.cacheMasterPassword(passwordKey, {
+                    forgetTime: check_time > 0 ? Date.now() + check_time : check_time,
+                  });
+                }
               } else {
                 this.settings.getCurrentMasterPasswordCacheKey().then(this.secureCache.clear);
               }
