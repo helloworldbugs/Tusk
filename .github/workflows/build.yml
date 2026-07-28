@@ -19,22 +19,22 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: '22'
-          cache: 'yarn'
+          cache: 'npm'
 
       - name: Install dependencies
-        run: yarn install
+        run: npm ci
 
       - name: Generate manifest
-        run: yarn run build:prepare
+        run: npm run build:prepare
 
       - name: Build background
-        run: yarn run build:background
+        run: npm run build:background
 
       - name: Build content script
-        run: yarn run build:js
+        run: npm run build:js
 
       - name: Build web
-        run: yarn run build:web
+        run: npm run build:web
 
       - name: Upload extension artifact
         uses: actions/upload-artifact@v4
@@ -55,22 +55,22 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: '22'
-          cache: 'yarn'
+          cache: 'npm'
 
       - name: Install dependencies
-        run: yarn install
+        run: npm ci
 
       - name: Generate manifest
-        run: yarn run build:prepare
+        run: npm run build:prepare
 
       - name: Build background
-        run: yarn run build:background
+        run: npm run build:background
 
       - name: Build content script
-        run: yarn run build:js
+        run: npm run build:js
 
       - name: Build web
-        run: yarn run build:web
+        run: npm run build:web
 
       - name: Create ZIP
         run: |
