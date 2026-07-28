@@ -34,9 +34,21 @@ jobs:
         run: npx vite build
         continue-on-error: true
 
+      - name: Create release ZIP
+        run: |
+          cd extension
+          zip -r ../tusk-release.zip .
+
       - name: Upload extension artifact
         uses: actions/upload-artifact@v4
         with:
           name: tusk-extension
           path: extension/
+          retention-days: 30
+
+      - name: Upload release ZIP
+        uses: actions/upload-artifact@v4
+        with:
+          name: tusk-release-zip
+          path: tusk-release.zip
           retention-days: 30
