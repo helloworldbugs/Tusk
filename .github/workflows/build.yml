@@ -18,26 +18,23 @@ jobs:
         with:
           node-version: '20'
 
-      - name: Install Yarn 1.x
-        run: npm install -g yarn
-
-      - name: Remove old lockfile for Yarn 1.x
-        run: rm -f yarn.lock
-
       - name: Install dependencies
-        run: yarn install
+        run: npm install --legacy-peer-deps
+
+      - name: Install sass explicitly
+        run: npm install sass --legacy-peer-deps
 
       - name: Generate manifest
-        run: yarn run build:prepare
+        run: npx esno ./scripts/manifest.ts
 
       - name: Build background
-        run: yarn run build:background
+        run: npx vite build --config vite.config.background.mts
 
       - name: Build content script
-        run: yarn run build:js
+        run: npx vite build --config vite.config.content.mts
 
       - name: Build web
-        run: yarn run build:web
+        run: npx vite build
 
       - name: Upload extension artifact
         uses: actions/upload-artifact@v4
