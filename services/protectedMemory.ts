@@ -1,7 +1,7 @@
 'use strict';
 
 /**
- * Storage in storage.session, just not in the clear.  Purpose is to prevent seeing the
+ * Storage in storage.local, just not in the clear.  Purpose is to prevent seeing the
  * contents in a casual scan of RAM.  Does not prevent an attacker with direct
  * access to the code from reading the contents. Kind of performative, TBH.
  */
@@ -26,7 +26,7 @@ function ProtectedMemory() {
   };
 
   async function getCryptoKey() {
-    const key = (await browser.storage.session.get('__key__'))['__key__'];
+    const key = (await browser.storage.local.get('__key__'))['__key__'];
     if (key === undefined) {
       const newKey = await globalThis.crypto.subtle.generateKey(
         {
@@ -38,7 +38,7 @@ function ProtectedMemory() {
       );
       const exported = await globalThis.crypto.subtle.exportKey('raw', newKey);
       const serialized = serialize(exported);
-      await browser.storage.session.set({ __key__: serialized });
+      await browser.storage.local.set({ __key__: serialized });
       console.log('Generated protected memory key');
       return newKey;
     }
@@ -51,7 +51,7 @@ function ProtectedMemory() {
   }
 
   async function getData(key: string) {
-    var encData = (await browser.storage.session.get(key))[key];
+    var encData = (await browser.storage.local.get(key))[key];
     if (encData === undefined || typeof encData !== 'string') {
       console.log('Cache miss for ' + key);
       return Promise.resolve(undefined);
@@ -81,16 +81,16 @@ function ProtectedMemory() {
       })
       .then(function (encData) {
         var dataString = Base64.encode(encData);
-        return browser.storage.session.set({ [key]: dataString });
+        return browser.storage.local.set({ [key]: dataString });
       });
   }
 
   function clearData(key: string) {
     console.log('Clear protected memory.');
     if (key !== undefined) {
-      return browser.storage.session.remove(key);
+      return browser.storage.local.remove(key);
     } else {
-      return browser.storage.session.clear();
+      return browser.storage.local.clear();
     }
   }
 
