@@ -92,7 +92,7 @@ function chromeManifestV3(): Manifest.WebExtensionManifest {
     background: {
       service_worker: backgroundScript,
     },
-    optional_host_permissions: hostPermissions,
+    host_permissions: hostPermissions,
   });
 }
 
