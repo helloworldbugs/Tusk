@@ -57,7 +57,7 @@
     "globals": "^16.0.0",
     "npm-run-all2": "^7.0.2",
     "prettier": "^3.5.3",
-    "sass": "^1.86.0",
+    "sass": "1.69.7",
     "vite": "^6.4.3",
     "vite-plugin-wasm": "^3.3.0",
     "vue-eslint-parser": "^10.1.1"

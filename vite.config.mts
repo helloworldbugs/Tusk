@@ -55,7 +55,6 @@ export const sharedConfig: UserConfig = {
   css: {
     preprocessorOptions: {
       scss: {
-        api: 'modern',
         quietDeps: true,
         silenceDeprecations: ['legacy-js-api', 'import'],
       },
