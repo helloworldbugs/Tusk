@@ -41,18 +41,9 @@ export default {
   },
   methods: {
     addServer() {
-      // Convert URL to match pattern for permissions API
-      let parsedUrl;
-      try {
-        parsedUrl = new URL(this.webdav.url);
-      } catch(e) {
-        this.messages.error = 'Invalid URL';
-        return;
-      }
-      const matchPattern = `${parsedUrl.protocol}//${parsedUrl.hostname}/*`;
       chromePromise.permissions
         .request({
-          origins: [matchPattern],
+          origins: [this.webdav.url], //FLAGHERE TODO
         })
         .then(() => {
           this.providerManager
