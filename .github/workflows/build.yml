@@ -20,24 +20,23 @@ jobs:
         with:
           node-version: '22'
 
-      - name: Remove yarn.lock for npm compatibility
-        run: rm -f yarn.lock
+      - name: Install Yarn
+        run: corepack enable
 
       - name: Install dependencies
-        run: npm install --legacy-peer-deps
+        run: yarn install
 
       - name: Generate manifest
-        run: npx esno ./scripts/manifest.ts
+        run: yarn run build:prepare
 
       - name: Build background
-        run: npx vite build --config vite.config.background.mts
+        run: yarn run build:background
 
       - name: Build content script
-        run: npx vite build --config vite.config.content.mts
+        run: yarn run build:js
 
       - name: Build web
-        run: npx vite build
-        continue-on-error: true
+        run: yarn run build:web
 
       - name: Upload extension artifact
         uses: actions/upload-artifact@v4
@@ -59,24 +58,23 @@ jobs:
         with:
           node-version: '22'
 
-      - name: Remove yarn.lock for npm compatibility
-        run: rm -f yarn.lock
+      - name: Install Yarn
+        run: corepack enable
 
       - name: Install dependencies
-        run: npm install --legacy-peer-deps
+        run: yarn install
 
       - name: Generate manifest
-        run: npx esno ./scripts/manifest.ts
+        run: yarn run build:prepare
 
       - name: Build background
-        run: npx vite build --config vite.config.background.mts
+        run: yarn run build:background
 
       - name: Build content script
-        run: npx vite build --config vite.config.content.mts
+        run: yarn run build:js
 
       - name: Build web
-        run: npx vite build
-        continue-on-error: true
+        run: yarn run build:web
 
       - name: Create ZIP
         run: |
