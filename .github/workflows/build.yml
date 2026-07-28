@@ -20,8 +20,10 @@ jobs:
         with:
           node-version: '22'
 
-      - name: Enable Corepack
-        run: corepack enable
+      - name: Prepare Yarn
+        run: |
+          corepack enable
+          corepack prepare yarn@4.7.0 --activate
 
       - name: Install dependencies
         run: yarn install
@@ -58,8 +60,10 @@ jobs:
         with:
           node-version: '22'
 
-      - name: Enable Corepack
-        run: corepack enable
+      - name: Prepare Yarn
+        run: |
+          corepack enable
+          corepack prepare yarn@4.7.0 --activate
 
       - name: Install dependencies
         run: yarn install
