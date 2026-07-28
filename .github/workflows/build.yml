@@ -19,11 +19,7 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: '22'
-
-      - name: Prepare Yarn
-        run: |
-          corepack enable
-          corepack prepare yarn@4.7.0 --activate
+          cache: 'yarn'
 
       - name: Install dependencies
         run: yarn install
@@ -59,11 +55,7 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: '22'
-
-      - name: Prepare Yarn
-        run: |
-          corepack enable
-          corepack prepare yarn@4.7.0 --activate
+          cache: 'yarn'
 
       - name: Install dependencies
         run: yarn install
