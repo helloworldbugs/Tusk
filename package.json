@@ -23,7 +23,7 @@
     "pack:zip": "rm -f extension.zip && zip -r extension.zip extension/*"
   },
   "dependencies": {
-    "@materializecss/materialize": "^2.2.1",
+    "@materializecss/materialize": "2.2.1",
     "@vue/compat": "^3.5.13",
     "argon2-browser": "^1.18.0",
     "axios": "^1.18.0",

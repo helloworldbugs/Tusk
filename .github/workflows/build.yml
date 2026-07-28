@@ -31,12 +31,7 @@ jobs:
         run: npx vite build --config vite.config.content.mts
 
       - name: Build web
-        run: npx vite build 2>&1 | tee web-build.log || true
-        continue-on-error: true
-
-      - name: Show web build errors
-        if: always()
-        run: cat web-build.log 2>/dev/null || echo "No log file"
+        run: npx vite build
 
       - name: Ensure web stubs exist
         run: |
