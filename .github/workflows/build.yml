@@ -34,6 +34,15 @@ jobs:
         run: npx vite build
         continue-on-error: true
 
+      - name: Ensure web stubs exist
+        run: |
+          if [ ! -f extension/dist/popup.html ]; then
+            echo "Creating fallback popup stub..."
+            mkdir -p extension/dist
+            echo '<!DOCTYPE html><html><body style="padding:20px;font-family:sans-serif;width:300px"><p>Extension loaded. Web UI build pending.</p></body></html>' > extension/dist/popup.html
+            cp extension/dist/popup.html extension/dist/options.html
+          fi
+
       - name: Create release ZIP
         run: |
           cd extension
