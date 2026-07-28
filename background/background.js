@@ -113,6 +113,18 @@ function Background(protectedMemory, localMemory, settings, notifications) {
         );
       });
     }
+
+    if (message.m == 'uploadDatabase') {
+      import('$services/webdavFileManager.js').then(({ WebdavFileManager }) => {
+        const wm = new WebdavFileManager(settings);
+        return wm.uploadCurrentDatabase(new Uint8Array(message.data));
+      }).then(() => {
+        sendResponse({ success: true });
+      }).catch((err) => {
+        sendResponse({ error: err.message });
+      });
+      return true; // keep channel open for async response
+    }
   }
 
   // function to determine if the content script is already injected, so we don't do it twice

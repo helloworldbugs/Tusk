@@ -24,27 +24,30 @@ export default {
   },
   methods: {
     details(e) {
+      e.stopPropagation();
       this.$router.route('/entry-details/' + this.entry.id);
     },
     autofill(e) {
       e.stopPropagation();
-      console.debug('autofill');
       this.unlockedState.autofill(this.entry);
     },
     copy(e) {
       e.stopPropagation();
-      console.debug('copy');
       this.unlockedState.copyPassword(this.entry);
+    },
+    edit(e) {
+      e.stopPropagation();
+      this.$router.route('/entry-edit/' + this.entry.id);
     },
   },
 };
 </script>
 
 <template>
-  <div
+    <div
     class="entry-list-item selectable between flair"
     :class="{ active: entry.view_is_active }"
-    @click="details"
+    @click="autofill"
   >
     <div class="text-info" :class="{ strike: entry.is_expired }">
       <span class="header">{{ header }}</span>
@@ -58,9 +61,9 @@ export default {
         <i class="fa fa-circle fa-stack-2x" />
         <i class="fa fa-clipboard fa-stack-1x fa-inverse" />
       </span>
-      <span class="fa-stack autofill" @click="autofill">
+      <span class="fa-stack edit" @click="edit">
         <i class="fa fa-circle fa-stack-2x" />
-        <i class="fa fa-magic fa-stack-1x fa-inverse" />
+        <i class="fa fa-pencil fa-stack-1x fa-inverse" />
       </span>
     </div>
   </div>
@@ -90,11 +93,11 @@ export default {
     min-width: 80px;
   }
   .copy,
-  .autofill {
+  .edit {
     opacity: 0.2;
   }
   .copy:hover,
-  .autofill:hover {
+  .edit:hover {
     opacity: 0.8;
   }
   &.active {

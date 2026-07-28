@@ -217,6 +217,7 @@ export default defineComponent({
         this.unlockedState.clearClipboardState();
         this.unlockedState.clearCache(); // new
         this.isUnlocked = false;
+        chrome.action.setBadgeText({ text: '' });
       });
     },
     showResults(entries, fromCache) {
@@ -267,6 +268,15 @@ export default defineComponent({
         }
         this.busy = false;
         this.isUnlocked = true;
+
+        // Badge: show matched count on extension icon
+        let badgeCount = priorityEntries.length;
+        if (badgeCount > 0) {
+          chrome.action.setBadgeText({ text: String(badgeCount) });
+          chrome.action.setBadgeBackgroundColor({ color: '#4688F1' });
+        } else {
+          chrome.action.setBadgeText({ text: '' });
+        }
       });
     },
     clickUnlock(event) {
@@ -321,6 +331,8 @@ export default defineComponent({
               this.settings.saveCurrentDatabaseUsage(dbUsage);
               this.settings.getSetDefaultRememberPeriod(this.rememberPeriod);
               this.showResults(entries);
+              // Cache master key for edit operations
+              this.unlockedState.cacheSet('masterKey', passwordKey);
               this.busy = false;
               this.masterPassword = '';
             });

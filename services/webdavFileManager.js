@@ -54,6 +54,7 @@ function WebdavFileManager(settings) {
     addServer: addServer,
     removeServer: removeServer,
     listServers: listServers,
+    uploadCurrentDatabase: uploadCurrentDatabase,
   };
 
   function enable() {
@@ -292,6 +293,25 @@ function WebdavFileManager(settings) {
           return settings.getSetWebdavDirectoryMap(dirMap);
         });
       });
+  }
+
+  function uploadCurrentDatabase(arrayBuffer) {
+    return settings.getCurrentDatabaseChoice().then(function (info) {
+      if (!info || info.providerKey !== 'webdav') {
+        throw new Error('Current database is not WebDAV');
+      }
+      let serverId = info.passwordFile.serverId;
+      return getServer(serverId).then(function (serverInfo) {
+        if (!serverInfo) throw new Error('Server not found');
+        let client = createClient(serverInfo.url, {
+          username: serverInfo.username,
+          password: serverInfo.password,
+          authType: AuthType.Auto,
+        });
+        let filePath = info.passwordFile.path || '/' + info.passwordFile.title;
+        return client.putFileContents(filePath, arrayBuffer, { overwrite: true });
+      });
+    });
   }
 
   return exports;

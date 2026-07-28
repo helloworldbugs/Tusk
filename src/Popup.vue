@@ -32,6 +32,14 @@
       :links="links"
       :settings="settings"
     />
+    <entry-edit
+      v-if="show.entryEdit.visible"
+      id="/entry-edit/:entryId"
+      :unlocked-state="unlockedState"
+      :keepass-service="keepassService"
+      :settings="settings"
+      :links="links"
+    />
     <!-- End Router View -->
   </div>
 </template>
@@ -63,6 +71,7 @@ import Unlock from '@/components/Unlock.vue';
 import Startup from '@/components/Startup.vue';
 import FilePicker from '@/components/FilePicker.vue';
 import EntryDetails from '@/components/EntryDetails.vue';
+import EntryEdit from '@/components/EntryEdit.vue';
 import SvgDefs from '@/components/SvgDefs.vue';
 import { reactive } from 'vue';
 import { useRouter } from '@/lib/useRouter.js';
@@ -117,6 +126,9 @@ const show = reactive({
   entryDetails: {
     visble: false,
   },
+  entryEdit: {
+    visible: false,
+  },
 });
 
 const $router = useRouter();
@@ -136,6 +148,10 @@ $router.registerRoutes([
   {
     route: '/entry-details/:entryId',
     var: show.entryDetails,
+  },
+  {
+    route: '/entry-edit/:entryId',
+    var: show.entryEdit,
   },
 ]);
 $router.route('/');

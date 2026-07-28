@@ -30,6 +30,7 @@ import { parseUrl, getValidTokens } from '@/lib/utils.js';
 
 function KeepassService(keepassHeader, settings, passwordFileStoreRegistry, keepassReference) {
   var my = {};
+  var _db = null; // raw kdbx db reference for save operations
 
   /**
    * return Promise(arrayBufer)
@@ -74,6 +75,7 @@ function KeepassService(keepassHeader, settings, passwordFileStoreRegistry, keep
           // KDBX - use kdbxweb library
           var kdbxCreds = jsonCredentialsToKdbx(masterKey);
           return kdbxweb.Kdbx.load(buf, kdbxCreds).then((db) => {
+            _db = db; // store for save operations
             var entries = parseKdbxDb(db.groups);
             majorVersion = db.header.versionMajor;
             return processReferences(entries, majorVersion);
@@ -270,6 +272,67 @@ function KeepassService(keepassHeader, settings, passwordFileStoreRegistry, keep
         creds[key] = new kdbxweb.ProtectedValue(jsonCreds[key].value, jsonCreds[key].salt);
     return creds;
   }
+
+  my.saveEntry = function (entryId, updatedFields, masterKey) {
+    if (!_db) return Promise.reject(new Error('No database loaded'));
+    
+    return Promise.resolve().then(() => {
+      // Find the entry in the kdbx db by UUID
+      function findEntryInGroup(group, id) {
+        for (let e of group.entries) {
+          if (e.uuid && !e.uuid.empty) {
+            let eid = convertArrayToUUID(Base64.decode(e.uuid.id));
+            if (eid === id) return e;
+          }
+        }
+        for (let sub of group.groups) {
+          let found = findEntryInGroup(sub, id);
+          if (found) return found;
+        }
+        return null;
+      }
+
+      let kdbxEntry = null;
+      for (let g of _db.groups) {
+        kdbxEntry = findEntryInGroup(g, entryId);
+        if (kdbxEntry) break;
+      }
+      if (!kdbxEntry) throw new Error('Entry not found in database');
+
+      // Update fields on the kdbx entry
+      let protectedFields = ['password', 'otp', 'tOTPSeed'];
+      
+      for (let key in updatedFields) {
+        if (protectedFields.includes(key)) {
+          let pv = kdbxweb.ProtectedValue.fromString(updatedFields[key]);
+          for (let i = kdbxEntry.fields.length - 1; i >= 0; i--) {
+            if (kdbxEntry.fields[i][0] === key) kdbxEntry.fields.splice(i, 1);
+          }
+          kdbxEntry.fields.push([key, pv]);
+        } else {
+          for (let i = kdbxEntry.fields.length - 1; i >= 0; i--) {
+            if (kdbxEntry.fields[i][0] === key) kdbxEntry.fields.splice(i, 1);
+          }
+          kdbxEntry.fields.push([key, updatedFields[key]]);
+        }
+      }
+
+      return _db.save();
+    });
+  };
+
+  my.uploadDatabase = function (arrayBuffer) {
+    return new Promise((resolve, reject) => {
+      chrome.runtime.sendMessage({
+        m: 'uploadDatabase',
+        data: Array.from(new Uint8Array(arrayBuffer)),
+      }, (response) => {
+        if (chrome.runtime.lastError) reject(chrome.runtime.lastError);
+        else if (response && response.error) reject(new Error(response.error));
+        else resolve(response);
+      });
+    });
+  };
 
   return my;
 }
