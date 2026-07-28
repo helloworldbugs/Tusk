@@ -156,7 +156,7 @@ function Settings(secureCache) {
         forgetTimes = items[storageKey];
       }
       // only set if not exists...  This prevents us from resetting the clock every unlock...
-      if (!(key in forgetTimes)) forgetTimes[key] = time;
+      if (!(key in forgetTimes) || time !== forgetTimes[key]) forgetTimes[key] = time;
 
       return chromePromise.storage.local.set({
         forgetTimes: forgetTimes,
