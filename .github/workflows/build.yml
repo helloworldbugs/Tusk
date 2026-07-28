@@ -18,11 +18,11 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '20'
-          cache: 'yarn'
+          node-version: '22'
+          corepack-enabled: true
 
       - name: Install dependencies
-        run: yarn install
+        run: corepack enable && yarn install
 
       - name: Build
         run: yarn build
@@ -45,11 +45,11 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '20'
-          cache: 'yarn'
+          node-version: '22'
+          corepack-enabled: true
 
       - name: Install dependencies
-        run: yarn install
+        run: corepack enable && yarn install
 
       - name: Build
         run: yarn build
