@@ -19,10 +19,12 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: '22'
-          corepack-enabled: true
+
+      - name: Enable corepack
+        run: corepack enable
 
       - name: Install dependencies
-        run: corepack enable && yarn install
+        run: yarn install
 
       - name: Build
         run: yarn build
@@ -46,10 +48,12 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: '22'
-          corepack-enabled: true
+
+      - name: Enable corepack
+        run: corepack enable
 
       - name: Install dependencies
-        run: corepack enable && yarn install
+        run: yarn install
 
       - name: Build
         run: yarn build
