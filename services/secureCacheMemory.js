@@ -67,12 +67,13 @@ function SecureCacheMemory(protectedMemory) {
     return p; //will resolve when we get something
   };
 
-  exports.clear = function (key) {
+  exports.clear = function (key, storageType) {
     console.log('clearing key: ' + key);
     return ready.then(function (port) {
       port.postMessage({
         action: 'clear',
         key: key,
+        storageType: storageType || 'session',
       });
     });
   };

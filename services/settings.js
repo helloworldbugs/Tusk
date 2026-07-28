@@ -144,7 +144,10 @@ function Settings(secureCache) {
         // Forever: store in local storage for persistence
         savePromise = secureCache.save(key, pw, 'local');
       } else {
-        savePromise = secureCache.save(key, pw);
+        // Timed or session: clear any old forever password from local
+        savePromise = secureCache.clear(key, 'local').then(() => {
+          return secureCache.save(key, pw);
+        });
       }
       return savePromise.then(() => {
         return exports.setForgetTime(key, forgetTime);

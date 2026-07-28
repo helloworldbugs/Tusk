@@ -23,7 +23,7 @@ function Background(protectedMemory, localMemory, settings, notifications) {
       if (!msg) return;
       switch (msg.action) {
         case 'clear':
-          protectedMemory.clearData(msg.key);
+          (msg.storageType === 'local' ? localMemory : protectedMemory).clearData(msg.key);
           break;
         case 'save':
           (msg.storageType === 'local' ? localMemory : protectedMemory).setData(msg.key, msg.value);
