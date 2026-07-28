@@ -21,8 +21,11 @@ jobs:
       - name: Install Yarn 1.x
         run: npm install -g yarn
 
+      - name: Remove old lockfile for Yarn 1.x
+        run: rm -f yarn.lock
+
       - name: Install dependencies
-        run: yarn install --frozen-lockfile
+        run: yarn install
 
       - name: Generate manifest
         run: yarn run build:prepare
