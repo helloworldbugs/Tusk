@@ -306,9 +306,9 @@ export default defineComponent({
                 let check_time = 60000 * this.rememberPeriod; // milliseconds / min
                 // Save the password in memory independently.
                 if (this.rememberPeriod === -2) {
-                  // Forever - don't set forgetTime
+                  // Forever - use -1 to bypass forgetStuff check
                   this.settings.cacheMasterPassword(passwordKey, {
-                    forgetTime: null,
+                    forgetTime: -1,
                   });
                 } else {
                   this.settings.cacheMasterPassword(passwordKey, {
