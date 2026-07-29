@@ -154,19 +154,6 @@ function Background(protectedMemory, localMemory, settings, notifications) {
 
   // Trigger immediately on service worker wake-up
   forgetStuff();
-  
-  // Also try setting badge immediately from local storage
-  chrome.storage.local.get('rememberPeriod', function(items) {
-    if (items.rememberPeriod === -2) {
-      localMemory.getData('secureCache.entries').then(function(entries) {
-        if (entries && entries.length > 0) {
-          protectedMemory.setData('secureCache.entries', entries);
-          chrome.action.setBadgeText({ text: String(entries.length) });
-          chrome.action.setBadgeBackgroundColor({ color: '#4688F1' });
-        }
-      }).catch(function() {});
-    }
-  });
 
   chrome.alarms.onAlarm.addListener(function (alarm) {
     if (alarm.name == 'forgetStuff') {
@@ -179,12 +166,23 @@ function Background(protectedMemory, localMemory, settings, notifications) {
     console.log('Alarm Handler -- Check if we should clear Cache --', new Date());
     chrome.storage.local.get('rememberPeriod', function(items) {
       if (items.rememberPeriod === -2) {
-        console.log('[forgetStuff] Forever mode, keeping cache and restoring from local');
+        console.log('[forgetStuff] Forever mode, restoring cache from local');
         localMemory.getData('secureCache.entries').then(function(entries) {
           if (entries && entries.length > 0) {
             protectedMemory.setData('secureCache.entries', entries);
-            chrome.action.setBadgeText({ text: String(entries.length) });
-            chrome.action.setBadgeBackgroundColor({ color: '#4688F1' });
+            // Set badge based on current tab URL if possible
+            chrome.tabs.query({active: true, currentWindow: true}, function(tabs) {
+              if (tabs.length > 0 && tabs[0].url) {
+                var url = tabs[0].url;
+                var hostname = new URL(url).hostname;
+                var matched = entries.filter(function(e) {
+                  return e.url && e.url.indexOf(hostname) > -1;
+                });
+                var count = matched.length || entries.length;
+                chrome.action.setBadgeText({ text: String(count) });
+                chrome.action.setBadgeBackgroundColor({ color: '#4688F1' });
+              }
+            });
           }
         }).catch(function() {});
       } else {
