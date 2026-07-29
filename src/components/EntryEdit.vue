@@ -47,8 +47,24 @@ export default {
         this.message = 'Uploading to server...';
         await this.keepassService.uploadDatabase(newBuffer);
         
+        // Update cached entry so list shows new values immediately
+        let allEntries = this.unlockedState.cacheGet('allEntries');
+        if (allEntries) {
+          let idx = allEntries.findIndex(e => e.id === this.entry.id);
+          if (idx >= 0) {
+            for (let key in this.editFields) {
+              if (key === 'password') {
+                allEntries[idx].protectedData = allEntries[idx].protectedData || {};
+                allEntries[idx].protectedData[key] = allEntries[idx].protectedData[key] || {};
+              } else {
+                allEntries[idx][key] = this.editFields[key];
+              }
+            }
+          }
+        }
+        
         this.message = 'Saved!';
-        setTimeout(() => this.$router.route('/'), 1000);
+        setTimeout(() => this.$router.route('/'), 800);
       } catch (err) {
         console.error(err);
         this.message = 'Error: ' + err.message;
