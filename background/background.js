@@ -15,7 +15,6 @@ function Background(protectedMemory, localMemory, settings, notifications) {
   console.log('Background worker registered.');
   chrome.runtime.onInstalled.addListener(settings.upgrade);
   chrome.runtime.onStartup.addListener(forgetStuff);
-  chrome.runtime.onStartup.addListener(autoStartup);
 
   //keep saved state for the popup for as long as we are alive (not long):
   chrome.runtime.onConnect.addListener(function (port) {
@@ -160,29 +159,21 @@ function Background(protectedMemory, localMemory, settings, notifications) {
     }
   });
 
-  function autoStartup() {
-    chrome.storage.local.get(['currentDatabaseChoice', 'rememberPeriod'], function(items) {
-      if (!items.currentDatabaseChoice || items.rememberPeriod !== -2) return;
-      console.log('[autoStartup] Forever mode, checking local cache...');
-      // Check if entries are in local storage and copy to session
-      localMemory.getData('secureCache.entries').then(function(entries) {
-        if (entries && entries.length > 0) {
-          console.log('[autoStartup] Copying', entries.length, 'entries to session');
-          protectedMemory.setData('secureCache.entries', entries);
-          chrome.action.setBadgeText({ text: String(entries.length) });
-          chrome.action.setBadgeBackgroundColor({ color: '#4688F1' });
-        }
-      }).catch(function() {});
-    });
-  }
   function forgetStuff() {
     console.log('Alarm Handler -- Check if we should clear Cache --', new Date());
-    // Check if forever mode - don't clear entries
     chrome.storage.local.get('rememberPeriod', function(items) {
       if (items.rememberPeriod === -2) {
-        console.log('[forgetStuff] Forever mode, keeping cache');
+        console.log('[forgetStuff] Forever mode, keeping cache and restoring from local');
+        localMemory.getData('secureCache.entries').then(function(entries) {
+          if (entries && entries.length > 0) {
+            protectedMemory.setData('secureCache.entries', entries);
+            chrome.action.setBadgeText({ text: String(entries.length) });
+            chrome.action.setBadgeBackgroundColor({ color: '#4688F1' });
+          }
+        }).catch(function() {});
       } else {
         protectedMemory.clearData('secureCache.entries');
+        chrome.action.setBadgeText({ text: '' });
       }
     });
     settings.getAllForgetTimes().then(function (allTimes) {
