@@ -38,7 +38,7 @@ export default {
       this.saving = true;
       this.message = 'Saving...';
       try {
-        let masterKey = this.unlockedState.masterKey;
+        let masterKey = this.keepassService.masterKey;
         if (!masterKey) {
           throw new Error('Session expired. Please re-unlock the database.');
         }
