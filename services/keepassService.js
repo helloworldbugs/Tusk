@@ -275,12 +275,22 @@ function KeepassService(keepassHeader, settings, passwordFileStoreRegistry, keep
     return creds;
   }
 
+  my.ensureDbLoaded = function () {
+    if (_db) return Promise.resolve();
+    console.log('[keepassService] _db is null, re-loading from cache...');
+    return my.getChosenDatabaseFile().then(function (buf) {
+      if (!_masterKey) throw new Error('Session expired. Please re-unlock the database.');
+      var kdbxCreds = jsonCredentialsToKdbx(_masterKey);
+      return kdbxweb.Kdbx.load(buf, kdbxCreds).then((db) => {
+        _db = db;
+        console.log('[keepassService] db re-loaded successfully');
+      });
+    });
+  };
+
   my.saveEntry = function (entryId, updatedFields) {
     console.log('[keepassService] saveEntry called, _db:', !!_db, '_masterKey:', !!_masterKey);
-    if (!_db) return Promise.reject(new Error('No database loaded'));
-    if (!_masterKey) return Promise.reject(new Error('Session expired. Please re-unlock the database.'));
-    
-    return Promise.resolve().then(() => {
+    return my.ensureDbLoaded().then(() => {
       // Find the entry in the kdbx db by UUID
       function findEntryInGroup(group, id) {
         for (let e of group.entries) {
