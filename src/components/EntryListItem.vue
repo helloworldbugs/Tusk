@@ -101,11 +101,13 @@ export default {
     min-width: 80px;
   }
   .copy,
-  .edit {
+  .edit,
+  .url {
     opacity: 0.2;
   }
   .copy:hover,
-  .edit:hover {
+  .edit:hover,
+  .url:hover {
     opacity: 0.8;
   }
   &.active {
