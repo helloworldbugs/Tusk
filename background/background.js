@@ -100,22 +100,17 @@ function Background(protectedMemory, localMemory, settings, notifications) {
           });
         });
       };
-      alreadyInjected(message.tabId).then((injectedAlready) => {
-        if (injectedAlready === true) {
+      // Always inject into all frames, then fill each with own origin
+      chrome.scripting.executeScript(
+        {
+          target: { tabId: message.tabId, allFrames: true },
+          files: ['/dist/contentScripts/index.global.js'],
+        },
+        function () {
+          console.log('Autofill script injected.');
           fillAllFrames();
-          return;
         }
-        chrome.scripting.executeScript(
-          {
-            target: { tabId: message.tabId, allFrames: true },
-            files: ['/dist/contentScripts/index.global.js'],
-          },
-          function () {
-            console.log('Autofill script injected.');
-            fillAllFrames();
-          }
-        );
-      });
+      );
     }
 
     if (message.m == 'uploadDatabase') {
