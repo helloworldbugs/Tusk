@@ -154,6 +154,19 @@ function Background(protectedMemory, localMemory, settings, notifications) {
 
   // Trigger immediately on service worker wake-up
   forgetStuff();
+  
+  // Also try setting badge immediately from local storage
+  chrome.storage.local.get('rememberPeriod', function(items) {
+    if (items.rememberPeriod === -2) {
+      localMemory.getData('secureCache.entries').then(function(entries) {
+        if (entries && entries.length > 0) {
+          protectedMemory.setData('secureCache.entries', entries);
+          chrome.action.setBadgeText({ text: String(entries.length) });
+          chrome.action.setBadgeBackgroundColor({ color: '#4688F1' });
+        }
+      }).catch(function() {});
+    }
+  });
 
   chrome.alarms.onAlarm.addListener(function (alarm) {
     if (alarm.name == 'forgetStuff') {
