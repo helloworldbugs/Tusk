@@ -192,12 +192,12 @@ function Background(protectedMemory, localMemory, settings, notifications) {
         } catch(e) { console.error('[badge] filter error', e); }
       }
       if (count > 0) {
-        chrome.action.setBadgeText({ text: String(count) });
-        chrome.action.setBadgeBackgroundColor({ color: '#4688F1' });
-        console.log('[badge] set badge to', count);
+        chrome.action.setBadgeText({ text: String(count), tabId: tabs[0].id });
+        chrome.action.setBadgeBackgroundColor({ color: '#4688F1', tabId: tabs[0].id });
+        console.log('[badge] set badge to', count, 'on tab', tabs[0].id);
       } else {
-        chrome.action.setBadgeText({ text: '' });
-        console.log('[badge] cleared badge');
+        chrome.action.setBadgeText({ text: '', tabId: tabs[0].id });
+        console.log('[badge] cleared badge on tab', tabs[0].id);
       }
     });
   }
