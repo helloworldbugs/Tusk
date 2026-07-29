@@ -152,6 +152,9 @@ function Background(protectedMemory, localMemory, settings, notifications) {
     periodInMinutes: 2,
   });
 
+  // Trigger immediately on service worker wake-up
+  forgetStuff();
+
   chrome.alarms.onAlarm.addListener(function (alarm) {
     if (alarm.name == 'forgetStuff') {
       forgetStuff();
