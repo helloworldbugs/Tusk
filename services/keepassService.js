@@ -277,13 +277,23 @@ function KeepassService(keepassHeader, settings, passwordFileStoreRegistry, keep
 
   my.ensureDbLoaded = function () {
     if (_db) return Promise.resolve();
-    console.log('[keepassService] _db is null, re-loading from cache...');
-    return my.getChosenDatabaseFile().then(function (buf) {
-      if (!_masterKey) throw new Error('Session expired. Please re-unlock the database.');
-      var kdbxCreds = jsonCredentialsToKdbx(_masterKey);
-      return kdbxweb.Kdbx.load(buf, kdbxCreds).then((db) => {
-        _db = db;
-        console.log('[keepassService] db re-loaded successfully');
+    console.log('[keepassService] _db is null, re-loading...');
+    // Try to get masterKey from cached password first
+    var keyPromise = _masterKey ? Promise.resolve(_masterKey) : 
+      settings.getCurrentDatabaseUsage().then(function(usage) {
+        if (usage.passwordKey) {
+          _masterKey = usage.passwordKey;
+        }
+        return _masterKey;
+      });
+    return keyPromise.then(function(mk) {
+      if (!mk) throw new Error('Session expired. Please re-unlock the database.');
+      return my.getChosenDatabaseFile().then(function (buf) {
+        var kdbxCreds = jsonCredentialsToKdbx(mk);
+        return kdbxweb.Kdbx.load(buf, kdbxCreds).then((db) => {
+          _db = db;
+          console.log('[keepassService] db re-loaded');
+        });
       });
     });
   };
