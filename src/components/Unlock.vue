@@ -456,7 +456,7 @@ export default defineComponent({
         <i class="fa fa-cog" aria-hidden="true" /> Settings</span
       >
       <span v-if="isUnlocked" class="selectable" @click="forgetPassword" style="margin-left:auto">
-        <i class="fa fa-lock" aria-hidden="true" /></span
+        <i class="fa fa-lock" aria-hidden="true" /> Lock</span
       >
       <span v-else class="selectable" @click="closeWindow" style="margin-left:auto">
         <i class="fa fa-times-circle" aria-hidden="true" /> Close Window</span
