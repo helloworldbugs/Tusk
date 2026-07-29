@@ -38,9 +38,11 @@ export default {
       this.saving = true;
       this.message = 'Saving...';
       try {
-        console.log('[EntryEdit] keepassService:', this.keepassService);
-        console.log('[EntryEdit] keepassService.saveEntry:', typeof this.keepassService.saveEntry);
+        console.log('[EntryEdit] save called');
+        console.log('[EntryEdit] keepassService:', !!this.keepassService);
+        console.log('[EntryEdit] saveEntry method:', typeof this.keepassService.saveEntry);
         let newBuffer = await this.keepassService.saveEntry(this.entry.id, this.editFields);
+        console.log('[EntryEdit] saveEntry returned, type:', typeof newBuffer, 'size:', newBuffer && newBuffer.byteLength);
         
         this.message = 'Uploading to server...';
         await this.keepassService.uploadDatabase(newBuffer);
