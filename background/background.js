@@ -163,8 +163,11 @@ function Background(protectedMemory, localMemory, settings, notifications) {
       if (items.rememberPeriod !== -2) return;
       protectedMemory.getData('secureCache.entries').then(function(entries) {
         if (!entries || !entries.length) {
-          localMemory.getData('secureCache.entries').then(function(localEntries) {
-            if (localEntries && localEntries.length) filterAndSetBadge(localEntries);
+          localMemory.getData('secureCache.entries').then(function(raw) {
+            if (raw) {
+              var localEntries = localMemory.deserialize(raw);
+              if (localEntries && localEntries.length) filterAndSetBadge(localEntries);
+            }
           }).catch(function() {});
           return;
         }
@@ -217,9 +220,12 @@ function Background(protectedMemory, localMemory, settings, notifications) {
     chrome.storage.local.get('rememberPeriod', function(items) {
       if (items.rememberPeriod === -2) {
         console.log('[forgetStuff] Forever mode, restoring cache from local');
-        localMemory.getData('secureCache.entries').then(function(entries) {
-          if (entries && entries.length > 0) {
-            protectedMemory.setData('secureCache.entries', entries);
+        localMemory.getData('secureCache.entries').then(function(raw) {
+          if (raw) {
+            var entries = localMemory.deserialize(raw);
+            if (entries && entries.length > 0) {
+              protectedMemory.setData('secureCache.entries', entries);
+            }
           }
         }).catch(function() {});
       } else {
