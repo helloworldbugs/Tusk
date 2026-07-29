@@ -82,7 +82,7 @@ export default {
       this.saving = false;
     },
     cancel() {
-      this.$router.route('/entry-details/' + this.entry.id);
+      this.$router.route('/');
     },
   },
 };
@@ -90,7 +90,7 @@ export default {
 
 <template>
   <div>
-    <go-back message="back" />
+    <go-back message="back to entry list" />
     <div class="edit-form" v-if="entry">
       <div class="edit-field">
         <label>Title</label>
