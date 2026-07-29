@@ -174,7 +174,7 @@ function Background(protectedMemory, localMemory, settings, notifications) {
   
   function filterAndSetBadge(entries) {
     chrome.tabs.query({active: true, currentWindow: true}, function(tabs) {
-      var count = entries.length;
+      var count = 0;
       if (tabs.length > 0 && tabs[0].url && tabs[0].url.startsWith('http')) {
         try {
           var hostname = new URL(tabs[0].url).hostname;
