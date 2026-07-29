@@ -35,6 +35,10 @@ export default {
       e.stopPropagation();
       this.unlockedState.copyPassword(this.entry);
     },
+    openUrl(e) {
+      e.stopPropagation();
+      if (this.entry.url) chrome.tabs.create({ url: this.entry.url });
+    },
     edit(e) {
       e.stopPropagation();
       this.$router.route('/entry-edit/' + this.entry.id);
@@ -57,6 +61,10 @@ export default {
       </span>
     </div>
     <div class="buttons">
+      <span class="fa-stack url" @click="openUrl">
+        <i class="fa fa-circle fa-stack-2x" />
+        <i class="fa fa-external-link fa-stack-1x fa-inverse" />
+      </span>
       <span class="fa-stack copy" @click="copy">
         <i class="fa fa-circle fa-stack-2x" />
         <i class="fa fa-clipboard fa-stack-1x fa-inverse" />
