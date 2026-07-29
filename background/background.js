@@ -177,9 +177,9 @@ function Background(protectedMemory, localMemory, settings, notifications) {
   }
   function forgetStuff() {
     console.log('Alarm Handler -- Check if we should clear Cache --', new Date());
-    // Don't clear entries if we have a forever-remembered password
-    settings.getCurrentDatabaseUsage().then(function(usage) {
-      if (usage && usage.rememberPeriod === -2) {
+    // Check if forever mode - don't clear entries
+    chrome.storage.local.get('rememberPeriod', function(items) {
+      if (items.rememberPeriod === -2) {
         console.log('[forgetStuff] Forever mode, keeping cache');
       } else {
         protectedMemory.clearData('secureCache.entries');
