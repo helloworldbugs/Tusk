@@ -323,21 +323,15 @@ function KeepassService(keepassHeader, settings, passwordFileStoreRegistry, keep
       }
       if (!kdbxEntry) throw new Error('Entry not found in database');
 
-      // Update fields on the kdbx entry
+      // Update fields on the kdbx entry (fields is a Map in kdbxweb)
       let protectedFields = ['password', 'otp', 'tOTPSeed'];
       
       for (let key in updatedFields) {
         if (protectedFields.includes(key)) {
           let pv = kdbxweb.ProtectedValue.fromString(updatedFields[key]);
-          for (let i = kdbxEntry.fields.length - 1; i >= 0; i--) {
-            if (kdbxEntry.fields[i][0] === key) kdbxEntry.fields.splice(i, 1);
-          }
-          kdbxEntry.fields.push([key, pv]);
+          kdbxEntry.fields.set(key, pv);
         } else {
-          for (let i = kdbxEntry.fields.length - 1; i >= 0; i--) {
-            if (kdbxEntry.fields[i][0] === key) kdbxEntry.fields.splice(i, 1);
-          }
-          kdbxEntry.fields.push([key, updatedFields[key]]);
+          kdbxEntry.fields.set(key, updatedFields[key]);
         }
       }
 
