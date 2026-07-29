@@ -451,14 +451,11 @@ export default defineComponent({
       <span class="selectable" @click="links.openOptions">
         <i class="fa fa-cog" aria-hidden="true" /> Settings</span
       >
-      <span v-if="isUnlocked" class="selectable" @click="forgetPassword">
-        <i class="fa fa-lock" aria-hidden="true" /> Lock Database</span
+      <span v-if="isUnlocked" class="selectable" @click="forgetPassword" style="margin-left:auto">
+        <i class="fa fa-lock" aria-hidden="true" /></span
       >
-      <span v-else class="selectable" @click="closeWindow">
+      <span v-else class="selectable" @click="closeWindow" style="margin-left:auto">
         <i class="fa fa-times-circle" aria-hidden="true" /> Close Window</span
-      >
-      <span class="selectable" @click="links.openHomepage">
-        <i class="fa fa-info-circle" aria-hidden="true" /> v{{ appVersion }}</span
       >
     </div>
   </div>
