@@ -15,6 +15,7 @@ function Background(protectedMemory, localMemory, settings, notifications) {
   console.log('Background worker registered.');
   chrome.runtime.onInstalled.addListener(settings.upgrade);
   chrome.runtime.onStartup.addListener(forgetStuff);
+  chrome.runtime.onStartup.addListener(autoStartup);
 
   //keep saved state for the popup for as long as we are alive (not long):
   chrome.runtime.onConnect.addListener(function (port) {
@@ -159,9 +160,55 @@ function Background(protectedMemory, localMemory, settings, notifications) {
     }
   });
 
+  function autoStartup() {
+    settings.getCurrentDatabaseUsage().then(function(usage) {
+      if (!usage || !usage.passwordKey) {
+        console.log('[autoStartup] No cached password, skipping auto-decrypt');
+        return;
+      }
+      if (usage.rememberPeriod !== -2) {
+        console.log('[autoStartup] Not forever mode, skipping');
+        return;
+      }
+      console.log('[autoStartup] Auto-decrypting database...');
+      import('$services/keepassService.js').then(function({ KeepassService }) {
+        import('$services/keepassHeader.js').then(function({ KeepassHeader }) {
+          import('$services/keepassReference.js').then(function({ KeepassReference }) {
+            import('$services/passwordFileStore.js').then(function({ PasswordFileStoreRegistry }) {
+              var kh = new KeepassHeader();
+              var kr = new KeepassReference();
+              var ks = new KeepassService(kh, settings, settings, kr);
+              ks.getChosenDatabaseFile().then(function(buf) {
+                return ks.getDecryptedData(Promise.resolve(buf), usage.passwordKey);
+              }).then(function(decryptedData) {
+                var entries = decryptedData.entries;
+                console.log('[autoStartup] Decrypted', entries.length, 'entries');
+                // Store in protectedMemory (session) so popup reads it via message passing
+                protectedMemory.setData('secureCache.entries', entries);
+                if (entries.length > 0) {
+                  chrome.action.setBadgeText({ text: '' });
+                  chrome.action.setBadgeBackgroundColor({ color: '#4688F1' });
+                }
+              }).catch(function(err) {
+                console.error('[autoStartup] Decrypt failed:', err);
+              });
+            });
+          });
+        });
+      });
+    });
+  }
+
   function forgetStuff() {
     console.log('Alarm Handler -- Check if we should clear Cache --', new Date());
-    protectedMemory.clearData('secureCache.entries'); // ALWAYS clear entries.
+    // Don't clear entries if we have a forever-remembered password
+    settings.getCurrentDatabaseUsage().then(function(usage) {
+      if (usage && usage.rememberPeriod === -2) {
+        console.log('[forgetStuff] Forever mode, keeping cache');
+      } else {
+        protectedMemory.clearData('secureCache.entries');
+      }
+    });
     settings.getAllForgetTimes().then(function (allTimes) {
       var now = Date.now();
       var forgottenKeys = [];
