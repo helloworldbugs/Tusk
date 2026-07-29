@@ -38,11 +38,9 @@ export default {
       this.saving = true;
       this.message = 'Saving...';
       try {
-        let masterKey = this.keepassService.masterKey;
-        if (!masterKey) {
-          throw new Error('Session expired. Please re-unlock the database.');
-        }
-        let newBuffer = await this.keepassService.saveEntry(this.entry.id, this.editFields, masterKey);
+        console.log('[EntryEdit] keepassService:', this.keepassService);
+        console.log('[EntryEdit] keepassService.saveEntry:', typeof this.keepassService.saveEntry);
+        let newBuffer = await this.keepassService.saveEntry(this.entry.id, this.editFields);
         
         this.message = 'Uploading to server...';
         await this.keepassService.uploadDatabase(newBuffer);

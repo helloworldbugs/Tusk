@@ -331,8 +331,6 @@ export default defineComponent({
               this.settings.saveCurrentDatabaseUsage(dbUsage);
               this.settings.getSetDefaultRememberPeriod(this.rememberPeriod);
               this.showResults(entries);
-              // Cache master key for edit operations
-              this.keepassService.masterKey = passwordKey;
               this.busy = false;
               this.masterPassword = '';
             });

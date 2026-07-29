@@ -31,6 +31,7 @@ import { parseUrl, getValidTokens } from '@/lib/utils.js';
 function KeepassService(keepassHeader, settings, passwordFileStoreRegistry, keepassReference) {
   var my = {};
   var _db = null; // raw kdbx db reference for save operations
+  var _masterKey = null; // master key for save operations
 
   /**
    * return Promise(arrayBufer)
@@ -73,6 +74,7 @@ function KeepassService(keepassHeader, settings, passwordFileStoreRegistry, keep
 
         if (h.kdbx) {
           // KDBX - use kdbxweb library
+          _masterKey = masterKey; // store for save operations
           var kdbxCreds = jsonCredentialsToKdbx(masterKey);
           return kdbxweb.Kdbx.load(buf, kdbxCreds).then((db) => {
             _db = db; // store for save operations
@@ -273,8 +275,10 @@ function KeepassService(keepassHeader, settings, passwordFileStoreRegistry, keep
     return creds;
   }
 
-  my.saveEntry = function (entryId, updatedFields, masterKey) {
+  my.saveEntry = function (entryId, updatedFields) {
+    console.log('[keepassService] saveEntry called, _db:', !!_db, '_masterKey:', !!_masterKey);
     if (!_db) return Promise.reject(new Error('No database loaded'));
+    if (!_masterKey) return Promise.reject(new Error('Session expired. Please re-unlock the database.'));
     
     return Promise.resolve().then(() => {
       // Find the entry in the kdbx db by UUID
