@@ -335,11 +335,18 @@ function KeepassService(keepassHeader, settings, passwordFileStoreRegistry, keep
         }
       }
 
-      return _db.save();
+      return _db.save().then(function(saved) {
+        console.log('[keepassService] save result type:', typeof saved, 'constructor:', saved && saved.constructor && saved.constructor.name);
+        return saved;
+      });
     });
   };
 
   my.uploadDatabase = function (arrayBuffer) {
+    console.log('[keepassService] uploadDatabase type:', typeof arrayBuffer, 
+      'isArrayBuffer:', arrayBuffer instanceof ArrayBuffer,
+      'isUint8Array:', arrayBuffer instanceof Uint8Array,
+      'byteLength:', arrayBuffer && arrayBuffer.byteLength);
     var bytes = new Uint8Array(arrayBuffer);
     var binary = '';
     for (var i = 0; i < bytes.length; i++) binary += String.fromCharCode(bytes[i]);
