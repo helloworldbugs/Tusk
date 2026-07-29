@@ -186,7 +186,7 @@ function Background(protectedMemory, localMemory, settings, notifications) {
                 // Store in protectedMemory (session) so popup reads it via message passing
                 protectedMemory.setData('secureCache.entries', entries);
                 if (entries.length > 0) {
-                  chrome.action.setBadgeText({ text: '' });
+                  chrome.action.setBadgeText({ text: String(entries.length) });
                   chrome.action.setBadgeBackgroundColor({ color: '#4688F1' });
                 }
               }).catch(function(err) {
