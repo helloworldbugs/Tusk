@@ -85,14 +85,24 @@ function Background(protectedMemory, localMemory, settings, notifications) {
     }
 
     if (message.m == 'autofill') {
+      var fillAllFrames = function() {
+        chrome.webNavigation.getAllFrames({tabId: message.tabId}, function(frames) {
+          if (!frames) return;
+          frames.forEach(function(f) {
+            var url = new URL(f.url);
+            var frameOrigin = url.protocol + '//' + url.hostname + '/';
+            chrome.tabs.sendMessage(message.tabId, {
+              m: 'fillPassword',
+              u: message.u,
+              p: message.p,
+              o: frameOrigin,
+            }, {frameId: f.frameId});
+          });
+        });
+      };
       alreadyInjected(message.tabId).then((injectedAlready) => {
         if (injectedAlready === true) {
-          chrome.tabs.sendMessage(message.tabId, {
-            m: 'fillPassword',
-            u: message.u,
-            p: message.p,
-            o: message.o,
-          });
+          fillAllFrames();
           return;
         }
         chrome.scripting.executeScript(
@@ -100,15 +110,9 @@ function Background(protectedMemory, localMemory, settings, notifications) {
             target: { tabId: message.tabId, allFrames: true },
             files: ['/dist/contentScripts/index.global.js'],
           },
-          function (result) {
-            //script injected
+          function () {
             console.log('Autofill script injected.');
-            chrome.tabs.sendMessage(message.tabId, {
-              m: 'fillPassword',
-              u: message.u,
-              p: message.p,
-              o: message.o,
-            });
+            fillAllFrames();
           }
         );
       });
