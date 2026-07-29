@@ -38,10 +38,8 @@ export default {
       this.saving = true;
       this.message = 'Saving...';
       try {
-        let masterKey = this.unlockedState.cacheGet('masterKey');
+        let masterKey = this.unlockedState.masterKey;
         if (!masterKey) {
-          // Try to get from secureCache
-          let allEntries = this.unlockedState.cacheGet('allEntries');
           throw new Error('Session expired. Please re-unlock the database.');
         }
         let newBuffer = await this.keepassService.saveEntry(this.entry.id, this.editFields, masterKey);
