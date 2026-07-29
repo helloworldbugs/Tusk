@@ -158,6 +158,7 @@ function Background(protectedMemory, localMemory, settings, notifications) {
 
   // Update badge when active tab changes
   var updateBadgeForTab = function() {
+    console.log('[badge] updateBadgeForTab called');
     chrome.storage.local.get('rememberPeriod', function(items) {
       if (items.rememberPeriod !== -2) return;
       protectedMemory.getData('secureCache.entries').then(function(entries) {
@@ -167,6 +168,7 @@ function Background(protectedMemory, localMemory, settings, notifications) {
           }).catch(function() {});
           return;
         }
+        console.log('[badge] got', entries.length, 'entries, filtering');
         filterAndSetBadge(entries);
       }).catch(function() {});
     });
@@ -174,6 +176,7 @@ function Background(protectedMemory, localMemory, settings, notifications) {
   
   function filterAndSetBadge(entries) {
     chrome.tabs.query({active: true, currentWindow: true}, function(tabs) {
+      console.log('[badge] tabs query returned', tabs.length, 'tabs');
       var count = 0;
       if (tabs.length > 0 && tabs[0].url && tabs[0].url.startsWith('http')) {
         try {
@@ -182,13 +185,16 @@ function Background(protectedMemory, localMemory, settings, notifications) {
             return e.url && e.url.indexOf(hostname) > -1;
           });
           count = matched.length;
-        } catch(e) {}
+          console.log('[badge] matched', count, 'for', hostname);
+        } catch(e) { console.error('[badge] filter error', e); }
       }
       if (count > 0) {
         chrome.action.setBadgeText({ text: String(count) });
         chrome.action.setBadgeBackgroundColor({ color: '#4688F1' });
+        console.log('[badge] set badge to', count);
       } else {
         chrome.action.setBadgeText({ text: '' });
+        console.log('[badge] cleared badge');
       }
     });
   }
