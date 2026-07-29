@@ -25,6 +25,7 @@ const hostPermissions = ['https://*/*', 'http://*/*', 'file:///*/*'];
 const permissions = [
   'activeTab',
   'tabs',
+  'webNavigation',
   'scripting',
   'storage',
   'clipboardWrite',

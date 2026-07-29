@@ -100,7 +100,6 @@ function Background(protectedMemory, localMemory, settings, notifications) {
           });
         });
       };
-      // Always inject into all frames, then fill each with own origin
       chrome.scripting.executeScript(
         {
           target: { tabId: message.tabId, allFrames: true },
