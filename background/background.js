@@ -165,12 +165,14 @@ function Background(protectedMemory, localMemory, settings, notifications) {
         if (!entries || !entries.length) {
           localMemory.getData('secureCache.entries').then(function(raw) {
             if (raw) {
-              var localEntries = localMemory.deserialize(raw);
+              var localEntries = typeof raw === 'string' ? localMemory.deserialize(raw) : raw;
               if (localEntries && localEntries.length) filterAndSetBadge(localEntries);
             }
           }).catch(function() {});
           return;
         }
+        if (typeof entries === 'string') entries = protectedMemory.deserialize(entries);
+        if (!Array.isArray(entries)) return;
         console.log('[badge] got', entries.length, 'entries, filtering');
         filterAndSetBadge(entries);
       }).catch(function() {});
