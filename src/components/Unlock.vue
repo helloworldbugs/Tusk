@@ -265,6 +265,10 @@ export default defineComponent({
         if (!fromCache) {
           // Don't bother saving if we're just reading from the cache.
           this.secureCache.save('secureCache.entries', entries);
+          // Also save to local for startup auto-decrypt
+          if (this.rememberPeriod === -2) {
+            this.secureCache.save('secureCache.entries', entries, 'local');
+          }
         }
         this.busy = false;
         this.isUnlocked = true;
