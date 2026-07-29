@@ -36,6 +36,7 @@
       v-if="show.entryEdit.visible"
       id="/entry-edit/:entryId"
       :unlocked-state="unlockedState"
+      :secure-cache="secureCache"
       :keepass-service="keepassService"
       :settings="settings"
       :links="links"

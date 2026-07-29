@@ -6,6 +6,7 @@ export default {
   props: {
     unlockedState: Object,
     keepassService: Object,
+    secureCache: Object,
     settings: Object,
     links: Object,
   },
@@ -44,23 +45,32 @@ export default {
         let newBuffer = await this.keepassService.saveEntry(this.entry.id, this.editFields);
         console.log('[EntryEdit] saveEntry returned, type:', typeof newBuffer, 'size:', newBuffer && newBuffer.byteLength);
         
-        this.message = 'Uploading to server...';
+        this.message = 'Uploading...';
         await this.keepassService.uploadDatabase(newBuffer);
         
-        // Update cached entry so list shows new values immediately
+        // Update both memory cache and secureCache so re-mount doesn't overwrite
         let allEntries = this.unlockedState.cacheGet('allEntries');
-        if (allEntries) {
-          let idx = allEntries.findIndex(e => e.id === this.entry.id);
+        let priEntries = this.unlockedState.cacheGet('priorityEntries');
+        let updateEntry = (list) => {
+          if (!list) return;
+          let idx = list.findIndex(e => e.id === this.entry.id);
           if (idx >= 0) {
             for (let key in this.editFields) {
               if (key === 'password') {
-                allEntries[idx].protectedData = allEntries[idx].protectedData || {};
-                allEntries[idx].protectedData[key] = allEntries[idx].protectedData[key] || {};
+                list[idx].protectedData = list[idx].protectedData || {};
               } else {
-                allEntries[idx][key] = this.editFields[key];
+                list[idx][key] = this.editFields[key];
               }
             }
           }
+        };
+        updateEntry(allEntries);
+        updateEntry(priEntries);
+        this.unlockedState.cacheSet('allEntries', allEntries);
+        this.unlockedState.cacheSet('priorityEntries', priEntries);
+        // Save to secureCache so Unlock re-mount doesn't reload old data
+        if (this.secureCache) {
+          this.secureCache.save('secureCache.entries', allEntries);
         }
         
         this.message = 'Saved!';
