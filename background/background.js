@@ -154,11 +154,55 @@ function Background(protectedMemory, localMemory, settings, notifications) {
 
   // Trigger immediately on service worker wake-up
   forgetStuff();
+  setTimeout(updateBadgeForTab, 200); // brief delay for storage to be ready
+
+  // Update badge when active tab changes
+  var updateBadgeForTab = function() {
+    chrome.storage.local.get('rememberPeriod', function(items) {
+      if (items.rememberPeriod !== -2) return;
+      protectedMemory.getData('secureCache.entries').then(function(entries) {
+        if (!entries || !entries.length) {
+          localMemory.getData('secureCache.entries').then(function(localEntries) {
+            if (localEntries && localEntries.length) filterAndSetBadge(localEntries);
+          }).catch(function() {});
+          return;
+        }
+        filterAndSetBadge(entries);
+      }).catch(function() {});
+    });
+  };
+  
+  function filterAndSetBadge(entries) {
+    chrome.tabs.query({active: true, currentWindow: true}, function(tabs) {
+      var count = entries.length;
+      if (tabs.length > 0 && tabs[0].url && tabs[0].url.startsWith('http')) {
+        try {
+          var hostname = new URL(tabs[0].url).hostname;
+          var matched = entries.filter(function(e) {
+            return e.url && e.url.indexOf(hostname) > -1;
+          });
+          count = matched.length;
+        } catch(e) {}
+      }
+      if (count > 0) {
+        chrome.action.setBadgeText({ text: String(count) });
+        chrome.action.setBadgeBackgroundColor({ color: '#4688F1' });
+      } else {
+        chrome.action.setBadgeText({ text: '' });
+      }
+    });
+  }
+
+  chrome.tabs.onActivated.addListener(updateBadgeForTab);
+  chrome.tabs.onUpdated.addListener(function(tabId, changeInfo) {
+    if (changeInfo.status === 'complete') updateBadgeForTab();
+  });
 
   chrome.alarms.onAlarm.addListener(function (alarm) {
     if (alarm.name == 'forgetStuff') {
-      forgetStuff();
-      return;
+        forgetStuff();
+        updateBadgeForTab();
+        return;
     }
   });
 
@@ -170,19 +214,6 @@ function Background(protectedMemory, localMemory, settings, notifications) {
         localMemory.getData('secureCache.entries').then(function(entries) {
           if (entries && entries.length > 0) {
             protectedMemory.setData('secureCache.entries', entries);
-            // Set badge based on current tab URL if possible
-            chrome.tabs.query({active: true, currentWindow: true}, function(tabs) {
-              if (tabs.length > 0 && tabs[0].url) {
-                var url = tabs[0].url;
-                var hostname = new URL(url).hostname;
-                var matched = entries.filter(function(e) {
-                  return e.url && e.url.indexOf(hostname) > -1;
-                });
-                var count = matched.length || entries.length;
-                chrome.action.setBadgeText({ text: String(count) });
-                chrome.action.setBadgeBackgroundColor({ color: '#4688F1' });
-              }
-            });
           }
         }).catch(function() {});
       } else {
