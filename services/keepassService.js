@@ -340,10 +340,14 @@ function KeepassService(keepassHeader, settings, passwordFileStoreRegistry, keep
   };
 
   my.uploadDatabase = function (arrayBuffer) {
+    var bytes = new Uint8Array(arrayBuffer);
+    var binary = '';
+    for (var i = 0; i < bytes.length; i++) binary += String.fromCharCode(bytes[i]);
+    var base64 = btoa(binary);
     return new Promise((resolve, reject) => {
       chrome.runtime.sendMessage({
         m: 'uploadDatabase',
-        data: Array.from(new Uint8Array(arrayBuffer)),
+        data: base64,
       }, (response) => {
         if (chrome.runtime.lastError) reject(chrome.runtime.lastError);
         else if (response && response.error) reject(new Error(response.error));

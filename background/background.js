@@ -115,9 +115,12 @@ function Background(protectedMemory, localMemory, settings, notifications) {
     }
 
     if (message.m == 'uploadDatabase') {
+      var binary = atob(message.data);
+      var bytes = new Uint8Array(binary.length);
+      for (var i = 0; i < binary.length; i++) bytes[i] = binary.charCodeAt(i);
       import('$services/webdavFileManager.js').then(({ WebdavFileManager }) => {
         const wm = new WebdavFileManager(settings);
-        return wm.uploadCurrentDatabase(new Uint8Array(message.data));
+        return wm.uploadCurrentDatabase(bytes);
       }).then(() => {
         sendResponse({ success: true });
       }).catch((err) => {
