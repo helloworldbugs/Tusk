@@ -378,6 +378,7 @@ function KeepassService(keepassHeader, settings, passwordFileStoreRegistry, keep
     if (!target) return Promise.reject(new Error('Group not found'));
     target.entries.push(entry);
     return _db.save();
+    });
   };
 
   return my;
