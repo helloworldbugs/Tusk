@@ -3,6 +3,7 @@ import { parseUrl, getValidTokens } from '@/lib/utils.js';
 
 import InfoCluster from '@/components/InfoCluster.vue';
 import EntryList from '@/components/EntryList.vue';
+import BrowseEntries from '@/components/BrowseEntries.vue';
 import Spinner from 'vue-simple-spinner';
 import Messenger from '@/components/Messenger.vue';
 import { defineComponent } from 'vue';
@@ -11,6 +12,7 @@ export default defineComponent({
   components: {
     InfoCluster,
     EntryList,
+    BrowseEntries,
     Spinner,
     Messenger,
   },
@@ -44,6 +46,7 @@ export default defineComponent({
       rememberPeriodText: '',
       databaseFileName: '',
       keyFilePicker: false,
+      showBrowse: false,
       appVersion: chrome.runtime.getManifest().version,
       slider_options: [
         {
@@ -210,6 +213,9 @@ export default defineComponent({
       this.secureCache.clear('secureCache.entries');
       this.$router.route('/choose');
     },
+    toggleBrowse() {
+      this.showBrowse = !this.showBrowse;
+    },
     forgetPassword() {
       this.settings.getCurrentMasterPasswordCacheKey().then((key) => {
         if (key !== null) this.secureCache.clear(key);
@@ -335,10 +341,17 @@ export default defineComponent({
 
     <!-- Entry List -->
     <EntryList
-      v-if="!busy && isUnlocked"
+      v-if="!busy && isUnlocked && !showBrowse"
       :messages="unlockedMessages"
       :unlocked-state="unlockedState"
       :settings="settings"
+    />
+
+    <!-- Browse All Entries -->
+    <BrowseEntries
+      v-if="!busy && isUnlocked && showBrowse"
+      :unlocked-state="unlockedState"
+      :keepass-service="keepassService"
     />
 
     <!-- General Messenger -->
@@ -430,6 +443,9 @@ export default defineComponent({
     <div v-show="!busy" class="box-bar medium between footer">
       <span class="selectable" @click="links.openOptions">
         <i class="fa fa-cog" aria-hidden="true" /> Settings</span
+      >
+      <span v-if="isUnlocked" class="selectable" @click="toggleBrowse" :class="{ active: showBrowse }">
+        <i class="fa fa-folder-open" aria-hidden="true" /></span
       >
       <span v-if="isUnlocked" class="selectable" @click="forgetPassword" style="margin-left:auto">
         <i class="fa fa-lock" aria-hidden="true" /> Lock</span
@@ -564,6 +580,10 @@ export default defineComponent({
 
   &:hover {
     background-color: $dark-background-color;
+  }
+  &.active {
+    background-color: $blue;
+    color: #fff;
   }
 }
 
