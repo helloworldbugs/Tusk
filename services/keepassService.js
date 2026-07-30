@@ -349,7 +349,7 @@ function KeepassService(keepassHeader, settings, passwordFileStoreRegistry, keep
   };
 
   my.moveEntryToGroup = function (entryId, groupName) {
-    if (!_db) return Promise.reject(new Error('No database loaded'));
+    return my.ensureDbLoaded().then(function () {
     function findGroup(groups, name) {
       for (var i = 0; i < groups.length; i++) {
         if (groups[i].name === name) return groups[i];
