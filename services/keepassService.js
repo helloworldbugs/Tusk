@@ -26,7 +26,7 @@ kdbxweb.CryptoEngine.setArgon2Impl(
   }
 );
 
-import { parseUrl, getValidTokens } from '@/lib/utils.js';
+import { parseUrl, matchLevel } from '@/lib/utils.js';
 
 function KeepassService(keepassHeader, settings, passwordFileStoreRegistry, keepassReference) {
   var my = {};
@@ -95,44 +95,18 @@ function KeepassService(keepassHeader, settings, passwordFileStoreRegistry, keep
       });
   };
 
-  my.rankEntries = (entries, siteUrl, title, siteTokens) => {
+  my.rankEntries = (entries, siteUrl) => {
     entries.forEach(function (entry) {
-      //apply a ranking algorithm to find the best matches
-      var entryOrigins = [parseUrl(entry.url)];
-
-      if (entry.keys.indexOf('tuskUrls') >= 0) {
-        let others = entry.tuskUrls.split(',').map((val) => {
-          return parseUrl(val);
-        });
-        entryOrigins = entryOrigins.concat(others);
-      }
-      if (entryOrigins.length && entryOrigins.some((a) => a && a.origin == siteUrl.origin))
-        entry.matchRank = 100; // perfect match
-      else if (entryOrigins.length && entryOrigins.some((a) => a && a.host == siteUrl.host))
-        entry.matchRank = 10; // possible match
-      else if (entryOrigins.length && entryOrigins.some((a) => a && a.hostname == siteUrl.hostname))
-        entry.matchRank = -100; // phishing?
-      else entry.matchRank = 0; // None
-
-      entry.matchRank +=
-        entry.title && title && entry.title.toLowerCase() == title.toLowerCase() ? 1 : 0;
-      entry.matchRank +=
-        entry.title && entry.title.toLowerCase() === siteUrl.hostname.toLowerCase() ? 1 : 0;
-      entry.matchRank +=
-        entry.url && siteUrl.hostname.indexOf(entry.url.toLowerCase()) > -1 ? 0.9 : 0;
-      entry.matchRank +=
-        entry.title && siteUrl.hostname.indexOf(entry.title.toLowerCase()) > -1 ? 0.9 : 0;
-
-      var entryTokens = getValidTokens(entryOrigins.join('.') + '.' + entry.title);
-      for (var i = 0; i < entryTokens.length; i++) {
-        var token1 = entryTokens[i];
-        for (var j = 0; j < siteTokens.length; j++) {
-          var token2 = siteTokens[j];
-          if (token1 == token2) {
-            entry.matchRank += 0.2;
-          }
+      var level = matchLevel(siteUrl.href, entry);
+      // Also check tuskUrls field for additional URL matches
+      if (level === 0 && entry.keys && entry.keys.indexOf('tuskUrls') >= 0) {
+        var urls = entry.tuskUrls.split(',');
+        for (var i = 0; i < urls.length; i++) {
+          var altLevel = matchLevel(siteUrl.href, { url: urls[i].trim() });
+          if (altLevel > level) level = altLevel;
         }
       }
+      entry.matchRank = level * 25; // 100, 75, 50, 25 for levels 4,3,2,1
     });
   };
 
