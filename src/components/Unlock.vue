@@ -31,11 +31,6 @@ export default defineComponent({
         warn: '',
         error: '',
       },
-      generalMessages: {
-        warn: '',
-        error: '',
-        success: '',
-      },
       busy: false,
       isUnlocked: false,
       masterPassword: '',
@@ -167,14 +162,6 @@ export default defineComponent({
       this.busy = false;
       focus();
     }
-    if (this.unlockedState.sitePermission) {
-      this.generalMessages.success =
-        'You have previously granted Tusk permission to fill passwords on ' +
-        this.unlockedState.origin;
-    } else {
-      this.generalMessages.warn =
-        'This may be a new site to Tusk. Before filling in a password, double check that this is the correct site.';
-    }
     //set knowlege from the URL
     this.databaseFileName = decodeURIComponent(this.$router.getRoute().title);
   },
@@ -232,6 +219,8 @@ export default defineComponent({
       });
     },
     showResults(entries, fromCache) {
+      this.unlockedMessages.warn = '';
+      this.unlockedMessages.error = '';
       let siteUrl = parseUrl(this.unlockedState.fullUrl || this.unlockedState.url);
       this.keepassService.rankEntries(entries, siteUrl); // in-place
 
@@ -276,7 +265,7 @@ export default defineComponent({
     },
     unlock(passwordKey) {
       this.busy = true;
-      this.generalMessages.error = '';
+      this.unlockedMessages.error = '';
       let passwordKeyPromise;
       let bufferPromise = this.keepassService.getChosenDatabaseFile();
       if (passwordKey === undefined)
@@ -328,7 +317,7 @@ export default defineComponent({
         })
         .catch((err) => {
           console.error(err);
-          this.generalMessages['error'] = err.message || 'invalid keyfile or KDBX file';
+          this.unlockedMessages['error'] = err.message || 'invalid keyfile or KDBX file';
           this.busy = false;
           throw err;
         });
@@ -358,9 +347,6 @@ export default defineComponent({
       :unlocked-state="unlockedState"
       :keepass-service="keepassService"
     />
-
-    <!-- General Messenger -->
-    <messenger v-show="!busy" :messages="generalMessages" />
 
     <!-- Unlock input group -->
     <div v-if="!busy && !isUnlocked" id="masterPasswordGroup">

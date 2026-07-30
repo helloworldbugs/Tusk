@@ -1,11 +1,9 @@
 <script>
 import EntryListItem from '@/components/EntryListItem.vue';
-import Messenger from '@/components/Messenger.vue';
 
 export default {
   components: {
     EntryListItem,
-    Messenger,
   },
   props: {
     settings: Object,
@@ -141,8 +139,10 @@ export default {
       />
       <i class="fa fa-plus add-entry" @click="$router.route('/entry-edit/new')" title="New entry" />
     </div>
-    <messenger :messages="allMessages" />
     <div class="entries">
+      <div v-if="allMessages.warn || allMessages.error || allMessages.success" class="no-match-msg">
+        {{ allMessages.warn || allMessages.error || allMessages.success }}
+      </div>
       <div v-if="priorityEntries && searchTerm.length == 0">
         <entry-list-item
           v-for="entry in priorityEntries"
@@ -169,6 +169,14 @@ export default {
   border-bottom: 2px solid $light-gray;
   height: 350px;
   overflow-y: auto;
+}
+
+.no-match-msg {
+  padding: 10px $wall-padding;
+  font-size: 12px;
+  color: #888;
+  background: #fff8e1;
+  border-bottom: 1px solid $light-gray;
 }
 
 .search {
