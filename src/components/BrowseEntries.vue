@@ -43,6 +43,9 @@ export default {
     editEntry(entry) {
       this.$router.route('/entry-edit/' + entry.id);
     },
+    openUrl(entry) {
+      if (entry.url) chrome.tabs.create({ url: entry.url });
+    },
   },
 };
 </script>
@@ -51,7 +54,7 @@ export default {
   <div id="browse-panel">
     <div class="search">
       <i class="fa fa-search" />
-      <input v-model="searchTerm" type="search" placeholder="search..." />
+      <input v-model="searchTerm" type="search" placeholder="search entire database..." />
     </div>
     <div class="browse-groups">
       <div v-for="group in groups" :key="group.name" class="group-section">
@@ -71,6 +74,10 @@ export default {
               <span class="entry-title">{{ entry.title || '(empty)' }}</span>
               <span class="entry-user">{{ entry.userName || '' }}</span>
             </div>
+            <span class="fa-stack entry-url" @click.stop="openUrl(entry)">
+              <i class="fa fa-circle fa-stack-2x" />
+              <i class="fa fa-external-link fa-stack-1x fa-inverse" />
+            </span>
             <span class="fa-stack entry-edit" @click.stop="editEntry(entry)">
               <i class="fa fa-circle fa-stack-2x" />
               <i class="fa fa-pencil fa-stack-1x fa-inverse" />
@@ -134,6 +141,7 @@ export default {
       .entry-title { font-size: 14px; display: block; }
       .entry-user { font-size: 11px; color: #666; }
     }
+    .entry-url,
     .entry-edit { opacity: 0.3; font-size: 16px; &:hover { opacity: 0.8; } }
   }
 }
