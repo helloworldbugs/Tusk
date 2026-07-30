@@ -445,7 +445,7 @@ export default defineComponent({
         <i class="fa fa-cog" aria-hidden="true" /> Settings</span
       >
       <span v-if="isUnlocked" class="selectable browse-btn" @click="toggleBrowse" :class="{ active: showBrowse }">
-        <i class="fa fa-folder-open" aria-hidden="true" /></span
+        <i class="fa fa-folder-open" aria-hidden="true" /> Database</span
       >
       <span v-if="isUnlocked" class="selectable lock-btn" @click="forgetPassword">
         <i class="fa fa-lock" aria-hidden="true" /> Lock</span

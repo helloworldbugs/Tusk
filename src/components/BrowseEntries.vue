@@ -85,13 +85,6 @@ export default {
 <style lang="scss" scoped>
 @import '../styles/settings.scss';
 
-#browse-panel {
-  height: 350px;
-  display: flex;
-  flex-direction: column;
-  border-bottom: 2px solid $light-gray;
-}
-
 .search {
   padding: 8px $wall-padding;
   box-sizing: border-box;
@@ -115,8 +108,9 @@ export default {
 }
 
 .browse-groups {
-  flex: 1;
+  height: 350px;
   overflow-y: auto;
+  border-bottom: 2px solid $light-gray;
 }
 
 .group-header {
