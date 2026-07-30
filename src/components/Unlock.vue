@@ -440,17 +440,17 @@ export default defineComponent({
     </div>
 
     <!-- Footer -->
-    <div v-show="!busy" class="box-bar medium between footer">
+    <div v-show="!busy" class="box-bar medium footer">
       <span class="selectable" @click="links.openOptions">
         <i class="fa fa-cog" aria-hidden="true" /> Settings</span
       >
-      <span v-if="isUnlocked" class="selectable" @click="toggleBrowse" :class="{ active: showBrowse }">
+      <span v-if="isUnlocked" class="selectable browse-btn" @click="toggleBrowse" :class="{ active: showBrowse }">
         <i class="fa fa-folder-open" aria-hidden="true" /></span
       >
-      <span v-if="isUnlocked" class="selectable" @click="forgetPassword" style="margin-left:auto">
+      <span v-if="isUnlocked" class="selectable lock-btn" @click="forgetPassword">
         <i class="fa fa-lock" aria-hidden="true" /> Lock</span
       >
-      <span v-else class="selectable" @click="closeWindow" style="margin-left:auto">
+      <span v-else class="selectable lock-btn" @click="closeWindow">
         <i class="fa fa-times-circle" aria-hidden="true" /> Close Window</span
       >
     </div>
@@ -572,6 +572,22 @@ export default defineComponent({
 
 .spinner {
   padding: $wall-padding;
+}
+
+.footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.browse-btn {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+.lock-btn {
+  margin-left: auto;
 }
 
 .footer span {

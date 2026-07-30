@@ -86,20 +86,31 @@ export default {
 @import '../styles/settings.scss';
 
 #browse-panel {
-  height: 400px;
+  height: 350px;
   display: flex;
   flex-direction: column;
+  border-bottom: 2px solid $light-gray;
 }
 
 .search {
   padding: 8px $wall-padding;
-  border-bottom: 2px solid $light-gray;
+  box-sizing: border-box;
   display: flex;
   align-items: center;
+  border-bottom: 2px solid $light-gray;
   input {
-    flex: 1; border: 0; padding-left: 10px;
-    font-size: 16px; background: transparent;
+    float: right;
+    width: 96%;
+    border: 0px;
+    padding: 0px;
+    padding-left: 10px;
+    font-size: 18px;
+    background-color: $background-color;
     &:focus { outline: none; }
+  }
+  .fa {
+    width: 4%;
+    font-size: 15px;
   }
 }
 
