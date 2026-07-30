@@ -25,8 +25,16 @@ export default {
     this.entry = this.unlockedState.cacheGet('allEntries').filter((entry) => {
       return entry.id == entryId;
     })[0];
-    // Load groups
-    this.groups = (this.keepassService.getGroups() || []).map(g => g.name);
+    // Load groups from cached entries (don't need _db)
+    let allEntries = this.unlockedState.cacheGet('allEntries') || [];
+    let groupNames = {};
+    allEntries.forEach(function(e) { if (e.groupName) groupNames[e.groupName] = true; });
+    this.groups = Object.keys(groupNames);
+    if (this.groups.length === 0) {
+      // Fallback to keepassService if db is loaded
+      let dbGroups = this.keepassService.getGroups() || [];
+      this.groups = dbGroups.map(function(g) { return g.name; });
+    }
     this.selectedGroup = this.entry?.groupName || this.groups[0] || '';
     if (!this.entry) return;
     // Copy editable fields

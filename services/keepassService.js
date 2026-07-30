@@ -339,9 +339,13 @@ function KeepassService(keepassHeader, settings, passwordFileStoreRegistry, keep
 
   my.getGroups = function () {
     if (!_db) return [];
-    return _db.groups.map(function(g) {
-      return { name: g.name || 'Root', uuid: g.uuid && !g.uuid.empty ? convertArrayToUUID(Base64.decode(g.uuid.id)) : null };
-    });
+    var result = [];
+    function collect(group) {
+      result.push({ name: group.name || 'Root' });
+      if (group.groups) group.groups.forEach(collect);
+    }
+    _db.groups.forEach(collect);
+    return result;
   };
 
   my.moveEntryToGroup = function (entryId, groupName) {
