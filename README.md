@@ -61,18 +61,13 @@ Cross-origin login forms (Aliyun, banks, etc.) now work correctly. Each frame re
 
 ### 🧪 CI/CD
 
-GitHub Actions auto-builds the extension on every push. [`tusk_test.py`](tusk_test.py) on the desktop automates download, Chrome launch, WebDAV config, and scan.
+GitHub Actions auto-builds the extension on every push.
 
 ---
 
 ## Quick Start
 
-```bash
-# Test automation
-python tusk_test.py
-```
-
-Or manually: load `dist/` folder in `chrome://extensions` (Developer mode).
+Load `dist/` folder in `chrome://extensions` (Developer mode).
 
 ---
 
