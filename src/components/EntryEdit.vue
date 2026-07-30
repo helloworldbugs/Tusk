@@ -14,6 +14,8 @@ export default {
     return {
       entry: null,
       editFields: {},
+      groups: [],
+      selectedGroup: '',
       saving: false,
       message: '',
     };
@@ -23,6 +25,9 @@ export default {
     this.entry = this.unlockedState.cacheGet('allEntries').filter((entry) => {
       return entry.id == entryId;
     })[0];
+    // Load groups
+    this.groups = (this.keepassService.getGroups() || []).map(g => g.name);
+    this.selectedGroup = this.entry?.groupName || this.groups[0] || '';
     if (!this.entry) return;
     // Copy editable fields
     let editableKeys = ['title', 'userName', 'url', 'notes', 'password'];
@@ -40,8 +45,10 @@ export default {
       this.message = 'Saving...';
       try {
         console.log('[EntryEdit] save called');
-        console.log('[EntryEdit] keepassService:', !!this.keepassService);
-        console.log('[EntryEdit] saveEntry method:', typeof this.keepassService.saveEntry);
+        // Move entry if group changed
+        if (this.selectedGroup !== this.entry.groupName) {
+          await this.keepassService.moveEntryToGroup(this.entry.id, this.selectedGroup);
+        }
         let newBuffer = await this.keepassService.saveEntry(this.entry.id, this.editFields);
         console.log('[EntryEdit] saveEntry returned, type:', typeof newBuffer, 'size:', newBuffer && newBuffer.byteLength);
         
@@ -92,6 +99,12 @@ export default {
   <div>
     <go-back message="back to entry list" />
     <div class="edit-form" v-if="entry">
+      <div class="edit-field">
+        <label>Group</label>
+        <select v-model="selectedGroup">
+          <option v-for="g in groups" :key="g" :value="g">{{ g }}</option>
+        </select>
+      </div>
       <div class="edit-field">
         <label>Title</label>
         <input v-model="editFields.title" type="text" />

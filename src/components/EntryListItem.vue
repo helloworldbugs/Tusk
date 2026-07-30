@@ -59,6 +59,7 @@ export default {
       <span class="user">
         {{ entry.userName || '&#60;empty&#62;' }}
       </span>
+      <span v-if="entry.groupName" class="group-label">{{ entry.groupName }}</span>
     </div>
     <div class="buttons">
       <span class="fa-stack url" @click="openUrl">
@@ -92,6 +93,12 @@ export default {
   }
   .user {
     font-size: 12px;
+  }
+  .group-label {
+    display: block;
+    font-size: 10px;
+    color: #999;
+    margin-top: 1px;
   }
   .buttons {
     font-size: 18px;
