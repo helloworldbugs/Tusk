@@ -56,6 +56,7 @@ export default {
         // Move entry if group changed
         if (this.selectedGroup !== this.entry.groupName) {
           await this.keepassService.moveEntryToGroup(this.entry.id, this.selectedGroup);
+          this.entry.groupName = this.selectedGroup; // update entry ref in-place
         }
         let newBuffer = await this.keepassService.saveEntry(this.entry.id, this.editFields);
         console.log('[EntryEdit] saveEntry returned, type:', typeof newBuffer, 'size:', newBuffer && newBuffer.byteLength);
