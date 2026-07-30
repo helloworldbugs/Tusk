@@ -184,11 +184,17 @@ function Background(protectedMemory, localMemory, settings, notifications) {
       if (tabs.length > 0 && tabs[0].url && tabs[0].url.startsWith('http')) {
         try {
           var pageUrl = tabs[0].url;
-          var matched = entries.filter(function(e) {
-            return entryMatchLevel(pageUrl, e) >= 1;
-          });
-          count = matched.length;
-          console.log('[badge] matched', count, 'for', pageUrl);
+          // Cascade: highest matching level first
+          for (var level = 4; level >= 1; level--) {
+            var matched = entries.filter(function(e) {
+              return entryMatchLevel(pageUrl, e) === level;
+            });
+            if (matched.length > 0) {
+              count = matched.length;
+              console.log('[badge] matched', count, 'at level', level, 'for', pageUrl);
+              break;
+            }
+          }
         } catch(e) { console.error('[badge] filter error', e); }
       }
       if (count > 0) {

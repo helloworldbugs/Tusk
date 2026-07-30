@@ -225,7 +225,11 @@ export default defineComponent({
       this.keepassService.rankEntries(entries, siteUrl); // in-place
 
       let allEntries = entries;
-      let priorityEntries = entries.filter((e) => e.matchRank >= 25);
+      // Cascade: show highest matching level first
+      let priorityEntries = entries.filter((e) => e.matchRank === 100);
+      if (priorityEntries.length === 0) priorityEntries = entries.filter((e) => e.matchRank === 75);
+      if (priorityEntries.length === 0) priorityEntries = entries.filter((e) => e.matchRank === 50);
+      if (priorityEntries.length === 0) priorityEntries = entries.filter((e) => e.matchRank === 25);
       priorityEntries.sort((a, b) => b.matchRank - a.matchRank);
 
       if (priorityEntries.length == 0) {
