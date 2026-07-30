@@ -139,6 +139,7 @@ export default {
         type="search"
         placeholder="search entire database..."
       />
+      <i class="fa fa-plus add-entry" @click="$router.route('/entry-edit/new')" title="New entry" />
     </div>
     <messenger :messages="allMessages" />
     <div class="entries">
@@ -192,6 +193,13 @@ export default {
   .fa {
     width: 4%;
     font-size: 15px;
+  }
+  .add-entry {
+    font-size: 18px;
+    cursor: pointer;
+    padding: 4px 6px;
+    border-radius: 3px;
+    &:hover { background: $light-background-color; }
   }
 }
 </style>

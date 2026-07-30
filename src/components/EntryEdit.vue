@@ -73,10 +73,11 @@ export default {
         this.message = 'Uploading...';
         await this.keepassService.uploadDatabase(newBuffer);
         
-        // Update both memory cache and secureCache so re-mount doesn't overwrite
-        let allEntries = this.unlockedState.cacheGet('allEntries');
-        let priEntries = this.unlockedState.cacheGet('priorityEntries');
-        let updateEntry = (list) => {
+        // Update cache — skip entry-level update for new entries
+        if (!this.isNew) {
+          let allEntries = this.unlockedState.cacheGet('allEntries');
+          let priEntries = this.unlockedState.cacheGet('priorityEntries');
+          let updateEntry = (list) => {
           if (!list) return;
           let idx = list.findIndex(e => e.id === this.entry.id);
           if (idx >= 0) {
@@ -93,9 +94,9 @@ export default {
         updateEntry(priEntries);
         this.unlockedState.cacheSet('allEntries', allEntries);
         this.unlockedState.cacheSet('priorityEntries', priEntries);
-        // Save to secureCache so Unlock re-mount doesn't reload old data
         if (this.secureCache) {
           this.secureCache.save('secureCache.entries', allEntries);
+        }
         }
         
         this.message = 'Saved!';
@@ -138,14 +139,15 @@ export default {
 
 <template>
   <div>
-    <go-back message="back to entry list" />
-    <div class="edit-form" v-if="entry || isNew">
-      <div class="edit-header" v-if="!isNew">
+    <go-back message="back to entry list">
+      <template v-if="!isNew" #extra>
         <span class="delete-btn selectable" @click="deleteEntry" title="Delete entry">
           <i class="fa fa-trash" />
         </span>
         <input v-if="deleteConfirm !== ''" v-model="deleteConfirm" placeholder='Type "yes" to delete' class="delete-input" @keyup.enter="deleteEntry" />
-      </div>
+      </template>
+    </go-back>
+    <div class="edit-form" v-if="entry || isNew">
       <div class="edit-field">
         <label>Group</label>
         <select v-model="selectedGroup">
