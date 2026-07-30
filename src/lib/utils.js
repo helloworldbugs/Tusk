@@ -71,4 +71,32 @@ const isFirefox = () => {
   return 'browser' in window;
 };
 
-export { getValidTokens, parseUrl, urlencode, guid, isVisible, isFirefox };
+/**
+ * Unified URL matching: returns match level 4-1, or 0 for no match.
+ * @param {string} pageUrl - current page URL
+ * @param {object} entry - entry with .url, optional .matchRegex
+ * @returns {number} 4=URI contains, 3=origin exact, 2=same domain, 1=regex, 0=none
+ */
+const matchLevel = (pageUrl, entry) => {
+  if (!pageUrl || !entry || !entry.url) return 0;
+  var safeParse = function(raw) {
+    try {
+      if (!/^https?:\/\//i.test(raw)) raw = 'http://' + raw;
+      var u = new URL(raw);
+      return { href: u.href, origin: u.origin, hostname: u.hostname,
+        domain: u.hostname.split('.').slice(-2).join('.') };
+    } catch(e) { return null; }
+  };
+  var page = safeParse(pageUrl);
+  var e = safeParse(entry.url);
+  if (!page || !e) return 0;
+  if (page.href.indexOf(e.href) > -1) return 4;
+  if (page.origin === e.origin) return 3;
+  if (page.domain === e.domain && page.domain.indexOf('.') > -1) return 2;
+  if (entry.matchRegex) {
+    try { if (new RegExp(entry.matchRegex).test(pageUrl)) return 1; } catch(ex) {}
+  }
+  return 0;
+};
+
+export { matchLevel, getValidTokens, parseUrl, urlencode, guid, isVisible, isFirefox };
