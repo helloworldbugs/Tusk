@@ -20,11 +20,14 @@ export default {
       saving: false,
       message: '',
       deleteConfirm: '',
+      fromBrowse: false,
       deleting: false,
     };
   },
   mounted() {
-    let entryId = this.$router.getRoute().entryId;
+    let route = this.$router.getRoute();
+    let entryId = route.entryId;
+    this.fromBrowse = route.from === 'browse';
     if (entryId === 'new') {
       this.isNew = true;
       this.editFields = { title: '', userName: '', url: '', notes: '', password: '' };
@@ -108,7 +111,9 @@ export default {
       this.saving = false;
     },
     cancel() {
-      this.$router.route('/');
+      // Go back to browse if came from there
+      if (this.fromBrowse) this.$router.route('/');
+      else this.$router.route('/');
     },
     async deleteEntry() {
       if (this.deleteConfirm !== 'yes') {
@@ -139,14 +144,13 @@ export default {
 
 <template>
   <div>
-    <go-back message="back to entry list">
-      <template v-if="!isNew" #extra>
-        <span class="delete-btn selectable" @click="deleteEntry" title="Delete entry">
-          <i class="fa fa-trash" />
-        </span>
-        <input v-if="deleteConfirm !== ''" v-model="deleteConfirm" placeholder='Type "yes" to delete' class="delete-input" @keyup.enter="deleteEntry" />
-      </template>
-    </go-back>
+    <go-back message="back to entry list" />
+    <div class="delete-bar" v-if="!isNew">
+      <span class="delete-btn selectable" @click="deleteEntry" title="Delete entry">
+        <i class="fa fa-trash" /> Delete
+      </span>
+      <input v-if="deleteConfirm !== ''" v-model="deleteConfirm" placeholder='Type "yes" to delete' class="delete-input" @keyup.enter="deleteEntry" />
+    </div>
     <div class="edit-form" v-if="entry || isNew">
       <div class="edit-field">
         <label>Group</label>
@@ -192,15 +196,15 @@ export default {
   padding: $wall-padding;
 }
 
-.edit-header {
+.delete-bar {
   display: flex;
   align-items: center;
   justify-content: flex-end;
+  padding: 4px $wall-padding;
   gap: 8px;
-  margin-bottom: 12px;
   .delete-btn {
     color: #c00;
-    font-size: 16px;
+    font-size: 13px;
     cursor: pointer;
     &:hover { opacity: 0.7; }
   }

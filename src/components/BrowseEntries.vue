@@ -46,7 +46,7 @@ export default {
       this.unlockedState.autofill(entry);
     },
     editEntry(entry) {
-      this.$router.route('/entry-edit/' + entry.id);
+      this.$router.route('/entry-edit/' + entry.id + '?from=browse');
     },
     openUrl(entry) {
       if (entry.url) chrome.tabs.create({ url: entry.url });

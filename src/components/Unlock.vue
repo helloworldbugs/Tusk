@@ -103,6 +103,8 @@ export default defineComponent({
     },
   },
   async mounted() {
+    // Restore browse state
+    if (this.unlockedState.cacheGet('showBrowse')) this.showBrowse = true;
     // modify unlockedState internal state
     await this.unlockedState.getTabDetails();
 
@@ -215,8 +217,11 @@ export default defineComponent({
     },
     toggleBrowse() {
       this.showBrowse = !this.showBrowse;
+      this.unlockedState.cacheSet('showBrowse', this.showBrowse);
     },
     forgetPassword() {
+      this.showBrowse = false;
+      this.unlockedState.cacheSet('showBrowse', false);
       this.settings.getCurrentMasterPasswordCacheKey().then((key) => {
         if (key !== null) this.secureCache.clear(key);
         this.secureCache.clear('secureCache.entries');
