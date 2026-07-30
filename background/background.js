@@ -183,12 +183,12 @@ function Background(protectedMemory, localMemory, settings, notifications) {
       var count = 0;
       if (tabs.length > 0 && tabs[0].url && tabs[0].url.startsWith('http')) {
         try {
-          var hostname = new URL(tabs[0].url).hostname;
+          var pageUrl = tabs[0].url;
           var matched = entries.filter(function(e) {
-            return e.url && e.url.indexOf(hostname) > -1;
+            return entryMatchLevel(pageUrl, e) >= 1;
           });
           count = matched.length;
-          console.log('[badge] matched', count, 'for', hostname);
+          console.log('[badge] matched', count, 'for', pageUrl);
         } catch(e) { console.error('[badge] filter error', e); }
       }
       if (count > 0) {
@@ -200,6 +200,28 @@ function Background(protectedMemory, localMemory, settings, notifications) {
         console.log('[badge] cleared badge on tab', tabs[0].id);
       }
     });
+  }
+
+  function entryMatchLevel(pageUrl, entry) {
+    if (!pageUrl || !entry || !entry.url) return 0;
+    var safeParse = function(raw) {
+      try {
+        if (!/^https?:\/\//i.test(raw)) raw = 'http://' + raw;
+        var u = new URL(raw);
+        return { href: u.href, origin: u.origin, hostname: u.hostname,
+          domain: u.hostname.split('.').slice(-2).join('.') };
+      } catch(e) { return null; }
+    };
+    var page = safeParse(pageUrl);
+    var e = safeParse(entry.url);
+    if (!page || !e) return 0;
+    if (page.href.indexOf(e.href) > -1) return 4;
+    if (page.origin === e.origin) return 3;
+    if (page.domain === e.domain && page.domain.indexOf('.') > -1) return 2;
+    if (entry.matchRegex) {
+      try { if (new RegExp(entry.matchRegex).test(pageUrl)) return 1; } catch(ex) {}
+    }
+    return 0;
   }
 
   chrome.tabs.onActivated.addListener(updateBadgeForTab);
