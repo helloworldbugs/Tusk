@@ -152,13 +152,14 @@ export default {
     margin-bottom: 4px;
     color: #555;
   }
-  input, textarea {
+  input, textarea, select {
     width: 100%;
     box-sizing: border-box;
     padding: 8px;
     border: 1px solid $light-gray;
     border-radius: 3px;
     font-size: 14px;
+    background: #fff;
     &:focus { outline: none; border-color: $blue; }
   }
 }
