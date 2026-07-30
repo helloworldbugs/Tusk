@@ -159,7 +159,7 @@ export default {
         <span class="delete-btn selectable" @click.stop="deleteEntry" title="Delete entry">
           <i class="fa fa-trash" />
           <span v-if="deleteClick === 0"> Delete</span>
-          <span v-if="deleteClick === 1" class="confirm-text">再次点击确认删除</span>
+          <span v-if="deleteClick === 1" class="confirm-text">Click again to confirm</span>
         </span>
       </template>
     </go-back>
