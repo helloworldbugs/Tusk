@@ -19,15 +19,19 @@ export default {
       selectedGroup: '',
       saving: false,
       message: '',
-      deleteConfirm: '',
+      deleteClick: 0,   // 0=not clicked, 1=clicked once (show confirm), 2=delete now
       fromBrowse: false,
       deleting: false,
     };
   },
   mounted() {
     let route = this.$router.getRoute();
-    let entryId = route.entryId;
-    this.fromBrowse = route.from === 'browse';
+    let rawEntryId = route.entryId || '';
+    // Strip query params from entryId (e.g. "abc123?from=browse" → "abc123")
+    let qIdx = rawEntryId.indexOf('?');
+    let entryId = qIdx >= 0 ? rawEntryId.substring(0, qIdx) : rawEntryId;
+    let queryStr = qIdx >= 0 ? rawEntryId.substring(qIdx + 1) : '';
+    this.fromBrowse = queryStr.indexOf('from=browse') >= 0;
     if (entryId === 'new') {
       this.isNew = true;
       this.editFields = { title: '', userName: '', url: '', notes: '', password: '' };
@@ -76,34 +80,41 @@ export default {
         this.message = 'Uploading...';
         await this.keepassService.uploadDatabase(newBuffer);
         
-        // Update cache — skip entry-level update for new entries
+        // Update cache
         if (!this.isNew) {
+          // Existing entry: update in-place
           let allEntries = this.unlockedState.cacheGet('allEntries');
           let priEntries = this.unlockedState.cacheGet('priorityEntries');
           let updateEntry = (list) => {
-          if (!list) return;
-          let idx = list.findIndex(e => e.id === this.entry.id);
-          if (idx >= 0) {
-            for (let key in this.editFields) {
-              if (key === 'password') {
-                list[idx].protectedData = list[idx].protectedData || {};
-              } else {
-                list[idx][key] = this.editFields[key];
+            if (!list) return;
+            let idx = list.findIndex(e => e.id === this.entry.id);
+            if (idx >= 0) {
+              for (let key in this.editFields) {
+                if (key === 'password') {
+                  list[idx].protectedData = list[idx].protectedData || {};
+                } else {
+                  list[idx][key] = this.editFields[key];
+                }
               }
             }
+          };
+          updateEntry(allEntries);
+          updateEntry(priEntries);
+          this.unlockedState.cacheSet('allEntries', allEntries);
+          this.unlockedState.cacheSet('priorityEntries', priEntries);
+          if (this.secureCache) {
+            this.secureCache.save('secureCache.entries', allEntries);
           }
-        };
-        updateEntry(allEntries);
-        updateEntry(priEntries);
-        this.unlockedState.cacheSet('allEntries', allEntries);
-        this.unlockedState.cacheSet('priorityEntries', priEntries);
-        if (this.secureCache) {
-          this.secureCache.save('secureCache.entries', allEntries);
-        }
+        } else {
+          // New entry: clear cache so Unlock re-downloads fresh data on next mount
+          this.unlockedState.clearCache();
+          if (this.secureCache) {
+            this.secureCache.clear('secureCache.entries');
+          }
         }
         
         this.message = 'Saved!';
-        setTimeout(() => this.$router.route('/'), 800);
+        setTimeout(() => this.$router.goBack(), 800);
       } catch (err) {
         console.error(err);
         this.message = 'Error: ' + err.message;
@@ -111,14 +122,12 @@ export default {
       this.saving = false;
     },
     cancel() {
-      // Go back to browse if came from there
-      if (this.fromBrowse) this.$router.route('/');
-      else this.$router.route('/');
+      this.$router.goBack();
     },
     async deleteEntry() {
-      if (this.deleteConfirm !== 'yes') {
-        this.deleteConfirm = '';
-        this.message = 'Type "yes" to confirm deletion';
+      if (this.deleteClick === 0) {
+        this.deleteClick = 1;
+        this.message = '';
         return;
       }
       this.deleting = true;
@@ -132,9 +141,10 @@ export default {
         if (idx >= 0) allEntries.splice(idx, 1);
         this.unlockedState.cacheSet('allEntries', allEntries);
         if (this.secureCache) this.secureCache.save('secureCache.entries', allEntries);
-        this.$router.route('/');
+        this.$router.goBack();
       } catch (err) {
         this.message = 'Delete error: ' + err.message;
+        this.deleteClick = 0;
       }
       this.deleting = false;
     },
@@ -144,13 +154,15 @@ export default {
 
 <template>
   <div>
-    <go-back message="back to entry list" />
-    <div class="delete-bar" v-if="!isNew">
-      <span class="delete-btn selectable" @click="deleteEntry" title="Delete entry">
-        <i class="fa fa-trash" /> Delete
-      </span>
-      <input v-if="deleteConfirm !== ''" v-model="deleteConfirm" placeholder='Type "yes" to delete' class="delete-input" @keyup.enter="deleteEntry" />
-    </div>
+    <go-back message="back to entry list">
+      <template v-if="!isNew" #extra>
+        <span class="delete-btn selectable" @click.stop="deleteEntry" title="Delete entry">
+          <i class="fa fa-trash" />
+          <span v-if="deleteClick === 0"> Delete</span>
+          <span v-if="deleteClick === 1" class="confirm-text">再次点击确认删除</span>
+        </span>
+      </template>
+    </go-back>
     <div class="edit-form" v-if="entry || isNew">
       <div class="edit-field">
         <label>Group</label>
@@ -196,24 +208,15 @@ export default {
   padding: $wall-padding;
 }
 
-.delete-bar {
-  display: flex;
-  align-items: center;
-  justify-content: flex-end;
-  padding: 4px $wall-padding;
-  gap: 8px;
-  .delete-btn {
+.delete-btn {
+  color: #c00;
+  font-size: 13px;
+  cursor: pointer;
+  user-select: none;
+  &:hover { opacity: 0.7; }
+  .confirm-text {
     color: #c00;
-    font-size: 13px;
-    cursor: pointer;
-    &:hover { opacity: 0.7; }
-  }
-  .delete-input {
-    width: 160px;
-    padding: 4px 8px;
-    border: 1px solid #c00;
-    border-radius: 3px;
-    font-size: 12px;
+    font-weight: 700;
   }
 }
 

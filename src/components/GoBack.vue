@@ -12,9 +12,13 @@ export default {
       <i class="fa fa-long-arrow-left" aria-hidden="true" />
       {{ message }}
     </span>
+    <span class="extra" @click.stop>
+      <slot name="extra"></slot>
+    </span>
   </div>
 </template>
 
 <style lang="scss">
 @import '../styles/settings.scss';
+.box-bar .extra { float: right; }
 </style>
