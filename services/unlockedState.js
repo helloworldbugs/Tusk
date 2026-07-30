@@ -41,6 +41,7 @@ function UnlockedState(keepassReference, settings, notifications) {
             // }
             var url = tabs[0].url.split('?');
             my.url = url[0];
+            my.fullUrl = tabs[0].url; // keep query params for matching
             my.title = tabs[0].title;
 
             var parsedUrl = parseUrl(tabs[0].url);

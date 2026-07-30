@@ -221,7 +221,7 @@ export default defineComponent({
       });
     },
     showResults(entries, fromCache) {
-      let siteUrl = parseUrl(this.unlockedState.url);
+      let siteUrl = parseUrl(this.unlockedState.fullUrl || this.unlockedState.url);
       this.keepassService.rankEntries(entries, siteUrl); // in-place
 
       let allEntries = entries;
