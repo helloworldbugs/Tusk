@@ -11,18 +11,26 @@ export default {
     };
   },
   mounted() {
-    let groups = this.keepassService.getGroups() || [];
-    // Auto-expand if single group
-    if (groups.length === 1) {
-      this.$set(this.expandedGroups, groups[0].name, true);
-    }
+    this.$nextTick(() => {
+      if (this.groups.length === 1) {
+        this.$set(this.expandedGroups, this.groups[0].name, true);
+      }
+    });
   },
   computed: {
     allEntries() {
       return this.unlockedState.cacheGet('allEntries') || [];
     },
     groups() {
-      return this.keepassService.getGroups() || [];
+      // Derive from cached entries (survives new popup instances)
+      let names = {};
+      this.allEntries.forEach(e => { if (e.groupName) names[e.groupName] = true; });
+      let result = Object.keys(names).map(n => ({ name: n }));
+      // Fallback to keepassService if db is loaded
+      if (result.length === 0) {
+        result = (this.keepassService.getGroups() || []);
+      }
+      return result;
     },
   },
   methods: {
