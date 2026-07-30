@@ -221,67 +221,39 @@ export default defineComponent({
       });
     },
     showResults(entries, fromCache) {
-      let getMatchesForThreshold = (threshold, entries, requireEmptyURL = false) => {
-        return entries.filter((e) => e.matchRank >= threshold && (requireEmptyURL ? !e.URL : true));
-      };
-      this.settings.getSetStrictModeEnabled().then((strictMode) => {
-        let siteUrl = parseUrl(this.unlockedState.url);
-        let title = this.unlockedState.title;
-        let siteTokens = getValidTokens(siteUrl.hostname + '.' + this.unlockedState.title);
-        this.keepassService.rankEntries(entries, siteUrl, title, siteTokens); // in-place
+      let siteUrl = parseUrl(this.unlockedState.url);
+      this.keepassService.rankEntries(entries, siteUrl); // in-place
 
-        let allEntries = entries;
-        let priorityEntries = getMatchesForThreshold(100, entries);
+      let allEntries = entries;
+      let priorityEntries = entries.filter((e) => e.matchRank >= 25);
+      priorityEntries.sort((a, b) => b.matchRank - a.matchRank);
 
-        if (priorityEntries.length == 0) {
-          priorityEntries = getMatchesForThreshold(10, entries);
+      if (priorityEntries.length == 0) {
+        this.unlockedMessages.warn = 'No matches found for this site.';
+      }
 
-          // in strict mode, good matches are considered partial matches.
-          if (strictMode && priorityEntries.length) {
-            this.unlockedMessages['warn'] =
-              'No perfect origin matches, showing ' + priorityEntries.length + ' partial matches.';
-          }
+      // Cache in memory
+      this.unlockedState.cacheSet('allEntries', allEntries);
+      this.unlockedState.cacheSet('priorityEntries', priorityEntries);
+
+      //save longer term (in encrypted storage)
+      if (!fromCache) {
+        this.secureCache.save('secureCache.entries', entries);
+        if (this.rememberPeriod === -2) {
+          this.secureCache.save('secureCache.entries', entries, 'local');
         }
-        if (!strictMode && priorityEntries.length == 0) {
-          priorityEntries = getMatchesForThreshold(0.8, entries, true);
-        }
-        if (!strictMode && priorityEntries.length == 0) {
-          priorityEntries = getMatchesForThreshold(0.4, entries);
+      }
+      this.busy = false;
+      this.isUnlocked = true;
 
-          if (priorityEntries.length) {
-            this.unlockedMessages.warn =
-              'No close matches, showing ' + priorityEntries.length + ' partial matches.';
-          }
-        }
-        if (priorityEntries.length == 0) {
-          this.unlockedMessages.warn = 'No matches found for this site.';
-        }
-
-        // Cache in memory
-        this.unlockedState.cacheSet('allEntries', allEntries);
-        this.unlockedState.cacheSet('priorityEntries', priorityEntries);
-
-        //save longer term (in encrypted storage)
-        if (!fromCache) {
-          // Don't bother saving if we're just reading from the cache.
-          this.secureCache.save('secureCache.entries', entries);
-          // Also save to local for startup auto-decrypt
-          if (this.rememberPeriod === -2) {
-            this.secureCache.save('secureCache.entries', entries, 'local');
-          }
-        }
-        this.busy = false;
-        this.isUnlocked = true;
-
-        // Badge: show matched count on extension icon
-        let badgeCount = priorityEntries.length;
-        if (badgeCount > 0) {
-          chrome.action.setBadgeText({ text: String(badgeCount) });
-          chrome.action.setBadgeBackgroundColor({ color: '#4688F1' });
-        } else {
-          chrome.action.setBadgeText({ text: '' });
-        }
-      });
+      // Badge: show matched count on extension icon
+      let badgeCount = priorityEntries.length;
+      if (badgeCount > 0) {
+        chrome.action.setBadgeText({ text: String(badgeCount) });
+        chrome.action.setBadgeBackgroundColor({ color: '#4688F1' });
+      } else {
+        chrome.action.setBadgeText({ text: '' });
+      }
     },
     clickUnlock(event) {
       event.preventDefault();
