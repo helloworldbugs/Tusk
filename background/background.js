@@ -204,6 +204,13 @@ function Background(protectedMemory, localMemory, settings, notifications) {
 
   function entryMatchLevel(pageUrl, entry) {
     if (!pageUrl || !entry || !entry.url) return 0;
+
+    // Level 1: regex pattern (prefix "regex:")
+    if (entry.url.startsWith('regex:')) {
+      try { if (new RegExp(entry.url.slice(6)).test(pageUrl)) return 1; } catch(ex) {}
+      return 0;
+    }
+
     var safeParse = function(raw) {
       try {
         if (!/^https?:\/\//i.test(raw)) raw = 'http://' + raw;
