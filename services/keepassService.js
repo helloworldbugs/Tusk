@@ -348,6 +348,49 @@ function KeepassService(keepassHeader, settings, passwordFileStoreRegistry, keep
     return result;
   };
 
+  my.addEntry = function (groupName, fields) {
+    return my.ensureDbLoaded().then(function () {
+      function findGroup(groups, name) {
+        for (var i = 0; i < groups.length; i++) {
+          if (groups[i].name === name) return groups[i];
+          var found = findGroup(groups[i].groups, name);
+          if (found) return found;
+        }
+        return null;
+      }
+      var group = findGroup(_db.groups, groupName) || _db.getDefaultGroup();
+      var entry = _db.createEntry(group);
+      if (fields.title) entry.fields.set('Title', fields.title);
+      if (fields.userName) entry.fields.set('UserName', fields.userName);
+      if (fields.url) entry.fields.set('URL', fields.url);
+      if (fields.notes) entry.fields.set('Notes', fields.notes);
+      if (fields.password) entry.fields.set('Password', kdbxweb.ProtectedValue.fromString(fields.password));
+      return _db.save();
+    });
+  };
+
+  my.deleteEntry = function (entryId) {
+    return my.ensureDbLoaded().then(function () {
+      function findAndRemove(groups, id) {
+        for (var i = 0; i < groups.length; i++) {
+          for (var j = 0; j < groups[i].entries.length; j++) {
+            var e = groups[i].entries[j];
+            if (e.uuid && !e.uuid.empty) {
+              if (convertArrayToUUID(Base64.decode(e.uuid.id)) === id)
+                return groups[i].entries.splice(j, 1)[0];
+            }
+          }
+          var found = findAndRemove(groups[i].groups, id);
+          if (found) return found;
+        }
+        return null;
+      }
+      var removed = findAndRemove(_db.groups, entryId);
+      if (!removed) return Promise.reject(new Error('Entry not found'));
+      return _db.save();
+    });
+  };
+
   my.moveEntryToGroup = function (entryId, groupName) {
     return my.ensureDbLoaded().then(function () {
     function findGroup(groups, name) {

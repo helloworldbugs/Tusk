@@ -22,15 +22,12 @@ export default {
       return this.unlockedState.cacheGet('allEntries') || [];
     },
     groups() {
-      // Derive from cached entries (survives new popup instances)
+      // Merge groups from cached entries + keepassService (includes empty groups)
       let names = {};
       this.allEntries.forEach(e => { if (e.groupName) names[e.groupName] = true; });
-      let result = Object.keys(names).map(n => ({ name: n }));
-      // Fallback to keepassService if db is loaded
-      if (result.length === 0) {
-        result = (this.keepassService.getGroups() || []);
-      }
-      return result;
+      // Also include groups from _db (may have no entries)
+      (this.keepassService.getGroups() || []).forEach(g => { names[g.name] = true; });
+      return Object.keys(names).sort().map(n => ({ name: n }));
     },
   },
   methods: {
@@ -54,6 +51,9 @@ export default {
     openUrl(entry) {
       if (entry.url) chrome.tabs.create({ url: entry.url });
     },
+    newEntry() {
+      this.$router.route('/entry-edit/new');
+    },
   },
 };
 </script>
@@ -63,6 +63,7 @@ export default {
     <div class="search">
       <i class="fa fa-search" />
       <input v-model="searchTerm" type="search" placeholder="search entire database..." />
+      <i class="fa fa-plus add-entry" @click="newEntry" title="New entry" />
     </div>
     <div class="browse-groups">
       <div v-for="group in groups" :key="group.name" class="group-section">
@@ -119,6 +120,13 @@ export default {
   .fa {
     width: 4%;
     font-size: 15px;
+  }
+  .add-entry {
+    font-size: 18px;
+    cursor: pointer;
+    padding: 4px 6px;
+    border-radius: 3px;
+    &:hover { background: $light-background-color; }
   }
 }
 
