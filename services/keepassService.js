@@ -337,6 +337,45 @@ function KeepassService(keepassHeader, settings, passwordFileStoreRegistry, keep
     });
   };
 
+  my.getGroups = function () {
+    if (!_db) return [];
+    return _db.groups.map(function(g) {
+      return { name: g.name || 'Root', uuid: g.uuid && !g.uuid.empty ? convertArrayToUUID(Base64.decode(g.uuid.id)) : null };
+    });
+  };
+
+  my.moveEntryToGroup = function (entryId, groupName) {
+    if (!_db) return Promise.reject(new Error('No database loaded'));
+    function findGroup(groups, name) {
+      for (var i = 0; i < groups.length; i++) {
+        if (groups[i].name === name) return groups[i];
+        var found = findGroup(groups[i].groups, name);
+        if (found) return found;
+      }
+      return null;
+    }
+    function findAndRemoveEntry(groups, id) {
+      for (var i = 0; i < groups.length; i++) {
+        for (var j = 0; j < groups[i].entries.length; j++) {
+          var e = groups[i].entries[j];
+          if (e.uuid && !e.uuid.empty) {
+            if (convertArrayToUUID(Base64.decode(e.uuid.id)) === id)
+              return groups[i].entries.splice(j, 1)[0];
+          }
+        }
+        var found = findAndRemoveEntry(groups[i].groups, id);
+        if (found) return found;
+      }
+      return null;
+    }
+    var entry = findAndRemoveEntry(_db.groups, entryId);
+    if (!entry) return Promise.reject(new Error('Entry not found'));
+    var target = findGroup(_db.groups, groupName);
+    if (!target) return Promise.reject(new Error('Group not found'));
+    target.entries.push(entry);
+    return _db.save();
+  };
+
   return my;
 }
 
