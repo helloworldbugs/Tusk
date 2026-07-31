@@ -200,6 +200,7 @@ export default defineComponent({
     chooseAnotherFile() {
       this.unlockedState.clearBackgroundState();
       this.secureCache.clear('secureCache.entries');
+      this.secureCache.clear('secureCache.entries', 'local');
       this.$router.route('/choose');
     },
     toggleBrowse() {
@@ -210,8 +211,12 @@ export default defineComponent({
       this.showBrowse = false;
       this.unlockedState.cacheSet('showBrowse', false);
       this.settings.getCurrentMasterPasswordCacheKey().then((key) => {
-        if (key !== null) this.secureCache.clear(key);
+        if (key !== null) {
+          this.secureCache.clear(key);
+          this.secureCache.clear(key, 'local');
+        }
         this.secureCache.clear('secureCache.entries');
+        this.secureCache.clear('secureCache.entries', 'local');
         this.unlockedState.clearClipboardState();
         this.unlockedState.clearCache(); // new
         this.isUnlocked = false;
