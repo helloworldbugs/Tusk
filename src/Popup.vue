@@ -159,6 +159,7 @@ $router.route('/');
 </script>
 
 <style lang="scss">
+@import './styles/theme.scss';
 @import './styles/shared.scss';
 
 #router-view {

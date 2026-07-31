@@ -1,5 +1,5 @@
-/* ── Tusk Color Theme ── */
-/* Light defaults (used by options page, fallback for popup) */
+/* ── Tusk Color Theme — popup only ── */
+
 :root {
   --tusk-blue: #0089ec;
   --tusk-green: #4caf50;
@@ -26,9 +26,8 @@
   --tusk-footer-active-text: #fff;
 }
 
-/* Dark mode override — popup only, options page stays light */
-#router-view {
-  @media (prefers-color-scheme: dark) {
+@media (prefers-color-scheme: dark) {
+  :root {
     --tusk-bg: #1e1e1e;
     --tusk-bg-light: #2d2d2d;
     --tusk-bg-dark: #3a3a3a;
