@@ -235,7 +235,7 @@ function Background(protectedMemory, localMemory, settings, notifications) {
         console.log('[shortcut] entries:', Array.isArray(entries) ? entries.length : typeof entries);
         if (!entries || !Array.isArray(entries) || !entries.length) { chrome.action.openPopup(); return; }
         var url = (tab && tab.url) || '';
-        var bestMatch = null, bestRank = 0;
+        var bestMatch = null, bestRank = 0, bestCount = 0;
         for (var i = 0; i < entries.length; i++) {
           var e = entries[i];
           if (!e.url) continue;
@@ -246,10 +246,12 @@ function Background(protectedMemory, localMemory, settings, notifications) {
             else if (tu.origin === eu.origin) rank = 75;
             else if (tu.hostname === eu.hostname) rank = 50;
           } catch (_) {}
-          if (rank > bestRank) { bestRank = rank; bestMatch = e; }
+          if (rank > bestRank) { bestRank = rank; bestMatch = e; bestCount = 1; }
+          else if (rank === bestRank && rank > 0) { bestCount++; }
         }
-        console.log('[shortcut] best:', bestMatch ? bestMatch.title : null, 'rank:', bestRank);
-        if (!bestMatch) { chrome.action.openPopup(); return; }
+        console.log('[shortcut] best:', bestMatch ? bestMatch.title : null, 'rank:', bestRank, 'count:', bestCount);
+        // Only autofill if exactly 1 match at the best rank level
+        if (!bestMatch || bestCount > 1) { chrome.action.openPopup(); return; }
         // Store match data for popup to autofill
         chrome.storage.local.set({pendingAutofill: {
           title: bestMatch.title,
