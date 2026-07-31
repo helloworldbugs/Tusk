@@ -80,6 +80,7 @@ export default {
   svg {
     width: 18px;
     vertical-align: middle;
+    fill: currentColor;
   }
 }
 </style>
