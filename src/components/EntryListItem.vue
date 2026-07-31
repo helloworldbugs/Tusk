@@ -86,7 +86,7 @@ export default {
   padding: 10px $wall-padding;
   box-sizing: border-box;
   border-bottom: 1px solid $light-gray;
-  background-color: #fff;
+  background-color: $light-background-color;
   display: flex;
   .header {
     font-size: 16px;
@@ -97,7 +97,7 @@ export default {
   .group-label {
     display: block;
     font-size: 10px;
-    color: #999;
+    color: var(--tusk-text-muted);
     margin-top: 1px;
   }
   .buttons {

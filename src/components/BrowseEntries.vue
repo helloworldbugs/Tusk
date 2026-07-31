@@ -267,7 +267,7 @@ export default {
   cursor: pointer;
   &:hover { opacity: 0.7; }
   .group-name { font-weight: 600; font-size: 14px; flex: 1; }
-  .group-count { font-size: 12px; color: #999; }
+  .group-count { font-size: 12px; color: var(--tusk-text-muted); }
   .action-icons {
     display: flex; align-items: center; gap: 4px;
     margin-left: 8px;
@@ -279,10 +279,10 @@ export default {
     font-size: 12px;
     padding: 3px 4px;
     border-radius: 2px;
-    color: #888;
-    &:hover { color: #333; background: $light-gray; }
+    color: var(--tusk-icon-muted);
+    &:hover { color: var(--tusk-text); background: $light-gray; }
   }
-  .group-delete-icon:hover { color: #c00; }
+  .group-delete-icon:hover { color: var(--tusk-delete-hover); }
   .rename-field {
     display: flex; align-items: center; gap: 4px; flex: 1;
   }
@@ -314,7 +314,7 @@ export default {
     .entry-info {
       flex: 1;
       .entry-title { font-size: 14px; display: block; }
-      .entry-user { font-size: 11px; color: #666; }
+      .entry-user { font-size: 11px; color: var(--tusk-text-subtle); }
     }
     .entry-url,
     .entry-edit { opacity: 0.3; font-size: 16px; &:hover { opacity: 0.8; } }
@@ -353,7 +353,7 @@ export default {
   left: 0; right: 0;
   padding: 6px $wall-padding;
   font-size: 12px;
-  color: #fff;
+  color: var(--tusk-svg-fill);
   background: rgba(0,0,0,0.7);
   text-align: center;
   z-index: 10;

@@ -254,7 +254,7 @@ export default defineComponent({
       let badgeCount = priorityEntries.length;
       if (badgeCount > 0) {
         chrome.action.setBadgeText({ text: String(badgeCount) });
-        chrome.action.setBadgeBackgroundColor({ color: '#4688F1' });
+          chrome.action.setBadgeBackgroundColor({ color: '#0089ec' });
       } else {
         chrome.action.setBadgeText({ text: '' });
       }
@@ -545,7 +545,7 @@ export default defineComponent({
     animate: 0.2s;
     background: $blue;
     border-radius: 1.3px;
-    border: 0.2px solid #010101;
+    border: 0.2px solid var(--tusk-text);
     margin-top: -2px;
   }
 
@@ -590,7 +590,7 @@ export default defineComponent({
   }
   &.active {
     background-color: $blue;
-    color: #fff;
+    color: var(--tusk-svg-fill);
   }
 }
 

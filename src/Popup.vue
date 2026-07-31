@@ -171,5 +171,7 @@ $router.route('/');
 body {
   margin: 0px;
   width: 100%;
+  background-color: $background-color;
+  color: $text-color;
 }
 </style>

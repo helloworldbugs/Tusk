@@ -209,13 +209,13 @@ export default {
 }
 
 .delete-btn {
-  color: #c00;
+  color: var(--tusk-red);
   font-size: 13px;
   cursor: pointer;
   user-select: none;
   &:hover { opacity: 0.7; }
   .confirm-text {
-    color: #c00;
+    color: var(--tusk-red);
     font-weight: 700;
   }
 }
@@ -227,7 +227,7 @@ export default {
     font-size: 12px;
     font-weight: 700;
     margin-bottom: 4px;
-    color: #555;
+    color: var(--tusk-text-subtle);
   }
   input, textarea, select {
     width: 100%;
@@ -236,7 +236,7 @@ export default {
     border: 1px solid $light-gray;
     border-radius: 3px;
     font-size: 14px;
-    background: #fff;
+    background: $light-background-color;
     &:focus { outline: none; border-color: $blue; }
   }
 }
@@ -254,8 +254,8 @@ export default {
     cursor: pointer;
     &:disabled { opacity: 0.5; }
   }
-  .action-button { background: $blue; color: #fff; }
-  .cancel { background: $light-gray; color: #333; }
+  .action-button { background: $blue; color: var(--tusk-svg-fill); }
+  .cancel { background: $light-gray; color: var(--tusk-text); }
 }
 
 .message {
