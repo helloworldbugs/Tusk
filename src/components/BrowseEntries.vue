@@ -169,11 +169,11 @@ export default {
             />
             <i class="fa fa-check confirm-icon" @click.stop="confirmRename(group)" title="Confirm" />
           </span>
-          <span class="group-count">{{ getGroupEntries(group.name).length }}</span>
           <span class="action-icons" @click.stop>
             <i class="fa fa-pencil group-edit-icon" @click="startRename(group)" title="Rename group" />
             <i class="fa fa-trash group-delete-icon" @click="confirmDeleteGroup(group)" title="Delete group" />
           </span>
+          <span class="group-count">{{ getGroupEntries(group.name).length }}</span>
         </div>
         <div v-if="expandedGroups[group.name]" class="group-entries">
           <div
@@ -215,7 +215,9 @@ export default {
         </div>
       </div>
     </div>
-    <div v-if="message" class="group-msg">{{ message }}</div>
+    <transition name="toast">
+      <div v-if="message" class="status-toast">{{ message }}</div>
+    </transition>
   </div>
 </template>
 
@@ -345,11 +347,26 @@ export default {
   &:focus { outline: none; }
 }
 
-.group-msg {
+.status-toast {
+  position: absolute;
+  bottom: 0;
+  left: 0; right: 0;
   padding: 6px $wall-padding;
   font-size: 12px;
-  color: #666;
-  background: $background-color;
-  border-bottom: 2px solid $light-gray;
+  color: #fff;
+  background: rgba(0,0,0,0.7);
+  text-align: center;
+  z-index: 10;
+  pointer-events: none;
+}
+.toast-enter-active, .toast-leave-active {
+  transition: opacity 0.2s;
+}
+.toast-enter-from, .toast-leave-to {
+  opacity: 0;
+}
+
+#browse-panel {
+  position: relative;
 }
 </style>
