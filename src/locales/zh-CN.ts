@@ -290,6 +290,13 @@ const zhCN: Record<string, string> = {
   '. Only applies to Chrome. Because of a Chrome bug, it is currently impossible to revoke this permission again after it is enabled. If you turn this ON, Tusk must be reinstalled to reset.': '。仅适用于 Chrome。由于 Chrome 的一个 bug，启用后无法撤销，需要重新安装 Tusk 才能重置。',
   'If enabled, only entries whose origins match exactly will be suggested for input. Titles and other tab information will not be considered in matching. For example': '启用后，仅匹配完全相同的域名才会被建议填充。标题和其他标签页信息不会被用于匹配。例如',
   ' will not match ': ' 不会匹配 ',
-};
+
+  // ===== Reauthorize & Support fragments =====
+  'You can ': '你可以 ',
+  'close this page': '关闭此页面',
+  ' and continue to use Tusk by clicking on the popup icon.': '，然后点击弹窗图标继续使用 Tusk。',
+  'If you like Tusk, please consider ': '如果你喜欢 Tusk，请考虑在 ',
+  ' so we can make Tusk better.': '，以便我们改进 Tusk。',
+  '. If you find a problem or are dissatisfied, please instead open an issue on the ': '。如果你遇到问题或不满意，请在 ',
 
 export default zhCN;
