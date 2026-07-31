@@ -33,6 +33,16 @@ function KeepassService(keepassHeader, settings, passwordFileStoreRegistry, keep
   var _db = null; // raw kdbx db reference for save operations
   var _masterKey = null; // master key for save operations
 
+  /* Shared helper: recursively find a group by name */
+  function findGroup(groups, name) {
+    for (var i = 0; i < groups.length; i++) {
+      if (groups[i].name === name) return groups[i];
+      var found = findGroup(groups[i].groups, name);
+      if (found) return found;
+    }
+    return null;
+  }
+
   /**
    * return Promise(arrayBufer)
    */
@@ -346,6 +356,32 @@ function KeepassService(keepassHeader, settings, passwordFileStoreRegistry, keep
     }
     _db.groups.forEach(collect);
     return result;
+  };
+
+  my.createGroup = function (groupName) {
+    return my.ensureDbLoaded().then(function () {
+      var parent = _db.getDefaultGroup();
+      _db.createGroup(parent, groupName);
+      return _db.save();
+    });
+  };
+
+  my.renameGroup = function (oldName, newName) {
+    return my.ensureDbLoaded().then(function () {
+      var group = findGroup(_db.groups, oldName);
+      if (!group) return Promise.reject(new Error('Group not found'));
+      group.name = newName;
+      return _db.save();
+    });
+  };
+
+  my.deleteGroup = function (groupName) {
+    return my.ensureDbLoaded().then(function () {
+      var group = findGroup(_db.groups, groupName);
+      if (!group) return Promise.reject(new Error('Group not found'));
+      _db.remove(group);
+      return _db.save();
+    });
   };
 
   my.addEntry = function (groupName, fields) {
