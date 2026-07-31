@@ -80,8 +80,8 @@ function Background(protectedMemory, localMemory, settings, notifications) {
             if (granted && message.then) {
               handleMessage(message.then, sender, sendResponse);
             }
-      }
-    });
+          });
+      });
   }
 
   async function handleShortcutAutofill(protectedMemory, tab) {
