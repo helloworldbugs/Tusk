@@ -251,6 +251,10 @@ const zhCN: Record<string, string> = {
   'the troubleshooting guide': '故障排除指南',
   'open an issue': '提交 issue',
 
+  // ===== Autofill Shortcut =====
+  'Autofill Shortcut': '自动填充快捷键',
+  'Press Ctrl+Shift+X to autofill the best matching entry on the current page. If no match is found or the database is locked, the popup will open instead.': '按下 Ctrl+Shift+X 可自动填充当前页面的最佳匹配条目。若无匹配或数据库已锁定，将打开弹窗。',
+
   // ===== Manage Databases paragraph fragments =====
   'Tusk ': 'Tusk ',
   'requires': '需要你',

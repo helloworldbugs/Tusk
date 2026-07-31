@@ -298,6 +298,10 @@ function Settings(secureCache) {
     return keyGetSetter('webdavDirectoryMap', dirMap, {}, 'object');
   };
 
+  exports.getSetAutofillShortcut = function (enabled) {
+    return keyGetSetter('autofillShortcut', enabled, false, 'boolean');
+  };
+
   exports.getSetHotkeyNavEnabled = function (enabled) {
     return keyGetSetter('hotkeyNavEnabled', enabled, false, 'boolean');
   };

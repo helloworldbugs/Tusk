@@ -263,6 +263,22 @@ export default defineComponent({
       } else {
         chrome.action.setBadgeText({ text: '' });
       }
+
+      // Check for pending shortcut autofill
+      this.checkPendingAutofill(allEntries);
+    },
+    checkPendingAutofill(allEntries) {
+      chrome.storage.local.get('pendingAutofill', (items) => {
+        if (!items.pendingAutofill) return;
+        chrome.storage.local.remove('pendingAutofill');
+        var entry = allEntries.find(e => e.id === items.pendingAutofill);
+        if (entry && entry.url && entry.userName) {
+          this.$nextTick(() => {
+            this.unlockedState.autofill(entry);
+            setTimeout(() => window.close(), 300);
+          });
+        }
+      });
     },
     clickUnlock(event) {
       event.preventDefault();

@@ -80,8 +80,72 @@ function Background(protectedMemory, localMemory, settings, notifications) {
             if (granted && message.then) {
               handleMessage(message.then, sender, sendResponse);
             }
-          });
+      }
+    });
+  }
+
+  async function handleShortcutAutofill(protectedMemory, tab) {
+    // Check if shortcut is enabled
+    var shortcutEnabled = await new Promise(function(resolve) {
+      chrome.storage.local.get('autofillShortcut', function(items) {
+        resolve(!!items.autofillShortcut);
+      });
+    });
+    if (!shortcutEnabled) return;
+
+    // Check if database is unlocked
+    var entries = await protectedMemory.getData('secureCache.entries');
+    if (!entries || !entries.length) {
+      // Not unlocked — open popup for user to unlock
+      await chrome.action.openPopup();
+      return;
+    }
+
+    // Find best matching entry for current tab
+    var url = tab.url || '';
+    var bestMatch = null;
+    var bestRank = 0;
+    for (var i = 0; i < entries.length; i++) {
+      var e = entries[i];
+      var entryUrl = e.url || '';
+      if (!entryUrl) continue;
+      var rank = 0;
+      // Simple URL matching: contains → origin → domain → regex
+      var tabUrlLower = url.toLowerCase();
+      var entryUrlLower = entryUrl.toLowerCase();
+      try {
+        var tabParsed = new URL(url);
+        var entryParsed = new URL(entryUrlLower.indexOf('://') >= 0 ? entryUrlLower : 'http://' + entryUrlLower);
+        var tabOrigin = tabParsed.origin;
+        var entryOrigin = entryParsed.origin;
+        var tabHost = tabParsed.hostname;
+        var entryHost = entryParsed.hostname;
+        if (tabUrlLower.indexOf(entryUrlLower) >= 0 || entryUrlLower.indexOf(tabUrlLower) >= 0) {
+          rank = 100; // URI contains
+        } else if (tabOrigin === entryOrigin) {
+          rank = 75; // Origin exact match
+        } else if (tabHost === entryHost) {
+          rank = 50; // Same domain
         }
+      } catch (_) {}
+      if (rank > bestRank) {
+        bestRank = rank;
+        bestMatch = e;
+      }
+    }
+
+    if (!bestMatch) {
+      // No match — open popup
+      await chrome.action.openPopup();
+      return;
+    }
+
+    // Store the best match ID for popup to pick up and autofill
+    await new Promise(function(resolve) {
+      chrome.storage.local.set({pendingAutofill: bestMatch.id}, resolve);
+    });
+    await chrome.action.openPopup();
+  }
       });
     }
 
@@ -145,6 +209,14 @@ function Background(protectedMemory, localMemory, settings, notifications) {
 
   //listen for "autofill" message:
   chrome.runtime.onMessage.addListener(handleMessage);
+
+  // Shortcut autofill: Ctrl+Shift+X
+  chrome.commands.onCommand.addListener(function(cmd, tab) {
+    if (cmd !== 'autofill_best_match') return;
+    handleShortcutAutofill(protectedMemory, tab).catch(function(err) {
+      console.error('[shortcut] autofill failed:', err);
+    });
+  });
 
   chrome.alarms.create('forgetStuff', {
     delayInMinutes: 1,

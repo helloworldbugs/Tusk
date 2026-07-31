@@ -12,7 +12,7 @@ export default {
     return {
       busy: false,
       expireTime: 2,
-      hotkeyNavEnabled: false,
+      autofillShortcut: false,
       allOriginPermission: false,
       allOriginPerms: {
         origins: [
@@ -21,7 +21,7 @@ export default {
         ]
       },
       strictMatchEnabled: false,
-      notificationsEnabled: ['expiration'],
+      notificationsEnabled: [],
       jsonState: [{
         k: 'databaseUsages',                      // key
         f: this.settings.getSetDatabaseUsages,    // getter
@@ -87,9 +87,6 @@ export default {
     expireTime(newval, oldval) {
       this.settings.getSetClipboardExpireInterval(parseInt(newval))
     },
-    hotkeyNavEnabled(newval, oldval) {
-      this.settings.getSetHotkeyNavEnabled(newval)
-    },
     strictMatchEnabled(newval, oldval) {
       this.settings.getSetStrictModeEnabled(newval)
     },
@@ -102,6 +99,9 @@ export default {
   },
   methods: {
     isFirefox: isFirefox,
+    saveAutofillShortcut() {
+      chrome.storage.local.set({ autofillShortcut: this.autofillShortcut });
+    },
     toggleOriginPermissions(evt) {
       // Negated because this function will call before the vue model update.
       const rawPerms = toRaw(this.allOriginPerms); // Convert proxy to raw object
@@ -117,8 +117,8 @@ export default {
       this.settings.getSetClipboardExpireInterval().then(val => {
         this.expireTime = val
       })
-      this.settings.getSetHotkeyNavEnabled().then(val => {
-        this.hotkeyNavEnabled = val
+      this.settings.getSetAutofillShortcut().then(val => {
+        this.autofillShortcut = val
       })
       this.settings.getSetNotificationsEnabled().then(val => {
         this.notificationsEnabled = val
@@ -181,9 +181,9 @@ export default {
     </div>
 
     <div class="box-bar roomy">
-      <h4>{{ $t('Enable Hotkey Navigation') }}</h4>
+      <h4>{{ $t('Autofill Shortcut') }}</h4>
       <p>
-        {{ $t('If enabled, you will be able to use [TAB] and [ENTER] to navigate and autofill your passwords when the tusk UI is open. By default, [CTRL]+[SHIFT]+[SPACE] will open the Tusk popup') }}
+        {{ $t('Press Ctrl+Shift+X to autofill the best matching entry on the current page. If no match is found or the database is locked, the popup will open instead.') }}
       </p>
     </div>
     <div class="box-bar roomy lighter">
@@ -191,11 +191,12 @@ export default {
         <div class="switch">
           <label>
             <input
-              v-model="hotkeyNavEnabled"
+              v-model="autofillShortcut"
               type="checkbox"
+              @change="saveAutofillShortcut"
             >
             <span class="lever" />
-            {{ $t('Hotkey Navigation') }}
+            {{ $t('Autofill Shortcut') }}
           </label>
         </div>
       </div>
