@@ -319,6 +319,10 @@ export default {
     }
     .entry-url,
     .entry-edit { opacity: 0.3; font-size: 16px; &:hover { opacity: 0.8; } }
+    @media (prefers-color-scheme: dark) {
+      .entry-url, .entry-edit { opacity: 0.6; }
+      .entry-url:hover, .entry-edit:hover { opacity: 0.35; }
+    }
   }
 }
 

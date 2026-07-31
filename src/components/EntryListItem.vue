@@ -117,6 +117,18 @@ export default {
   .url:hover {
     opacity: 0.8;
   }
+  @media (prefers-color-scheme: dark) {
+    .copy,
+    .edit,
+    .url {
+      opacity: 0.7;
+    }
+    .copy:hover,
+    .edit:hover,
+    .url:hover {
+      opacity: 0.4;
+    }
+  }
   &.active {
     background-color: $highlighted;
     padding-left: 20px;
