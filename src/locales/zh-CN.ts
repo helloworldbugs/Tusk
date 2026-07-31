@@ -26,6 +26,9 @@ const zhCN: Record<string, string> = {
   'Invalid credential': '密码或密钥文件不正确',
   'Error opening database: Invalid credential': '数据库密码或密钥文件不正确',
   'Bad password or corrupted database': '密码错误或数据库已损坏',
+  'InvalidKey': '密钥无效',
+  'InvalidSignature': '数据库签名无效',
+  'Integrity': '数据库完整性校验失败',
   'Unlocking ': '正在解锁 ',
 
   // ===== Entry List =====
