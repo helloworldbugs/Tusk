@@ -236,6 +236,7 @@ export default {
     border: 1px solid $light-gray;
     border-radius: 3px;
     font-size: 14px;
+    color: $text-color;
     background: $light-background-color;
     &:focus { outline: none; border-color: $blue; }
   }

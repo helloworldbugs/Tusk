@@ -517,6 +517,8 @@ export default defineComponent({
     width: calc(100% - 1em);
     box-sizing: border-box;
     font-size: 18px;
+    color: $text-color;
+    background: $light-background-color;
     border-width: 0px 0px;
     padding: 5px $wall-padding;
 

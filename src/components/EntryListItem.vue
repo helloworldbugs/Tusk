@@ -110,7 +110,7 @@ export default {
   .copy,
   .edit,
   .url {
-    opacity: 0.2;
+    opacity: 0.35;
   }
   .copy:hover,
   .edit:hover,

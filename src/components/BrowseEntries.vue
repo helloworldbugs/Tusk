@@ -237,6 +237,7 @@ export default {
     padding: 0px;
     padding-left: 10px;
     font-size: 18px;
+    color: $text-color;
     background-color: $background-color;
     &:focus { outline: none; }
   }

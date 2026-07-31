@@ -1,62 +1,46 @@
 /* ── Tusk Color Theme ── */
+/* Light defaults (used by options page, fallback for popup) */
 :root {
-  /* Core palette */
   --tusk-blue: #0089ec;
   --tusk-green: #4caf50;
   --tusk-red: #e74c3c;
   --tusk-warn-yellow: #f8dd6b;
-
-  /* Backgrounds */
   --tusk-bg: #f7f9fa;
   --tusk-bg-light: #fff;
   --tusk-bg-dark: #d1d3d5;
-
-  /* Text */
   --tusk-text: #2c3e50;
   --tusk-text-muted: #999;
   --tusk-text-subtle: #666;
-
-  /* Borders & dividers */
   --tusk-border: #e7e8ea;
   --tusk-border-light: #eff0f1;
-
-  /* Highlights */
   --tusk-highlight: #fff1c0;
   --tusk-highlight-bg: #fff8e1;
-
-  /* Special */
   --tusk-bar-hover: #c4c6c8;
   --tusk-bg-hover: #eef0f2;
   --tusk-icon-muted: #888;
   --tusk-delete-hover: #c00;
-  
-  /* SVG fills */
   --tusk-svg-fill: #fff;
-
-  /* Footer active */
+  --tusk-light-red: #e19e97;
+  --tusk-light-green: #79ac93;
   --tusk-footer-active-bg: var(--tusk-blue);
   --tusk-footer-active-text: #fff;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
+/* Dark mode override — popup only, options page stays light */
+#router-view {
+  @media (prefers-color-scheme: dark) {
     --tusk-bg: #1e1e1e;
     --tusk-bg-light: #2d2d2d;
     --tusk-bg-dark: #3a3a3a;
-
     --tusk-text: #e0e0e0;
     --tusk-text-muted: #888;
     --tusk-text-subtle: #999;
-
     --tusk-border: #404040;
     --tusk-border-light: #353535;
-
     --tusk-highlight: #5a4a00;
     --tusk-highlight-bg: #3a2a00;
-
     --tusk-light-red: #5c2a26;
     --tusk-light-green: #2a4a3a;
-
     --tusk-bar-hover: #4a4a4a;
     --tusk-bg-hover: #353535;
     --tusk-icon-muted: #777;
