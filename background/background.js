@@ -227,8 +227,33 @@ function Background(protectedMemory, localMemory, settings, notifications) {
   // Shortcut autofill: Ctrl+Shift+X
   chrome.commands.onCommand.addListener(function(cmd, tab) {
     if (cmd !== 'autofill_best_match') return;
-    handleShortcutAutofill(protectedMemory, tab).catch(function(err) {
-      console.error('[shortcut] autofill failed:', err);
+    console.log('[shortcut] triggered, tab:', tab?.url);
+    chrome.storage.local.get('autofillShortcut', function(items) {
+      if (!items.autofillShortcut) { console.log('[shortcut] disabled'); return; }
+      protectedMemory.getData('secureCache.entries').then(function(entries) {
+        console.log('[shortcut] entries:', entries ? entries.length : 0);
+        if (!entries || !entries.length) { chrome.action.openPopup(); return; }
+        var url = (tab && tab.url) || '';
+        var bestMatch = null, bestRank = 0;
+        for (var i = 0; i < entries.length; i++) {
+          var e = entries[i];
+          if (!e.url) continue;
+          var rank = 0;
+          try {
+            var tu = new URL(url), eu = new URL(e.url.indexOf('://') >= 0 ? e.url : 'http://' + e.url);
+            if (url.toLowerCase().indexOf(e.url.toLowerCase()) >= 0 || e.url.toLowerCase().indexOf(url.toLowerCase()) >= 0) rank = 100;
+            else if (tu.origin === eu.origin) rank = 75;
+            else if (tu.hostname === eu.hostname) rank = 50;
+          } catch (_) {}
+          if (rank > bestRank) { bestRank = rank; bestMatch = e; }
+        }
+        console.log('[shortcut] best:', bestMatch ? bestMatch.id : null, 'rank:', bestRank);
+        if (!bestMatch) { chrome.action.openPopup(); return; }
+        chrome.storage.local.set({pendingAutofill: bestMatch.id}, function() {
+          console.log('[shortcut] opening popup');
+          chrome.action.openPopup();
+        });
+      });
     });
   });
 
