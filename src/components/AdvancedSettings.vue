@@ -268,7 +268,7 @@ export default {
     <div class="box-bar roomy">
       <h4>{{ $t('Enable Strict Matching') }}</h4>
       <p>
-        {{ $t('If enabled, only entries whose origins match exactly will be suggested for input. Titles and other tab information will not be considered in matching. For example,') }}
+        {{ $t('If enabled, only entries whose origins match exactly will be suggested for input. Titles and other tab information will not be considered in matching. For example') }},
         <pre>www.google.com</pre>
         {{ $t(' will not match ') }}
         <pre>https://google.com</pre>

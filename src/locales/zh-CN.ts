@@ -277,6 +277,7 @@ const zhCN: Record<string, string> = {
   ' If enabled, the extension prompts once for permission to access and change data on all websites which disables the permissions popup on each new website. This has ': ' 启用后，扩展将一次性请求所有网站的访问和修改权限，不会在每个新网站上弹出权限提示。这有',
   '. Only applies to Chrome. Because of a Chrome bug, it is currently impossible to revoke this permission again after it is enabled. If you turn this ON, Tusk must be reinstalled to reset.': '。仅适用于 Chrome。由于 Chrome 的一个 bug，启用后无法撤销，需要重新安装 Tusk 才能重置。',
   'If enabled, only entries whose origins match exactly will be suggested for input. Titles and other tab information will not be considered in matching. For example': '启用后，仅匹配完全相同的域名才会被建议填充。标题和其他标签页信息不会被用于匹配。例如',
+  ' will not match ': ' 不会匹配 ',
 };
 
 export default zhCN;
