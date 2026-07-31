@@ -273,11 +273,14 @@ export default defineComponent({
         if (!items.pendingAutofill) return;
         chrome.storage.local.remove('pendingAutofill');
         var entry = allEntries.find(e => e.id === items.pendingAutofill);
-        if (entry && entry.url && entry.userName) {
+        if (entry) {
+          console.log('[pendingAutofill] found entry, autofilling:', entry.title);
           this.$nextTick(() => {
             this.unlockedState.autofill(entry);
-            setTimeout(() => window.close(), 300);
+            setTimeout(() => window.close(), 800);
           });
+        } else {
+          console.log('[pendingAutofill] entry not found in allEntries');
         }
       });
     },
