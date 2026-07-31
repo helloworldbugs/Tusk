@@ -309,8 +309,8 @@ export default {
   .entry-row {
     display: flex; align-items: center;
     padding: 8px $wall-padding;
-    border-bottom: 1px solid lighten($light-gray, 5%);
-    &:hover { background: darken($background-color, 3%); }
+    border-bottom: 1px solid var(--tusk-border-light);
+    &:hover { background: var(--tusk-bg-hover); }
     .entry-info {
       flex: 1;
       .entry-title { font-size: 14px; display: block; }
@@ -330,7 +330,7 @@ export default {
   font-size: 13px;
   color: $blue;
   cursor: pointer;
-  &:hover { background: darken($background-color, 2%); }
+  &:hover { background: var(--tusk-bg-hover); }
   .fa { margin-right: 4px; }
 }
 .new-group-form {
