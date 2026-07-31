@@ -452,7 +452,9 @@ export default defineComponent({
 @import '../styles/settings.scss';
 
 #masterPasswordGroup {
+  color: $text-color;
   .keyfile-picker {
+    color: $text-color;
     background-color: $light-background-color;
     box-sizing: border-box;
     transition: all 0.2s linear;
@@ -482,6 +484,7 @@ export default defineComponent({
 
   #select-keyfile {
     padding: 8px $wall-padding;
+    color: $text-color;
     background-color: $light-background-color;
     border-bottom: 1px solid $light-gray;
 
