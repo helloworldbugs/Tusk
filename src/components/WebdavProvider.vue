@@ -133,63 +133,61 @@ export default {
     <div v-if="loggedIn">
       <div class="warn pill">
         <p>
-          <b>Wait! </b>Did you read the
-          <a href="https://github.com/subdavis/Tusk/wiki/WebDAV-Support">best practices guide</a>?
-          Do that first!
+          <b>{{ $t('Wait! ') }}</b>{{ $t('Did you read the') }}
+          <a href="https://github.com/subdavis/Tusk/wiki/WebDAV-Support">{{ $t('best practices guide') }}</a>?
+          {{ $t('Do that first!') }}
         </p>
       </div>
       <div>
         <p>
-          The URL below should have the path of a FOLDER, not an individual FILE. The webDAV
-          provider works by recursively scanning all files within the folder you specify. Your
-          keepass databases will be discovered by their file extension (.kdbx).
+          {{ $t('The URL below should have the path of a FOLDER, not an individual FILE. The webDAV provider works by recursively scanning all files within the folder you specify. Your keepass databases will be discovered by their file extension (.kdbx).') }}
         </p>
       </div>
       <table v-if="serverList.length">
         <tr>
-          <th>User</th>
-          <th>URL</th>
-          <th>Actions</th>
+          <th>{{ $t('User') }}</th>
+          <th>{{ $t('URL') }}</th>
+          <th>{{ $t('Actions') }}</th>
         </tr>
         <tr v-for="(server, index) in serverList">
           <td>{{ server.username }}</td>
           <td>{{ server.url }}</td>
           <td>
             <a v-show="!server.scanBusy" class="selectable" @click="scan(server.serverId)">
-              <i class="fa fa-search" /> scan</a
+              <i class="fa fa-search" /> {{ $t('scan') }}</a
             >
-            <a v-show="server.scanBusy"><i class="fa fa-spinner fa-pulse" /> scanning</a>
+            <a v-show="server.scanBusy"><i class="fa fa-spinner fa-pulse" /> {{ $t('scanning') }}</a>
           </td>
           <td>
             <a class="selectable" @click="remove(server.serverId)">
-              <i class="fa fa-times-circle selectable" /> remove</a
+              <i class="fa fa-times-circle selectable" /> {{ $t('remove') }}</a
             >
           </td>
         </tr>
       </table>
       <div v-if="loggedIn">
-        <p><b>Add new server</b></p>
+        <p><b>{{ $t('Add new server') }}</b></p>
         <div id="webdav-server-input-box">
           <input
             id="webdav-server"
             v-model="webdav.url"
             type="text"
-            placeholder="http://server:port/remote.php/webdav/"
+            :placeholder="$t('http://server:port/remote.php/webdav/')"
           />
           <input
             id="webdav-username"
             v-model="webdav.username"
             type="text"
-            placeholder="Username"
+            :placeholder="$t('Username')"
           />
           <input
             id="webdav-password"
             v-model="webdav.password"
             type="password"
-            placeholder="Password"
+            :placeholder="$t('Password')"
           />
         </div>
-        <a class="waves-effect waves-light btn" @click="addServer">Add server</a>
+        <a class="waves-effect waves-light btn" @click="addServer">{{ $t('Add server') }}</a>
       </div>
     </div>
   </div>

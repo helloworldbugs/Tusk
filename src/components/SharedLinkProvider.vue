@@ -59,18 +59,17 @@ export default {
     },
     addLink() {
       if (!this.currentUrl || !this.currentUrlTitle) {
-        this.messages.error = 'Link or Title Missing';
+        this.messages.error = this.$t('Link or Title Missing');
         return;
       }
 
       let parsed = parseUrl(this.currentUrl);
       if (!parsed.host || parsed.host === window.location.host) {
-        this.messages.error = 'Link URL is not valid.';
+        this.messages.error = this.$t('Link URL is not valid.');
         return;
       }
       if (parsed.pathname.charAt(parsed.pathname.length - 1) === '/') {
-        this.messages.error =
-          'URL must include file path. (eg. http://example.com is invalid, but http://example.com/file.ckp is valid.)';
+      this.messages.error = this.$t('URL must include file path. (eg. http://example.com is invalid, but http://example.com/file.ckp is valid.)');
         return;
       }
 
@@ -79,13 +78,11 @@ export default {
         // Expected URL Structure is https://drive.google.com/file/d/FILE_ID/view?usp=sharing
         let id = parsed.pathname.split('/')[3];
         if (!id || !parsed.pathname.startsWith('/file/d/')) {
-          this.messages.error =
-            'Invalid Google Drive Shared Link. Expected format: https://drive.google.com/file/d/FILE_ID';
+      this.messages.error = this.$t('Invalid Google Drive Shared Link. Expected format: https://drive.google.com/file/d/FILE_ID');
           return;
         }
         // direct_link = "https://drive.google.com/uc?export=download&id=" + id;
-        this.messages.error =
-          'Google Drive Shared Links are no longer supported. Please use the Google Drive provider.';
+      this.messages.error = this.$t('Google Drive Shared Links are no longer supported. Please use the Google Drive provider.');
         return;
       } else if (parsed.host.endsWith('.dropbox.com')) {
         direct_link = parsed.href.replace('dl=0', 'dl=1');
@@ -135,23 +132,23 @@ export default {
     />
     <ul class="examples">
       <li>
-        <b>Dropbox URL Example</b>
+        <b>{{ $t('Dropbox URL Example') }}</b>
         https://www.dropbox.com/scl/fi/FILE_ID/filename.kdbx?rlkey=&st=&dl=1
       </li>
-      <li><b>Google Drive and OneDrive</b> shared links no longer work</li>
+      <li><b>{{ $t('Google Drive and OneDrive shared links no longer work') }}</b></li>
       <li>
-        Other clould provider shared links will likely not work, but direct HTTP file links will.
+        {{ $t('Other cloud provider shared links will likely not work, but direct HTTP file links will.') }}
       </li>
     </ul>
     <div v-if="loggedIn" class="url-form shared-link-box">
-      <input id="shared-link" v-model="currentUrl" type="text" placeholder="Shared Link URL" />
+      <input id="shared-link" v-model="currentUrl" type="text" :placeholder="$t('Shared Link URL')" />
       <input
         id="shared-link-name"
         v-model="currentUrlTitle"
         type="text"
-        placeholder="Database Name"
+        :placeholder="$t('Database Name')"
       />
-      <a class="waves-effect waves-light btn" @click="addLink">Add URL Source</a>
+      <a class="waves-effect waves-light btn" @click="addLink">{{ $t('Add URL Source') }}</a>
     </div>
   </div>
 </template>

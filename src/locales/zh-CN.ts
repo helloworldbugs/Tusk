@@ -218,6 +218,38 @@ const zhCN: Record<string, string> = {
   'Clipboard cleared': '剪贴板已清除',
   'Remember password expired': '记住密码已过期',
   ' copied to clipboard. Clipboard will clear in {0} minute(s).': ' 已复制到剪贴板，将在 {0} 分钟后清除。',
+
+  // ===== Providers: WebDAV extras =====
+  'Wait! ': '等等！',
+  'Did you read the': '你阅读了',
+  'best practices guide': '最佳实践指南',
+  'Do that first!': '先去看看吧！',
+  'scan': '扫描',
+  'scanning': '扫描中',
+  'remove': '移除',
+  'Add new server': '添加新服务器',
+  'Add server': '添加服务器',
+
+  // ===== Providers: Google Drive extras =====
+  'Google Drive support has updated!': 'Google Drive 支持已更新！',
+  'You can now grant Tusk access to each keepass file.': '现在可以为每个 KeePass 文件单独授权。',
+  'Having problems?': '遇到问题？',
+  'Read the troubleshooting guide.': '阅读故障排除指南。',
+  'Choose database file': '选择数据库文件',
+
+  // ===== Misc link & segment texts =====
+  'leaving a review on the google web store': '在 Chrome 网上应用店留下评价',
+  'firefox addon store': 'Firefox 附加组件商店',
+  'issue tracker': 'issue 跟踪器',
+  'optional authentication method': '可选认证方式',
+  'KeePass site': 'KeePass 网站',
+  'stored unencrypted': '以未加密形式存储',
+  'serious security implications': '严重的安全隐患',
+  'Keepass2Android': 'Keepass2Android',
+  'KeePassXC': 'KeePassXC',
+  'KeeWeb': 'KeeWeb',
+  'the troubleshooting guide': '故障排除指南',
+  'open an issue': '提交 issue',
 };
 
 export default zhCN;
