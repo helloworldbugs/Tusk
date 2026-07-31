@@ -14,6 +14,7 @@ export default {
       newGroupName: '',
       busy: false,
       message: '',
+      entriesVersion: 0,
     };
   },
   mounted() {
@@ -25,6 +26,7 @@ export default {
   },
   computed: {
     allEntries() {
+      this.entriesVersion; // reactive dependency — bump after cache updates
       return this.unlockedState.cacheGet('allEntries') || [];
     },
     groups() {
@@ -77,6 +79,7 @@ export default {
         all.forEach(e => { if (e.groupName === group.name) e.groupName = newName; });
         this.unlockedState.cacheSet('allEntries', all);
         if (this.$parent?.secureCache) this.$parent.secureCache.save('secureCache.entries', all);
+        this.entriesVersion++;
         this.renamingGroup = null;
         this.message = 'Renamed.';
         setTimeout(() => this.message = '', 1500);
@@ -104,6 +107,7 @@ export default {
         all = all.filter(e => e.groupName !== group.name);
         this.unlockedState.cacheSet('allEntries', all);
         if (this.$parent?.secureCache) this.$parent.secureCache.save('secureCache.entries', all);
+        this.entriesVersion++;
         this.message = 'Deleted.';
         setTimeout(() => this.message = '', 1500);
       } catch (err) {
@@ -125,6 +129,7 @@ export default {
         let buf = await this.keepassService.createGroup(name);
         await this.keepassService.uploadDatabase(buf);
         // No entry changes needed — getGroups() reads from _db which is already updated
+        this.entriesVersion++;
         this.showNewGroup = false;
         this.message = 'Created.';
         setTimeout(() => this.message = '', 1500);
@@ -287,14 +292,14 @@ export default {
     width: 120px;
     &:focus { outline: none; }
   }
-  .confirm-icon {
-    font-size: 12px;
-    color: $green;
-    cursor: pointer;
-    padding: 2px 4px;
-    border-radius: 2px;
-    &:hover { background: $light-gray; }
-  }
+}
+
+.confirm-icon {
+  font-size: 13px;
+  color: $green;
+  cursor: pointer;
+  flex-shrink: 0;
+  &:hover { opacity: 0.7; }
 }
 
 .group-entries {
