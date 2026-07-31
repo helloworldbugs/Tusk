@@ -314,7 +314,7 @@ function Settings(secureCache) {
     return keyGetSetter(
       'notificationsEnabled',
       enabledTypes,
-      ['clipboard', 'expiration'],
+      [],
       'object'
     );
   };
