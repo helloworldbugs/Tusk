@@ -266,8 +266,8 @@ export default {
   display: flex; align-items: center; gap: 6px;
   cursor: pointer;
   &:hover { opacity: 0.7; }
-  .group-name { font-weight: 600; font-size: 14px; }
-  .group-count { margin-left: auto; font-size: 12px; color: #999; }
+  .group-name { font-weight: 600; font-size: 14px; flex: 1; }
+  .group-count { font-size: 12px; color: #999; }
   .action-icons {
     display: flex; align-items: center; gap: 4px;
     margin-left: 8px;
@@ -284,7 +284,7 @@ export default {
   }
   .group-delete-icon:hover { color: #c00; }
   .rename-field {
-    display: flex; align-items: center; gap: 4px;
+    display: flex; align-items: center; gap: 4px; flex: 1;
   }
   .group-name-input {
     font-weight: 600;
