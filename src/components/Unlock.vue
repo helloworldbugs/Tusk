@@ -348,7 +348,7 @@ export default defineComponent({
         })
         .catch((err) => {
           console.error(err);
-          this.unlockedMessages['error'] = err.message || this.$t('invalid keyfile or KDBX file');
+          this.unlockedMessages['error'] = this.$t(err.message) || this.$t('invalid keyfile or KDBX file');
           this.busy = false;
           throw err;
         });

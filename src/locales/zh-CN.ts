@@ -21,6 +21,11 @@ const zhCN: Record<string, string> = {
   'Close Window': '关闭窗口',
   'No matches found for this site.': '未找到匹配此网站的条目',
   'invalid keyfile or KDBX file': '密钥文件或数据库文件无效',
+
+  // ===== kdbxweb errors =====
+  'Invalid credential': '密码或密钥文件不正确',
+  'Error opening database: Invalid credential': '数据库密码或密钥文件不正确',
+  'Bad password or corrupted database': '密码错误或数据库已损坏',
   'Unlocking ': '正在解锁 ',
 
   // ===== Entry List =====
