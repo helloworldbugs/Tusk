@@ -246,7 +246,7 @@ export default defineComponent({
       this.unlockedState.cacheSet('priorityEntries', priorityEntries);
 
       //save longer term (in encrypted storage)
-      if (!fromCache) {
+      if (!fromCache && this.rememberPeriod !== 0) {
         this.secureCache.save('secureCache.entries', entries);
         if (this.rememberPeriod === -2) {
           this.secureCache.save('secureCache.entries', entries, 'local');
