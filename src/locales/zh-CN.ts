@@ -298,5 +298,6 @@ const zhCN: Record<string, string> = {
   'If you like Tusk, please consider ': '如果你喜欢 Tusk，请考虑在 ',
   ' so we can make Tusk better.': '，以便我们改进 Tusk。',
   '. If you find a problem or are dissatisfied, please instead open an issue on the ': '。如果你遇到问题或不满意，请在 ',
+};
 
 export default zhCN;
