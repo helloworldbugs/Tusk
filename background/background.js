@@ -146,10 +146,8 @@ function Background(protectedMemory, localMemory, settings, notifications) {
     });
     await chrome.action.openPopup();
   }
-      });
-    }
 
-    if (message.m == 'autofill') {
+  if (message.m == 'autofill') {
       var fillAllFrames = function() {
         chrome.webNavigation.getAllFrames({tabId: message.tabId}, function(frames) {
           if (!frames) return;
