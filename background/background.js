@@ -231,8 +231,9 @@ function Background(protectedMemory, localMemory, settings, notifications) {
     chrome.storage.local.get('autofillShortcut', function(items) {
       if (!items.autofillShortcut) { console.log('[shortcut] disabled'); return; }
       protectedMemory.getData('secureCache.entries').then(function(entries) {
-        console.log('[shortcut] entries:', entries ? entries.length : 0);
-        if (!entries || !entries.length) { chrome.action.openPopup(); return; }
+        if (typeof entries === 'string') entries = protectedMemory.deserialize(entries);
+        console.log('[shortcut] entries:', Array.isArray(entries) ? entries.length : typeof entries);
+        if (!entries || !Array.isArray(entries) || !entries.length) { chrome.action.openPopup(); return; }
         var url = (tab && tab.url) || '';
         var bestMatch = null, bestRank = 0;
         for (var i = 0; i < entries.length; i++) {
