@@ -127,6 +127,8 @@ function firefoxManifestV2(): Manifest.WebExtensionManifest {
 
 export async function writeManifest(target: 'chrome' | 'firefox' = 'chrome') {
   const manifest = target === 'chrome' ? chromeManifestV3() : firefoxManifestV2();
+  // @ts-expect-error static_data is build-time only, not a valid manifest key
+  delete (manifest as any).static_data;
   await fs.writeJSON(r('extension/manifest.json'), manifest, { spaces: 2 });
   log('PRE', 'write manifest.json ' + target);
 }
