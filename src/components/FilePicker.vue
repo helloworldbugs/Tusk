@@ -68,7 +68,7 @@ export default {
     </div>
     <div class="box-bar small selectable flair chooseFile" @click="links.openOptionsDatabases">
       <span>
-        <b>Manage Database Files</b>
+        <b>{{ $t('Manage Database Files') }}</b>
       </span>
     </div>
   </div>

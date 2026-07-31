@@ -3,6 +3,7 @@
 import { ChromePromiseApi } from '@/lib/chrome-api-promise.js';
 import { parseUrl } from '@/lib/utils.js';
 import { ref } from 'vue';
+import { i18n } from '@/services/i18n';
 
 const chromePromise = ChromePromiseApi();
 
@@ -61,7 +62,7 @@ function UnlockedState(keepassReference, settings, notifications) {
                 resolve();
               });
           } else {
-            reject(new Error('Unable to determine tab details'));
+            reject(new Error(i18n.t('Unable to determine tab details')));
           }
         }
       );
@@ -172,11 +173,7 @@ function UnlockedState(keepassReference, settings, notifications) {
       settings.setForgetTime('clearClipboard', Date.now() + interval * 60000);
       notifications
         .push({
-          text:
-            fieldName +
-            ' copied to clipboard.  Clipboard will clear in ' +
-            interval +
-            ' minute(s).',
+          text: fieldName + i18n.t(' copied to clipboard.  Clipboard will clear in ', interval) + interval + i18n.t(' minute(s).'),
           type: 'clipboard',
         })
         .then(() => window.close());

@@ -118,10 +118,10 @@ export default {
 
 <template>
   <div>
-    <go-back :message="'back to entry list'" />
+    <go-back :message="$t('back to entry list')" />
     <div class="box-bar nopad all-attributes">
       <div v-if="otp" class="attribute-box">
-        <span class="attribute-title">One Time Password</span>
+        <span class="attribute-title">{{ $t('One Time Password') }}</span>
         <br />
         <span class="attribute-value">{{ otp_value }}</span>
         <div class="progress">
@@ -175,14 +175,14 @@ export default {
           <i class="fa fa-circle fa-stack-2x" />
           <i class="fa fa-clipboard fa-stack-1x fa-inverse" />
         </span>
-        Copy to clipboard
+        {{ $t('Copy to clipboard') }}
       </div>
       <div class="button-inner selectable" @click="autofill">
         <span class="fa-stack copy">
           <i class="fa fa-circle fa-stack-2x" />
           <i class="fa fa-magic fa-stack-1x fa-inverse" />
         </span>
-        Autofill
+        {{ $t('Autofill') }}
       </div>
     </div>
   </div>

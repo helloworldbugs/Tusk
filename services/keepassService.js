@@ -7,6 +7,7 @@ import * as Case from 'case';
 // import pako from 'pako'
 import * as kdbxweb from 'kdbxweb';
 import argon2 from 'argon2-browser/dist/argon2-bundled.min.js';
+import { i18n } from '@/services/i18n';
 
 kdbxweb.CryptoEngine.setArgon2Impl(
   (password, salt, memory, iterations, length, parallelism, type, version) => {
@@ -80,7 +81,7 @@ function KeepassService(keepassHeader, settings, passwordFileStoreRegistry, keep
     return bufferPromise
       .then(function (buf) {
         var h = keepassHeader.readHeader(buf);
-        if (!h) throw new Error('Failed to read file header');
+        if (!h) throw new Error(i18n.t('Failed to read file header'));
 
         if (h.kdbx) {
           // KDBX - use kdbxweb library
@@ -271,7 +272,7 @@ function KeepassService(keepassHeader, settings, passwordFileStoreRegistry, keep
         return _masterKey;
       });
     return keyPromise.then(function(mk) {
-      if (!mk) throw new Error('Session expired. Please re-unlock the database.');
+        if (!mk) throw new Error(i18n.t('Session expired. Please re-unlock the database.'));
       return my.getChosenDatabaseFile().then(function (buf) {
         var kdbxCreds = jsonCredentialsToKdbx(mk);
         return kdbxweb.Kdbx.load(buf, kdbxCreds).then((db) => {
@@ -305,7 +306,7 @@ function KeepassService(keepassHeader, settings, passwordFileStoreRegistry, keep
         kdbxEntry = findEntryInGroup(g, entryId);
         if (kdbxEntry) break;
       }
-      if (!kdbxEntry) throw new Error('Entry not found in database');
+        if (!kdbxEntry) throw new Error(i18n.t('Entry not found in database'));
 
       // Update fields on the kdbx entry (fields is a Map in kdbxweb)
       let protectedFields = ['password', 'otp', 'tOTPSeed'];
@@ -377,7 +378,7 @@ function KeepassService(keepassHeader, settings, passwordFileStoreRegistry, keep
   my.renameGroup = function (oldName, newName) {
     return my.ensureDbLoaded().then(function () {
       var group = findGroup(_db.groups, oldName);
-      if (!group) return Promise.reject(new Error('Group not found'));
+      if (!group) return Promise.reject(new Error(i18n.t('Group not found')));
       group.name = newName;
       return _db.save();
     });
@@ -386,7 +387,7 @@ function KeepassService(keepassHeader, settings, passwordFileStoreRegistry, keep
   my.deleteGroup = function (groupName) {
     return my.ensureDbLoaded().then(function () {
       var group = findGroup(_db.groups, groupName);
-      if (!group) return Promise.reject(new Error('Group not found'));
+      if (!group) return Promise.reject(new Error(i18n.t('Group not found')));
       // Splice directly from parent to bypass recycle bin (same pattern as deleteEntry)
       var parent = group.parentGroup;
       if (parent) {

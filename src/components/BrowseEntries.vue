@@ -71,7 +71,7 @@ export default {
       let newName = this.renameInput.trim();
       if (!newName || newName === group.name) { this.renamingGroup = null; return; }
       this.busy = true;
-      this.message = 'Renaming...';
+      this.message = this.$t('Renaming...');
       try {
         let buf = await this.keepassService.renameGroup(group.name, newName);
         await this.keepassService.uploadDatabase(buf);
@@ -82,10 +82,10 @@ export default {
         if (this.$parent?.secureCache) this.$parent.secureCache.save('secureCache.entries', all);
         this.entriesVersion++;
         this.renamingGroup = null;
-        this.message = 'Renamed.';
+        this.message = this.$t('Renamed.');
         setTimeout(() => this.message = '', 1500);
       } catch (err) {
-        this.message = 'Error: ' + err.message;
+        this.message = this.$t('Error: ') + err.message;
       }
       this.busy = false;
     },
@@ -95,11 +95,11 @@ export default {
     async confirmDeleteGroup(group) {
       let count = this.getGroupEntries(group.name).length;
       let msg = count > 0
-        ? 'Delete group "' + group.name + '" and all ' + count + ' entries?'
-        : 'Delete empty group "' + group.name + '"?';
+        ? this.$t('Delete group "{0}" and all {1} entries?', group.name, count)
+        : this.$t('Delete empty group "{0}"?', group.name);
       if (!confirm(msg)) return;
       this.busy = true;
-      this.message = 'Deleting...';
+      this.message = this.$t('Deleting...');
       try {
         let buf = await this.keepassService.deleteGroup(group.name);
         await this.keepassService.uploadDatabase(buf);
@@ -109,10 +109,10 @@ export default {
         this.unlockedState.cacheSet('allEntries', all);
         if (this.$parent?.secureCache) this.$parent.secureCache.save('secureCache.entries', all);
         this.entriesVersion++;
-        this.message = 'Deleted.';
+        this.message = this.$t('Deleted.');
         setTimeout(() => this.message = '', 1500);
       } catch (err) {
-        this.message = 'Error: ' + err.message;
+        this.message = this.$t('Error: ') + err.message;
       }
       this.busy = false;
     },
@@ -125,17 +125,17 @@ export default {
       let name = this.newGroupName.trim();
       if (!name) { this.showNewGroup = false; return; }
       this.busy = true;
-      this.message = 'Creating...';
+      this.message = this.$t('Creating...');
       try {
         let buf = await this.keepassService.createGroup(name);
         await this.keepassService.uploadDatabase(buf);
         // No entry changes needed — getGroups() reads from _db which is already updated
         this.entriesVersion++;
         this.showNewGroup = false;
-        this.message = 'Created.';
+        this.message = this.$t('Created.');
         setTimeout(() => this.message = '', 1500);
       } catch (err) {
-        this.message = 'Error: ' + err.message;
+        this.message = this.$t('Error: ') + err.message;
       }
       this.busy = false;
     },
@@ -150,8 +150,8 @@ export default {
   <div id="browse-panel">
     <div class="search">
       <i class="fa fa-search" />
-      <input v-model="searchTerm" type="search" placeholder="search entire database..." />
-      <i class="fa fa-plus add-entry" @click="newEntry" title="New entry" />
+      <input v-model="searchTerm" type="search" :placeholder="$t('search entire database...')" />
+      <i class="fa fa-plus add-entry" @click="newEntry" :title="$t('New entry')" />
     </div>
     <div class="browse-groups">
       <div v-for="group in groups" :key="group.name" class="group-section">
@@ -167,11 +167,11 @@ export default {
               @keyup.enter="confirmRename(group)"
               @keyup.escape="cancelRename"
             />
-            <i class="fa fa-check confirm-icon" @click.stop="confirmRename(group)" title="Confirm" />
+            <i class="fa fa-check confirm-icon" @click.stop="confirmRename(group)" :title="$t('Confirm')" />
           </span>
           <span class="action-icons" @click.stop>
-            <i class="fa fa-pencil group-edit-icon" @click="startRename(group)" title="Rename group" />
-            <i class="fa fa-trash group-delete-icon" @click="confirmDeleteGroup(group)" title="Delete group" />
+            <i class="fa fa-pencil group-edit-icon" @click="startRename(group)" :title="$t('Rename group')" />
+            <i class="fa fa-trash group-delete-icon" @click="confirmDeleteGroup(group)" :title="$t('Delete group')" />
           </span>
           <span class="group-count">{{ getGroupEntries(group.name).length }}</span>
         </div>
@@ -183,7 +183,7 @@ export default {
             @click="autofill(entry)"
           >
             <div class="entry-info">
-              <span class="entry-title">{{ entry.title || '(empty)' }}</span>
+              <span class="entry-title">{{ entry.title || $t('(empty)') }}</span>
               <span class="entry-user">{{ entry.userName || '' }}</span>
             </div>
             <span class="fa-stack entry-url" @click.stop="openUrl(entry)">
@@ -203,7 +203,7 @@ export default {
           <input
             ref="newGroupInput"
             v-model="newGroupName"
-            placeholder="Group name..."
+            :placeholder="$t('Group name...')"
             class="new-group-input"
             @keyup.enter="confirmNewGroup"
             @keyup.escape="cancelNewGroup"
@@ -211,7 +211,7 @@ export default {
           <i class="fa fa-check confirm-icon" @click="confirmNewGroup" title="Confirm" />
         </div>
         <div v-else class="new-group-btn selectable" @click="startNewGroup">
-          <i class="fa fa-plus" /> New Group
+          <i class="fa fa-plus" /> {{ $t('New Group') }}
         </div>
       </div>
     </div>

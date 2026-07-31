@@ -71,7 +71,7 @@ export default {
         reader.readAsArrayBuffer(fp);
         reader.onload = (e) => {
           if (fp.name.indexOf('.kdbx') < 0 || fp.size < 70) {
-            this.messages.error += fp.name + ' is not a valid KeePass v2+ file. ';
+            this.messages.error += fp.name + this.$t(' is not a valid KeePass v2+ file. ');
             return;
           }
 
@@ -139,7 +139,7 @@ export default {
           multiple
           @change="handleAdd"
         />
-        <a class="waves-effect waves-light btn" @click="selectFile">Select Local File</a>
+        <a class="waves-effect waves-light btn" @click="selectFile">{{ $t('Select Local File') }}</a>
       </div>
     </div>
   </div>

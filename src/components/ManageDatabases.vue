@@ -63,44 +63,47 @@ export default {
   <div>
     <div class="box-bar about roomy">
       <p>
-        Tusk
-        <b>requires</b> that you enable at least one of these cloud storage providers to sync your
-        keepass database with. Once the files appear below, they will be available to unlock within
-        the popup window. If you have problems, please read
+        {{ $t('Tusk ') }}
+        <b>{{ $t('requires') }}</b>
+        {{ $t(' that you enable at least one of these cloud storage providers to sync your keepass database with. Once the files appear below, they will be available to unlock within the popup window. If you have problems, please read ') }}
         <a href="https://github.com/subdavis/Tusk/wiki/Troubleshooting#google-drive-issues"
-          >the troubleshooting guide</a
+          >{{ $t('the troubleshooting guide') }}</a
         >
-        or <a href="https://github.com/subdavis/Tusk/issues">open an issue</a>.
+        {{ $t(' or ') }}
+        <a href="https://github.com/subdavis/Tusk/issues">{{ $t('open an issue') }}</a>
+        .
       </p>
 
       <a class="waves-effect waves-light btn mr-10" @click="tabRouter.route('/help/me/choose')"
-        >Help me choose</a
+        >{{ $t('Help me choose') }}</a
       >
       <a class="waves-effect waves-light btn" @click="tabRouter.route('/new/user')"
-        >I don't have a KeePass Database</a
+        >{{ $t('I don\'t have a KeePass Database') }}</a
       >
 
       <p v-show="show.help.visible" id="/help/me/choose">
-        If you're unsure which to pick, I recommend
-        <b>Dropbox</b>. It is easy to use and widely supported by other Keepass apps, such as
+        {{ $t('If you\'re unsure which to pick, I recommend ') }}
+        <b>{{ $t('Dropbox') }}</b>
+        {{ $t('. It is easy to use and widely supported by other Keepass apps, such as ') }}
         <a
           href="https://play.google.com/store/apps/details?id=keepass2android.keepass2android&hl=en"
-          >Keepass2Android</a
+          >{{ $t('Keepass2Android') }}</a
         >
-        for iOS or
-        <a href="https://itunes.apple.com/us/app/keepass-touch/id966759076?mt=8">KeepassTouch</a>.
-        Simply create a Dropbox account, upload your keepass database, and enable the dropbox
-        provider below.
+        {{ $t(' for iOS or ') }}
+        <a href="https://itunes.apple.com/us/app/keepass-touch/id966759076?mt=8">{{ $t('KeepassTouch') }}</a>
+        {{ $t('. Simply create a Dropbox account, upload your keepass database, and enable the dropbox provider below.') }}
       </p>
 
       <p v-show="show.newUser.visible" id="/new/user">
-        If you've never used keepass before, you will need to create a new keepass database before
-        enabling the providers below. You can do this by downloading a desktop keepass application
-        like
-        <a href="https://keepassxc.org/">KeePassXC</a> or generate one quickly in your browser with
-        <a href="https://app.keeweb.info/">KeeWeb</a>. Store the keepass database file in a cloud
-        provider like <a href="https://dropbox.com">Dropbox</a> or
-        <a href="http://drive.google.com">Google Drive</a> and come back here when you're done.
+        {{ $t('If you\'ve never used keepass before, you will need to create a new keepass database before enabling the providers below. You can do this by downloading a desktop keepass application like ') }}
+        <a href="https://keepassxc.org/">{{ $t('KeePassXC') }}</a>
+        {{ $t(' or generate one quickly in your browser with ') }}
+        <a href="https://app.keeweb.info/">{{ $t('KeeWeb') }}</a>
+        {{ $t('. Store the keepass database file in a cloud provider like ') }}
+        <a href="https://dropbox.com">{{ $t('Dropbox') }}</a>
+        {{ $t(' or ') }}
+        <a href="http://drive.google.com">{{ $t('Google Drive') }}</a>
+        {{ $t(' and come back here when you\'re done.') }}
       </p>
     </div>
     <oauth-provider :provider-manager="sampleManager" :settings="settings" />

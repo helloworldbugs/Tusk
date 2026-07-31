@@ -86,7 +86,7 @@ export default defineComponent({
     },
     selectedKeyFileName: function () {
       if (this.selectedKeyFile !== undefined) return this.selectedKeyFile.name;
-      return 'No keyfile selected.  (click to change)';
+      return this.$t('No keyfile selected.  (click to change)');
     },
   },
   watch: {
@@ -238,7 +238,7 @@ export default defineComponent({
       priorityEntries.sort((a, b) => b.matchRank - a.matchRank);
 
       if (priorityEntries.length == 0) {
-        this.unlockedMessages.warn = 'No matches found for this site.';
+        this.unlockedMessages.warn = this.$t('No matches found for this site.');
       }
 
       // Cache in memory
@@ -322,7 +322,7 @@ export default defineComponent({
         })
         .catch((err) => {
           console.error(err);
-          this.unlockedMessages['error'] = err.message || 'invalid keyfile or KDBX file';
+          this.unlockedMessages['error'] = err.message || this.$t('invalid keyfile or KDBX file');
           this.busy = false;
           throw err;
         });
@@ -335,7 +335,7 @@ export default defineComponent({
   <div>
     <!-- Busy Spinner -->
     <div v-if="busy" class="spinner">
-      <spinner size="medium" :message="'Unlocking ' + databaseFileName" />
+      <spinner size="medium" :message="$t('Unlocking ') + databaseFileName" />
     </div>
 
     <!-- Entry List -->
@@ -357,12 +357,12 @@ export default defineComponent({
     <div v-if="!busy && !isUnlocked" id="masterPasswordGroup">
       <div class="unlockLogo stack-item">
         <img src="/assets/icons/exported/128x128.svg" width="256px" height="256px" />
-        <span>KeePass Tusk</span>
+          <span>{{ $t('KeePass Tusk') }}</span>
       </div>
 
       <form @submit="clickUnlock">
         <div class="small selectable databaseChoose" @click="$router.route('/choose')">
-          <b>{{ databaseFileName }}</b> <span class="muted-color">change...</span>
+          <b>{{ databaseFileName }}</b> <span class="muted-color">{{ $t('change...') }}</span>
         </div>
 
         <div class="stack-item masterPasswordInput">
@@ -406,7 +406,7 @@ export default defineComponent({
                 <i class="fa fa-file fa-fw" aria-hidden="true" /> {{ kf.name }}
               </span>
               <span class="selectable" @click="links.openOptionsKeyfiles">
-                <i class="fa fa-wrench fa-fw" aria-hidden="true" /> Manage Keyfiles</span
+                <i class="fa fa-wrench fa-fw" aria-hidden="true" /> {{ $t('Manage Keyfiles') }}</span
               >
             </div>
           </transition>
@@ -415,7 +415,7 @@ export default defineComponent({
         <div class="box-bar small plain remember-period-picker">
           <span>
             <label for="rememberPeriodLength">
-              <span>{{ rememberPeriodText }} (slide to choose)</span>
+              <span>{{ $t(rememberPeriodText) }} {{ $t(' (slide to choose)') }}</span>
             </label>
             <input
               id="rememberPeriodLength"
@@ -430,7 +430,7 @@ export default defineComponent({
         </div>
 
         <div class="stack-item">
-          <button class="action-button selectable" @click="clickUnlock">Unlock Database</button>
+          <button class="action-button selectable" @click="clickUnlock">{{ $t('Unlock Database') }}</button>
         </div>
       </form>
     </div>
@@ -438,16 +438,16 @@ export default defineComponent({
     <!-- Footer -->
     <div v-show="!busy" class="box-bar medium footer">
       <span class="selectable" @click="links.openOptions">
-        <i class="fa fa-cog" aria-hidden="true" /> Settings</span
+        <i class="fa fa-cog" aria-hidden="true" /> {{ $t('Settings') }}</span
       >
       <span v-if="isUnlocked" class="selectable browse-btn" @click="toggleBrowse" :class="{ active: showBrowse }">
-        <i :class="['fa', showBrowse ? 'fa-folder-open' : 'fa-folder']" aria-hidden="true" /> Database</span
+        <i :class="['fa', showBrowse ? 'fa-folder-open' : 'fa-folder']" aria-hidden="true" /> {{ $t('Database') }}</span
       >
       <span v-if="isUnlocked" class="selectable lock-btn" @click="forgetPassword">
-        <i class="fa fa-lock" aria-hidden="true" /> Lock</span
+        <i class="fa fa-lock" aria-hidden="true" /> {{ $t('Lock') }}</span
       >
       <span v-else class="selectable lock-btn" @click="closeWindow">
-        <i class="fa fa-times-circle" aria-hidden="true" /> Close Window</span
+        <i class="fa fa-times-circle" aria-hidden="true" /> {{ $t('Close Window') }}</span
       >
     </div>
   </div>

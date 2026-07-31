@@ -35,27 +35,26 @@ export default {
 <template>
   <div>
     <div class="box-bar roomy">
-      <h4>Reauthorize {{ provider.title }}</h4>
+      <h4>{{ $t('Reauthorize {0}', provider.title) }}</h4>
       <p>
-        The authorization token for {{ provider.title }} has expired and Tusk was unable to refresh
-        it. Please reauthorize below to continue to use Tusk with your database from
-        {{ provider.title }}.
+        {{ $t('The authorization token for {0} has expired and Tusk was unable to refresh it. Please reauthorize below to continue to use Tusk with your database from {0}.', provider.title) }}
       </p>
     </div>
     <div class="box-bar roomy lighter">
-      <a class="waves-effect waves-light btn" @click="launchAuth">Authorize {{ provider.title }}</a>
+      <a class="waves-effect waves-light btn" @click="launchAuth">{{ $t('Authorize {0}', provider.title) }}</a>
     </div>
     <div v-if="done" class="box-bar roomy plain">
-      <h4><i class="fa fa-check" aria-hidden="true" /> Success</h4>
+      <h4><i class="fa fa-check" aria-hidden="true" /> {{ $t('Success') }}</h4>
       <p>
-        You can
-        <b>close this page</b> and continue to use Tusk by clicking on the popup icon.
+        {{ $t('You can ') }}
+        <b>{{ $t('close this page') }}</b>
+        {{ $t(' and continue to use Tusk by clicking on the popup icon.') }}
       </p>
     </div>
     <div v-if="fail && !done" class="box-bar roomy plain">
-      <h4><i class="fa fa-times" aria-hidden="true" /> Error</h4>
+      <h4><i class="fa fa-times" aria-hidden="true" /> {{ $t('Error') }}</h4>
       <p>
-        It looks like something went wrong during the re-authorization process. Please try again.
+        {{ $t('It looks like something went wrong during the re-authorization process. Please try again.') }}
       </p>
     </div>
   </div>

@@ -21,7 +21,7 @@ export default {
           <svg class="icon" viewBox="0 0 1 1">
             <use v-bind="{ 'xlink:href': '#' + providerManager.icon }" />
           </svg>
-          {{ providerManager.chooseTitle }}
+          {{ $t(providerManager.chooseTitle) }}
         </span>
         <span v-show="error.length" class="error pill">{{ error }}</span>
       </div>
@@ -46,7 +46,7 @@ export default {
       </span>
     </div>
     <div class="description">
-      {{ providerManager.chooseDescription }}
+      {{ $t(providerManager.chooseDescription) }}
     </div>
   </div>
 </template>

@@ -63,7 +63,7 @@ export default {
   methods: {
     async save() {
       this.saving = true;
-      this.message = 'Saving...';
+      this.message = this.$t('Saving...');
       try {
         let newBuffer;
         if (this.isNew) {
@@ -75,9 +75,8 @@ export default {
           }
           newBuffer = await this.keepassService.saveEntry(this.entry.id, this.editFields);
         }
-        console.log('[EntryEdit] saveEntry returned, type:', typeof newBuffer, 'size:', newBuffer && newBuffer.byteLength);
         
-        this.message = 'Uploading...';
+        this.message = this.$t('Uploading...');
         await this.keepassService.uploadDatabase(newBuffer);
         
         // Update cache
@@ -113,11 +112,10 @@ export default {
           }
         }
         
-        this.message = 'Saved!';
+        this.message = this.$t('Saved!');
         setTimeout(() => this.$router.goBack(), 800);
       } catch (err) {
-        console.error(err);
-        this.message = 'Error: ' + err.message;
+        this.message = this.$t('Error: ') + err.message;
       }
       this.saving = false;
     },
@@ -131,7 +129,7 @@ export default {
         return;
       }
       this.deleting = true;
-      this.message = 'Deleting...';
+      this.message = this.$t('Deleting...');
       try {
         let newBuffer = await this.keepassService.deleteEntry(this.entry.id);
         await this.keepassService.uploadDatabase(newBuffer);
@@ -143,7 +141,7 @@ export default {
         if (this.secureCache) this.secureCache.save('secureCache.entries', allEntries);
         this.$router.goBack();
       } catch (err) {
-        this.message = 'Delete error: ' + err.message;
+        this.message = this.$t('Delete error: ') + err.message;
         this.deleteClick = 0;
       }
       this.deleting = false;
@@ -154,47 +152,47 @@ export default {
 
 <template>
   <div>
-    <go-back message="back to entry list">
+    <go-back :message="$t('back to entry list')">
       <template v-if="!isNew" #extra>
-        <span class="delete-btn selectable" @click.stop="deleteEntry" title="Delete entry">
+        <span class="delete-btn selectable" @click.stop="deleteEntry" :title="$t('Delete')">
           <i class="fa fa-trash" />
-          <span v-if="deleteClick === 0"> Delete</span>
-          <span v-if="deleteClick === 1" class="confirm-text">Click again to confirm</span>
+          <span v-if="deleteClick === 0"> {{ $t('Delete') }}</span>
+          <span v-if="deleteClick === 1" class="confirm-text">{{ $t('Click again to confirm') }}</span>
         </span>
       </template>
     </go-back>
     <div class="edit-form" v-if="entry || isNew">
       <div class="edit-field">
-        <label>Group</label>
+        <label>{{ $t('Group') }}</label>
         <select v-model="selectedGroup">
           <option v-for="g in groups" :key="g" :value="g">{{ g }}</option>
         </select>
       </div>
       <div class="edit-field">
-        <label>Title</label>
+        <label>{{ $t('Title') }}</label>
         <input v-model="editFields.title" type="text" />
       </div>
       <div class="edit-field">
-        <label>Username</label>
+        <label>{{ $t('Username') }}</label>
         <input v-model="editFields.userName" type="text" />
       </div>
       <div class="edit-field">
-        <label>Password</label>
+        <label>{{ $t('Password') }}</label>
         <input v-model="editFields.password" type="text" />
       </div>
       <div class="edit-field">
-        <label>URL</label>
+        <label>{{ $t('URL') }}</label>
         <input v-model="editFields.url" type="text" />
       </div>
       <div class="edit-field">
-        <label>Notes</label>
+        <label>{{ $t('Notes') }}</label>
         <textarea v-model="editFields.notes" rows="4"></textarea>
       </div>
       <div class="edit-actions">
         <button class="action-button" :disabled="saving" @click="save">
-          {{ saving ? 'Saving...' : 'Save' }}
+          {{ saving ? $t('Saving...') : $t('Save') }}
         </button>
-        <button class="action-button cancel" @click="cancel">Cancel</button>
+        <button class="action-button cancel" @click="cancel">{{ $t('Cancel') }}</button>
       </div>
       <div class="message" v-if="message">{{ message }}</div>
     </div>

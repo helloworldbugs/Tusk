@@ -10,6 +10,7 @@
 import { ProtectedMemory } from '$services/protectedMemory';
 import { Settings } from '$services/settings.js';
 import { Notifications } from '$services/notifications';
+import { i18n } from '@/services/i18n';
 
 function Background(protectedMemory, localMemory, settings, notifications) {
   console.log('Background worker registered.');
@@ -279,7 +280,7 @@ function Background(protectedMemory, localMemory, settings, notifications) {
             case 'clearClipboard':
               clearClipboard();
               notifications.push({
-                text: 'Clipboard cleared',
+                text: i18n.t('Clipboard cleared'),
                 type: 'expiration',
                 expire: 2,
               });
@@ -288,7 +289,7 @@ function Background(protectedMemory, localMemory, settings, notifications) {
               if (key.indexOf('password') >= 0) {
                 forgetPassword().then(() => {
                   notifications.push({
-                    text: 'Remember password expired',
+                    text: i18n.t('Remember password expired'),
                     type: 'expiration',
                   });
                 });

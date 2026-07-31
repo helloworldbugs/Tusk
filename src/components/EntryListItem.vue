@@ -57,7 +57,7 @@ export default {
       <span class="header">{{ header }}</span>
       <br />
       <span class="user">
-        {{ entry.userName || '&#60;empty&#62;' }}
+        {{ entry.userName || $t('(empty)') }}
       </span>
       <span v-if="entry.groupName" class="group-label">{{ entry.groupName }}</span>
     </div>

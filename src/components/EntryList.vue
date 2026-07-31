@@ -135,9 +135,9 @@ export default {
         ref="searchbox"
         v-model="searchTerm"
         type="search"
-        placeholder="search entire database..."
+        :placeholder="$t('search entire database...')"
       />
-      <i class="fa fa-plus add-entry" @click="$router.route('/entry-edit/new')" title="New entry" />
+      <i class="fa fa-plus add-entry" @click="$router.route('/entry-edit/new')" :title="$t('New entry')" />
     </div>
     <div class="entries">
       <div v-if="allMessages.warn || allMessages.error || allMessages.success" class="no-match-msg">

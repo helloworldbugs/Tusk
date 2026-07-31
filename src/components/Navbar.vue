@@ -19,7 +19,7 @@ export default {
         <!-- set class like /advanced-active-listener so the router can set -->
         <template v-for="route in routes" :key="route.name">
           <li v-if="!route.hidden_from_navbar" class="tab" :class="{ active: route.var.visible }">
-            <a @click="$router.route(route.route)">{{ route.name }}</a>
+            <a @click="$router.route(route.route)">{{ $t(route.name) }}</a>
           </li>
         </template>
       </ul>
