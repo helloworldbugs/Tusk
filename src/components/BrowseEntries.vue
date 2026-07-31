@@ -30,6 +30,7 @@ export default {
       return this.unlockedState.cacheGet('allEntries') || [];
     },
     groups() {
+      this.entriesVersion; // reactive dep — bump after any group mutation
       let names = {};
       this.allEntries.forEach(e => { if (e.groupName) names[e.groupName] = true; });
       (this.keepassService.getGroups() || []).forEach(g => { names[g.name] = true; });

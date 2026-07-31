@@ -350,8 +350,16 @@ function KeepassService(keepassHeader, settings, passwordFileStoreRegistry, keep
   my.getGroups = function () {
     if (!_db) return [];
     var result = [];
+    var defaultGroup = _db.getDefaultGroup();
+    var recycleUuid = _db.meta.recycleBinUuid;
+    function isRecycleBin(group) {
+      return !!(recycleUuid && group.uuid && group.uuid.equals(recycleUuid));
+    }
     function collect(group) {
-      result.push({ name: group.name || 'Root' });
+      // Skip Root and recycle bin groups, but still traverse Root's children
+      if (group !== defaultGroup && !isRecycleBin(group)) {
+        result.push({ name: group.name || 'Root' });
+      }
       if (group.groups) group.groups.forEach(collect);
     }
     _db.groups.forEach(collect);
