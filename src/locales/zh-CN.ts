@@ -250,6 +250,33 @@ const zhCN: Record<string, string> = {
   'KeeWeb': 'KeeWeb',
   'the troubleshooting guide': '故障排除指南',
   'open an issue': '提交 issue',
+
+  // ===== Manage Databases paragraph fragments =====
+  'Tusk ': 'Tusk ',
+  'requires': '需要你',
+  ' that you enable at least one of these cloud storage providers to sync your keepass database with. Once the files appear below, they will be available to unlock within the popup window. If you have problems, please read ': ' 启用至少一个云存储提供程序来同步 KeePass 数据库。文件显示在下方后，即可在弹窗中解锁。如有问题，请阅读',
+  ' or ': ' 或 ',
+  'If you\'re unsure which to pick, I recommend ': '如不确定选哪个，推荐 ',
+  '. It is easy to use and widely supported by other Keepass apps, such as ': '。它简单易用，且被以下 KeePass 应用广泛支持，如 ',
+  ' for iOS or ': '（iOS）或 ',
+  '. Simply create a Dropbox account, upload your keepass database, and enable the dropbox provider below.': '。只需创建一个 Dropbox 账号，上传 KeePass 数据库，然后启用下方的 Dropbox 提供程序即可。',
+  'If you\'ve never used keepass before, you will need to create a new keepass database before enabling the providers below. You can do this by downloading a desktop keepass application like ': '如从未使用过 KeePass，需要先创建数据库。你可以下载桌面版应用，如 ',
+  ' or generate one quickly in your browser with ': '，或在浏览器中快速生成 ',
+  '. Store the keepass database file in a cloud provider like ': '。将数据库文件存储在云存储中，如 ',
+  ' and come back here when you\'re done.': '，完成后回到这里。',
+  'Google Drive': 'Google Drive',
+
+  // ===== Manage Keyfiles paragraph fragments =====
+  'Key files are an ': '密钥文件是一种 ',
+  '. More info on key files is available on the ': '。更多信息请参考 ',
+  'Tusk can store your key files locally in your browser\'s storage, and apply them when opening your password database. Websites and other browser extensions do not have access to these files. However, they are ': 'Tusk 可以将密钥文件存储在浏览器本地，在打开数据库时使用。网站和其他扩展无法访问这些文件，但它们会 ',
+  ' in your local browser profile and someone with access to your device could read them.': ' 在你的浏览器本地配置文件中，有设备访问权限的人可以读取。',
+
+  // ===== Advanced Settings paragraph fragments =====
+  'Only proceed if you know what you\'re doing.': '仅在了解后果的前提下继续。',
+  ' If enabled, the extension prompts once for permission to access and change data on all websites which disables the permissions popup on each new website. This has ': ' 启用后，扩展将一次性请求所有网站的访问和修改权限，不会在每个新网站上弹出权限提示。这有',
+  '. Only applies to Chrome. Because of a Chrome bug, it is currently impossible to revoke this permission again after it is enabled. If you turn this ON, Tusk must be reinstalled to reset.': '。仅适用于 Chrome。由于 Chrome 的一个 bug，启用后无法撤销，需要重新安装 Tusk 才能重置。',
+  'If enabled, only entries whose origins match exactly will be suggested for input. Titles and other tab information will not be considered in matching. For example': '启用后，仅匹配完全相同的域名才会被建议填充。标题和其他标签页信息不会被用于匹配。例如',
 };
 
 export default zhCN;
