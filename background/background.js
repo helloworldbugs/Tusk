@@ -81,6 +81,7 @@ function Background(protectedMemory, localMemory, settings, notifications) {
               handleMessage(message.then, sender, sendResponse);
             }
           });
+        }
       });
   }
 
