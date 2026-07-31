@@ -247,9 +247,14 @@ function Background(protectedMemory, localMemory, settings, notifications) {
           } catch (_) {}
           if (rank > bestRank) { bestRank = rank; bestMatch = e; }
         }
-        console.log('[shortcut] best:', bestMatch ? bestMatch.id : null, 'rank:', bestRank);
+        console.log('[shortcut] best:', bestMatch ? bestMatch.title : null, 'rank:', bestRank);
         if (!bestMatch) { chrome.action.openPopup(); return; }
-        chrome.storage.local.set({pendingAutofill: bestMatch.id}, function() {
+        // Store match data for popup to autofill
+        chrome.storage.local.set({pendingAutofill: {
+          title: bestMatch.title,
+          userName: bestMatch.userName,
+          url: bestMatch.url
+        }}, function() {
           console.log('[shortcut] opening popup');
           chrome.action.openPopup();
         });

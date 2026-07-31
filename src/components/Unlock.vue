@@ -269,10 +269,18 @@ export default defineComponent({
     },
     checkPendingAutofill(allEntries) {
       chrome.storage.local.get('pendingAutofill', (items) => {
-        console.log('[pendingAutofill] checking:', items.pendingAutofill);
-        if (!items.pendingAutofill) return;
+        var pa = items.pendingAutofill;
+        console.log('[pendingAutofill] checking:', pa);
+        if (!pa) return;
         chrome.storage.local.remove('pendingAutofill');
-        var entry = allEntries.find(e => e.id === items.pendingAutofill);
+        // Match by title + url + userName (IDs may differ between cached and fresh entries)
+        var entry = allEntries.find(e =>
+          e.title === pa.title && e.url === pa.url && e.userName === pa.userName
+        );
+        if (!entry) {
+          // Fallback: match by title only
+          entry = allEntries.find(e => e.title === pa.title);
+        }
         if (entry) {
           console.log('[pendingAutofill] found entry, autofilling:', entry.title);
           this.$nextTick(() => {
