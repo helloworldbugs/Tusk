@@ -43,6 +43,7 @@ export default defineComponent({
       keyFilePicker: false,
       showBrowse: false,
       appVersion: chrome.runtime.getManifest().version,
+      silentAutofill: false,
       slider_options: [
         {
           time: 0,
@@ -270,18 +271,15 @@ export default defineComponent({
     checkPendingAutofill(allEntries) {
       chrome.storage.local.get('pendingAutofill', (items) => {
         var pa = items.pendingAutofill;
-        console.log('[pendingAutofill] checking:', pa);
+        console.log('[pendingAutofill] checking:', pa ? pa.title : undefined);
         if (!pa) return;
         chrome.storage.local.remove('pendingAutofill');
-        // Match by title + url + userName (IDs may differ between cached and fresh entries)
         var entry = allEntries.find(e =>
           e.title === pa.title && e.url === pa.url && e.userName === pa.userName
         );
-        if (!entry) {
-          // Fallback: match by title only
-          entry = allEntries.find(e => e.title === pa.title);
-        }
+        if (!entry) { entry = allEntries.find(e => e.title === pa.title); }
         if (entry) {
+          this.silentAutofill = true;
           console.log('[pendingAutofill] found entry, autofilling:', entry.title);
           this.$nextTick(() => {
             this.unlockedState.autofill(entry);
@@ -360,7 +358,7 @@ export default defineComponent({
 </script>
 
 <template>
-  <div>
+  <div v-if="!silentAutofill">
     <!-- Busy Spinner -->
     <div v-if="busy" class="spinner">
       <spinner size="medium" :message="$t('Unlocking ') + databaseFileName" />
