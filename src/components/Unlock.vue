@@ -381,6 +381,7 @@ export default defineComponent({
 
     <!-- Unlock input group -->
     <div v-if="!busy && !isUnlocked" id="masterPasswordGroup">
+      <messenger v-show="unlockedMessages.error" :messages="unlockedMessages" />
       <div class="unlockLogo stack-item">
         <img src="/assets/icons/exported/128x128.svg" width="256px" height="256px" />
           <span>{{ $t('KeePass Tusk') }}</span>
