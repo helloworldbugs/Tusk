@@ -86,18 +86,34 @@ function Background(protectedMemory, localMemory, settings, notifications) {
   }
 
   async function handleShortcutAutofill(protectedMemory, tab) {
+    console.log('[shortcut] triggered, tab:', tab?.url);
     // Check if shortcut is enabled
     var shortcutEnabled = await new Promise(function(resolve) {
       chrome.storage.local.get('autofillShortcut', function(items) {
         resolve(!!items.autofillShortcut);
       });
     });
+    console.log('[shortcut] shortcutEnabled:', shortcutEnabled);
     if (!shortcutEnabled) return;
+
+    // Get current tab if not provided
+    if (!tab || !tab.url) {
+      var tabs = await new Promise(function(resolve) {
+        chrome.tabs.query({ active: true, currentWindow: true }, resolve);
+      });
+      tab = tabs[0];
+    }
+    if (!tab) {
+      console.log('[shortcut] no active tab, opening popup');
+      await chrome.action.openPopup();
+      return;
+    }
 
     // Check if database is unlocked
     var entries = await protectedMemory.getData('secureCache.entries');
+    console.log('[shortcut] entries count:', entries ? entries.length : 0);
     if (!entries || !entries.length) {
-      // Not unlocked — open popup for user to unlock
+      console.log('[shortcut] no entries, opening popup');
       await chrome.action.openPopup();
       return;
     }
@@ -111,7 +127,6 @@ function Background(protectedMemory, localMemory, settings, notifications) {
       var entryUrl = e.url || '';
       if (!entryUrl) continue;
       var rank = 0;
-      // Simple URL matching: contains → origin → domain → regex
       var tabUrlLower = url.toLowerCase();
       var entryUrlLower = entryUrl.toLowerCase();
       try {
@@ -122,11 +137,11 @@ function Background(protectedMemory, localMemory, settings, notifications) {
         var tabHost = tabParsed.hostname;
         var entryHost = entryParsed.hostname;
         if (tabUrlLower.indexOf(entryUrlLower) >= 0 || entryUrlLower.indexOf(tabUrlLower) >= 0) {
-          rank = 100; // URI contains
+          rank = 100;
         } else if (tabOrigin === entryOrigin) {
-          rank = 75; // Origin exact match
+          rank = 75;
         } else if (tabHost === entryHost) {
-          rank = 50; // Same domain
+          rank = 50;
         }
       } catch (_) {}
       if (rank > bestRank) {
@@ -135,16 +150,16 @@ function Background(protectedMemory, localMemory, settings, notifications) {
       }
     }
 
+    console.log('[shortcut] bestMatch:', bestMatch ? bestMatch.id : null, 'rank:', bestRank);
     if (!bestMatch) {
-      // No match — open popup
       await chrome.action.openPopup();
       return;
     }
 
-    // Store the best match ID for popup to pick up and autofill
     await new Promise(function(resolve) {
       chrome.storage.local.set({pendingAutofill: bestMatch.id}, resolve);
     });
+    console.log('[shortcut] opening popup for autofill');
     await chrome.action.openPopup();
   }
 

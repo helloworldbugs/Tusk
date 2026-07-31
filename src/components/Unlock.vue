@@ -269,6 +269,7 @@ export default defineComponent({
     },
     checkPendingAutofill(allEntries) {
       chrome.storage.local.get('pendingAutofill', (items) => {
+        console.log('[pendingAutofill] checking:', items.pendingAutofill);
         if (!items.pendingAutofill) return;
         chrome.storage.local.remove('pendingAutofill');
         var entry = allEntries.find(e => e.id === items.pendingAutofill);
