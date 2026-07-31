@@ -152,15 +152,17 @@ export default {
         <div class="group-header" @click="toggleGroup(group.name)">
           <i :class="['fa', expandedGroups[group.name] ? 'fa-folder-open' : 'fa-folder', 'fa-fw']" />
           <span v-if="renamingGroup !== group.name" class="group-name">{{ group.name }}</span>
-          <input
-            v-else
-            ref="renameInput"
-            v-model="renameInput"
-            class="group-name-input"
-            @click.stop
-            @keyup.enter="confirmRename(group)"
-            @keyup.escape="cancelRename"
-          />
+          <span v-else class="rename-field">
+            <input
+              ref="renameInput"
+              v-model="renameInput"
+              class="group-name-input"
+              @click.stop
+              @keyup.enter="confirmRename(group)"
+              @keyup.escape="cancelRename"
+            />
+            <i class="fa fa-check confirm-icon" @click.stop="confirmRename(group)" title="Confirm" />
+          </span>
           <span class="group-count">{{ getGroupEntries(group.name).length }}</span>
           <span class="action-icons" @click.stop>
             <i class="fa fa-pencil group-edit-icon" @click="startRename(group)" title="Rename group" />
@@ -200,6 +202,7 @@ export default {
             @keyup.enter="confirmNewGroup"
             @keyup.escape="cancelNewGroup"
           />
+          <i class="fa fa-check confirm-icon" @click="confirmNewGroup" title="Confirm" />
         </div>
         <div v-else class="new-group-btn selectable" @click="startNewGroup">
           <i class="fa fa-plus" /> New Group
@@ -272,14 +275,25 @@ export default {
     &:hover { color: #333; background: $light-gray; }
   }
   .group-delete-icon:hover { color: #c00; }
+  .rename-field {
+    display: flex; align-items: center; gap: 4px;
+  }
   .group-name-input {
     font-weight: 600;
     font-size: 14px;
     border: 1px solid $blue;
     border-radius: 3px;
     padding: 2px 6px;
-    width: 160px;
+    width: 120px;
     &:focus { outline: none; }
+  }
+  .confirm-icon {
+    font-size: 12px;
+    color: $green;
+    cursor: pointer;
+    padding: 2px 4px;
+    border-radius: 2px;
+    &:hover { background: $light-gray; }
   }
 }
 
@@ -313,9 +327,10 @@ export default {
 }
 .new-group-form {
   padding: 8px $wall-padding;
+  display: flex; align-items: center; gap: 6px;
 }
 .new-group-input {
-  width: 100%;
+  flex: 1;
   box-sizing: border-box;
   padding: 8px;
   border: 1px solid $blue;

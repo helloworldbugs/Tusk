@@ -379,7 +379,12 @@ function KeepassService(keepassHeader, settings, passwordFileStoreRegistry, keep
     return my.ensureDbLoaded().then(function () {
       var group = findGroup(_db.groups, groupName);
       if (!group) return Promise.reject(new Error('Group not found'));
-      _db.remove(group);
+      // Splice directly from parent to bypass recycle bin (same pattern as deleteEntry)
+      var parent = group.parentGroup;
+      if (parent) {
+        var idx = parent.groups.indexOf(group);
+        if (idx >= 0) parent.groups.splice(idx, 1);
+      }
       return _db.save();
     });
   };
