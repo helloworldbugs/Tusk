@@ -134,9 +134,9 @@ var filler = (function () {
 
     if (priorityPair) {
       //don't bother with the others, this is the one
-      if (priorityPair.u && isVisible(priorityPair.u)) fillField(priorityPair.u, username);
+      if (priorityPair.u && isVisible(priorityPair.u) && username != null) fillField(priorityPair.u, username);
 
-      if (priorityPair.p && isVisible(priorityPair.p)) fillField(priorityPair.p, password);
+      if (priorityPair.p && isVisible(priorityPair.p) && password != null) fillField(priorityPair.p, password);
 
       return;
     }
@@ -149,10 +149,10 @@ var filler = (function () {
           !filled &&
           isElementInViewport(pair.u) &&
           isElementInViewport(pair.p) &&
-          isVisible(pair.p)
+          isVisible(pair.p) && password != null
         ) {
           filled = fillField(pair.p, password);
-          if (isVisible(pair.u)) {
+          if (isVisible(pair.u) && username != null) {
             //sometimes the username is invisible, i.e. google login
             fillField(pair.u, username);
           }
