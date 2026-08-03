@@ -58,6 +58,9 @@ export default {
     openUrl(entry) {
       if (entry.url) chrome.tabs.create({ url: entry.url });
     },
+    copyEntryPassword(entry) {
+      this.unlockedState.copyPassword(entry);
+    },
     newEntry() {
       this.$router.route('/entry-edit/new');
     },
@@ -186,6 +189,10 @@ export default {
               <span class="entry-title">{{ entry.title || $t('(empty)') }}</span>
               <span class="entry-user">{{ entry.userName || '' }}</span>
             </div>
+            <span class="fa-stack entry-copy" @click.stop="copyEntryPassword(entry)" title="Copy password">
+              <i class="fa fa-circle fa-stack-2x" />
+              <i class="fa fa-clipboard fa-stack-1x fa-inverse" />
+            </span>
             <span class="fa-stack entry-url" @click.stop="openUrl(entry)">
               <i class="fa fa-circle fa-stack-2x" />
               <i class="fa fa-external-link fa-stack-1x fa-inverse" />
@@ -317,11 +324,12 @@ export default {
       .entry-title { font-size: 14px; display: block; }
       .entry-user { font-size: 11px; color: var(--tusk-text-subtle); }
     }
+    .entry-copy,
     .entry-url,
     .entry-edit { opacity: 0.3; font-size: 16px; &:hover { opacity: 0.8; } }
     @media (prefers-color-scheme: dark) {
-      .entry-url, .entry-edit { opacity: 0.6; }
-      .entry-url:hover, .entry-edit:hover { opacity: 0.35; }
+      .entry-copy, .entry-url, .entry-edit { opacity: 0.6; }
+      .entry-copy:hover, .entry-url:hover, .entry-edit:hover { opacity: 0.35; }
     }
   }
 }

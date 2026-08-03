@@ -142,7 +142,7 @@ export default defineComponent({
       let focus = () => {
         this.$nextTick(() => {
           let mp = this.$refs.masterPassword;
-          if (mp !== undefined) mp.focus();
+          if (mp) mp.focus();
         });
       };
 
