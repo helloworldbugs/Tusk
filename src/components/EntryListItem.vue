@@ -66,19 +66,19 @@ export default {
       <span v-if="entry.groupName" class="group-label">{{ entry.groupName }}</span>
     </div>
     <div class="buttons">
-      <span class="fa-stack url" @click="openUrl">
+      <span class="fa-stack url" @click="openUrl" :title="$t('Open URL')">
         <i class="fa fa-circle fa-stack-2x" />
         <i class="fa fa-external-link fa-stack-1x fa-inverse" />
       </span>
-      <span class="fa-stack copy-user" @click="copyUser" title="Copy username">
+      <span class="fa-stack copy-user" @click="copyUser" :title="$t('Copy username')">
         <i class="fa fa-circle fa-stack-2x" />
         <i class="fa fa-user fa-stack-1x fa-inverse" />
       </span>
-      <span class="fa-stack copy" @click="copy" title="Copy password">
+      <span class="fa-stack copy" @click="copy" :title="$t('Copy password')">
         <i class="fa fa-circle fa-stack-2x" />
         <i class="fa fa-clipboard fa-stack-1x fa-inverse" />
       </span>
-      <span class="fa-stack edit" @click="edit">
+      <span class="fa-stack edit" @click="edit" :title="$t('Edit entry')">
         <i class="fa fa-circle fa-stack-2x" />
         <i class="fa fa-pencil fa-stack-1x fa-inverse" />
       </span>

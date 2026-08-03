@@ -76,6 +76,12 @@ const zhCN: Record<string, string> = {
   // ===== Footer / Shared =====
   'Confirm': '确认',
 
+  // ===== Entry button tooltips =====
+  'Open URL': '打开网址',
+  'Copy username': '复制用户名',
+  'Copy password': '复制密码',
+  'Edit entry': '编辑条目',
+
   // ===== Startup / Onboarding =====
   'Tusk is an extension that uses your existing KeePass database files to autofill passwords on websites. In order to continue, you must add your KeePass database file(s).': 'Tusk 是一个使用已有 KeePass 数据库文件自动填充网站密码的扩展。要开始使用，您需要添加至少一个 KeePass 数据库文件。',
   'Add a KeePass database file': '添加 KeePass 数据库文件',

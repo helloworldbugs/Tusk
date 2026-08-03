@@ -192,19 +192,19 @@ export default {
               <span class="entry-title">{{ entry.title || $t('(empty)') }}</span>
               <span class="entry-user">{{ entry.userName || '' }}</span>
             </div>
-            <span class="fa-stack entry-url" @click.stop="openUrl(entry)" title="Open URL">
+            <span class="fa-stack entry-url" @click.stop="openUrl(entry)" :title="$t('Open URL')">
               <i class="fa fa-circle fa-stack-2x" />
               <i class="fa fa-external-link fa-stack-1x fa-inverse" />
             </span>
-            <span class="fa-stack entry-copy-user" @click.stop="copyEntryUsername(entry)" title="Copy username">
+            <span class="fa-stack entry-copy-user" @click.stop="copyEntryUsername(entry)" :title="$t('Copy username')">
               <i class="fa fa-circle fa-stack-2x" />
               <i class="fa fa-user fa-stack-1x fa-inverse" />
             </span>
-            <span class="fa-stack entry-copy" @click.stop="copyEntryPassword(entry)" title="Copy password">
+            <span class="fa-stack entry-copy" @click.stop="copyEntryPassword(entry)" :title="$t('Copy password')">
               <i class="fa fa-circle fa-stack-2x" />
               <i class="fa fa-clipboard fa-stack-1x fa-inverse" />
             </span>
-            <span class="fa-stack entry-edit" @click.stop="editEntry(entry)" title="Edit entry">
+            <span class="fa-stack entry-edit" @click.stop="editEntry(entry)" :title="$t('Edit entry')">
               <i class="fa fa-circle fa-stack-2x" />
               <i class="fa fa-pencil fa-stack-1x fa-inverse" />
             </span>
