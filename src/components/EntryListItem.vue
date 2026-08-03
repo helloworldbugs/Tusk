@@ -35,6 +35,10 @@ export default {
       e.stopPropagation();
       this.unlockedState.copyPassword(this.entry);
     },
+    copyUser(e) {
+      e.stopPropagation();
+      this.unlockedState.copyUsername(this.entry);
+    },
     openUrl(e) {
       e.stopPropagation();
       if (this.entry.url) chrome.tabs.create({ url: this.entry.url });
@@ -66,7 +70,11 @@ export default {
         <i class="fa fa-circle fa-stack-2x" />
         <i class="fa fa-external-link fa-stack-1x fa-inverse" />
       </span>
-      <span class="fa-stack copy" @click="copy">
+      <span class="fa-stack copy-user" @click="copyUser" title="Copy username">
+        <i class="fa fa-circle fa-stack-2x" />
+        <i class="fa fa-user fa-stack-1x fa-inverse" />
+      </span>
+      <span class="fa-stack copy" @click="copy" title="Copy password">
         <i class="fa fa-circle fa-stack-2x" />
         <i class="fa fa-clipboard fa-stack-1x fa-inverse" />
       </span>
@@ -108,22 +116,26 @@ export default {
     min-width: 80px;
   }
   .copy,
+  .copy-user,
   .edit,
   .url {
     opacity: 0.35;
   }
   .copy:hover,
+  .copy-user:hover,
   .edit:hover,
   .url:hover {
     opacity: 0.8;
   }
   @media (prefers-color-scheme: dark) {
     .copy,
+    .copy-user,
     .edit,
     .url {
       opacity: 0.7;
     }
     .copy:hover,
+    .copy-user:hover,
     .edit:hover,
     .url:hover {
       opacity: 0.4;
