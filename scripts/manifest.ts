@@ -93,6 +93,12 @@ function chromeManifestV3(): Manifest.WebExtensionManifest {
         suggested_key: { default: 'Ctrl+Shift+X' },
         description: 'Auto-fill best matching entry',
       },
+      fill_username: {
+        description: 'Fill username at current input',
+      },
+      fill_password: {
+        description: 'Fill password at current input',
+      },
     },
     key: 'MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAhoF/A6nYIxSHW2AekTQRJga9QodwEJBTeAA5r0tW9djrTHY3Ei0FdnUE1FrH2Hx03tsj4RjXMWDHtsqMg4REJdFNzndsRKWvliGomXtxE8XByawJf/NGx0/imAtVBrHc846D/Bn4q1dRaRauqkPMKgpcHoPeg+uLTBIfAn5qPgLlvLLqNSKRg6zGYkm0iBYFiyLd1cqWjsDrVhant90W5rE7qmGQPXZudkc2ejtijuMJL4CF9BeQXOVv/9a0XzAwNbArSr+zHnNOicZPyeEnT7mujFDvLRzXvi7OPW+8mdEsm3AeagKZ6bGUuqyzwxs8XlysWqJsXBoX6tjZCGGVpQIDAQAB',
     background: {
@@ -119,6 +125,12 @@ function firefoxManifestV2(): Manifest.WebExtensionManifest {
       autofill_best_match: {
         suggested_key: { default: 'Ctrl+Shift+X' },
         description: 'Auto-fill best matching entry',
+      },
+      fill_username: {
+        description: 'Fill username at current input',
+      },
+      fill_password: {
+        description: 'Fill password at current input',
       },
     },
     permissions: [

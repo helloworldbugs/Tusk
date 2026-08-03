@@ -148,8 +148,8 @@ function Background(protectedMemory, localMemory, settings, notifications) {
 
   // Shortcut autofill: Ctrl+Shift+X
   chrome.commands.onCommand.addListener(function(cmd, tab) {
-    if (cmd !== 'autofill_best_match') return;
-    console.log('[shortcut] triggered, tab:', tab?.url);
+    if (cmd !== 'autofill_best_match' && cmd !== 'fill_username' && cmd !== 'fill_password') return;
+    console.log('[shortcut] triggered:', cmd, 'tab:', tab?.url);
     chrome.storage.local.get('autofillShortcut', function(items) {
       if (!items.autofillShortcut) { console.log('[shortcut] disabled'); return; }
       protectedMemory.getData('secureCache.entries').then(function(entries) {
@@ -170,16 +170,14 @@ function Background(protectedMemory, localMemory, settings, notifications) {
           if (rank > bestRank) { bestRank = rank; bestMatch = e; bestCount = 1; }
           else if (rank === bestRank && rank > 0) { bestCount++; }
         }
-        console.log('[shortcut] best:', bestMatch ? bestMatch.title : null, 'rank:', bestRank, 'count:', bestCount);
-        // Only autofill if exactly 1 match at the best rank level
-        if (!bestMatch || bestCount > 1) { chrome.action.openPopup(); return; }
-        // Store match data for popup to autofill
+        if (!bestMatch || (cmd === 'autofill_best_match' && bestCount > 1)) { chrome.action.openPopup(); return; }
         chrome.storage.local.set({pendingAutofill: {
           title: bestMatch.title,
           userName: bestMatch.userName,
-          url: bestMatch.url
+          url: bestMatch.url,
+          fillMode: cmd === 'fill_username' ? 'user' : (cmd === 'fill_password' ? 'pw' : 'both')
         }}, function() {
-          console.log('[shortcut] opening popup');
+          console.log('[shortcut] opening popup, mode:', cmd);
           chrome.action.openPopup();
         });
       });

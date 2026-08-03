@@ -102,6 +102,9 @@ export default {
     saveAutofillShortcut() {
       chrome.storage.local.set({ autofillShortcut: this.autofillShortcut });
     },
+    openShortcuts() {
+      chrome.tabs.create({ url: 'chrome://extensions/shortcuts' });
+    },
     toggleOriginPermissions(evt) {
       // Negated because this function will call before the vue model update.
       const rawPerms = toRaw(this.allOriginPerms); // Convert proxy to raw object
@@ -183,7 +186,9 @@ export default {
     <div class="box-bar roomy">
       <h4>{{ $t('Autofill Shortcut') }}</h4>
       <p>
-        {{ $t('Press Ctrl+Shift+X to autofill the best matching entry on the current page. If no match is found or the database is locked, the popup will open instead.') }}
+        {{ $t('Three shortcuts available: auto-fill both, fill username only, fill password only. Customize the key combinations in Chrome\'s shortcut settings.') }}
+        <br />
+        <a href="#" @click.prevent="openShortcuts">{{ $t('Open Chrome shortcut settings') }}</a>
       </p>
     </div>
     <div class="box-bar roomy lighter">

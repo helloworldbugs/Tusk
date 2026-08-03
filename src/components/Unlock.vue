@@ -280,7 +280,21 @@ export default defineComponent({
         if (entry) {
           this.silentAutofill = true;
           this.$nextTick(() => {
-            this.unlockedState.autofill(entry);
+            if (pa.fillMode === 'user') {
+              chrome.runtime.sendMessage({
+                m: 'requestPermission',
+                perms: { origins: [this.unlockedState.origin] },
+                then: { m: 'autofill', tabId: this.unlockedState.tabId, u: entry.userName, o: this.unlockedState.origin }
+              });
+            } else if (pa.fillMode === 'pw') {
+              chrome.runtime.sendMessage({
+                m: 'requestPermission',
+                perms: { origins: [this.unlockedState.origin] },
+                then: { m: 'autofill', tabId: this.unlockedState.tabId, p: this.unlockedState.getDecryptedAttribute(entry, 'password'), o: this.unlockedState.origin }
+              });
+            } else {
+              this.unlockedState.autofill(entry);
+            }
             setTimeout(() => window.close(), 800);
           });
         }
