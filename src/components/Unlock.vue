@@ -271,7 +271,6 @@ export default defineComponent({
     checkPendingAutofill(allEntries) {
       chrome.storage.local.get('pendingAutofill', (items) => {
         var pa = items.pendingAutofill;
-        console.log('[pendingAutofill] checking:', pa ? pa.title : undefined);
         if (!pa) return;
         chrome.storage.local.remove('pendingAutofill');
         var entry = allEntries.find(e =>
@@ -280,13 +279,10 @@ export default defineComponent({
         if (!entry) { entry = allEntries.find(e => e.title === pa.title); }
         if (entry) {
           this.silentAutofill = true;
-          console.log('[pendingAutofill] found entry, autofilling:', entry.title);
           this.$nextTick(() => {
             this.unlockedState.autofill(entry);
             setTimeout(() => window.close(), 800);
           });
-        } else {
-          console.log('[pendingAutofill] entry not found in allEntries');
         }
       });
     },

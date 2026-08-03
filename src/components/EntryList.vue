@@ -68,7 +68,7 @@ export default {
   mounted() {
     // Autofocus searchbox
     this.$nextTick(function () {
-      this.$refs.searchbox.focus();
+      if (this.$refs.searchbox) this.$refs.searchbox.focus();
     });
     this.createEntryFilters(this.allEntries);
     // Restore the search term if needed
