@@ -204,6 +204,7 @@ export default {
     font-size: 15px;
   }
   .add-entry {
+    width: auto;
     font-size: 18px;
     cursor: pointer;
     padding: 4px 6px;
