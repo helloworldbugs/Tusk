@@ -280,24 +280,36 @@ export default defineComponent({
         if (entry) {
           this.silentAutofill = true;
           this.$nextTick(() => {
-            if (pa.fillMode === 'user') {
-              chrome.runtime.sendMessage({
-                m: 'requestPermission',
-                perms: { origins: [this.unlockedState.origin] },
-                then: { m: 'autofill', tabId: this.unlockedState.tabId, u: entry.userName, o: this.unlockedState.origin }
-              });
-            } else if (pa.fillMode === 'pw') {
-              chrome.runtime.sendMessage({
-                m: 'requestPermission',
-                perms: { origins: [this.unlockedState.origin] },
-                then: { m: 'autofill', tabId: this.unlockedState.tabId, p: this.unlockedState.getDecryptedAttribute(entry, 'password'), o: this.unlockedState.origin }
-              });
+            var fillMode = pa.fillMode || 'both';
+            if (fillMode === 'user') {
+              this.directFill(entry.userName || '');
+            } else if (fillMode === 'pw') {
+              this.directFill(this.unlockedState.getDecryptedAttribute(entry, 'password') || '');
+            } else if (fillMode === 'notes') {
+              this.directFill(entry.notes || '');
             } else {
               this.unlockedState.autofill(entry);
             }
-            setTimeout(() => window.close(), 800);
+            setTimeout(() => window.close(), 500);
           });
         }
+      });
+    },
+    directFill(value) {
+      chrome.tabs.query({ active: true, currentWindow: true }, function(tabs) {
+        if (!tabs[0]) return;
+        chrome.scripting.executeScript({
+          target: { tabId: tabs[0].id },
+          func: function(val) {
+            var el = document.activeElement;
+            if (el && (el.tagName === 'INPUT' || el.tagName === 'TEXTAREA')) {
+              el.value = val;
+              el.dispatchEvent(new Event('input', {bubbles: true}));
+              el.dispatchEvent(new Event('change', {bubbles: true}));
+            }
+          },
+          args: [value]
+        });
       });
     },
     clickUnlock(event) {

@@ -97,6 +97,9 @@ function chromeManifestV3(): Manifest.WebExtensionManifest {
       fill_username: {
         description: '__MSG_fillUsername__',
       },
+      fill_notes: {
+        description: '__MSG_fillNotes__',
+      },
       fill_password: {
         description: '__MSG_fillPassword__',
       },
@@ -129,6 +132,9 @@ function firefoxManifestV2(): Manifest.WebExtensionManifest {
       },
       fill_username: {
         description: '__MSG_fillUsername__',
+      },
+      fill_notes: {
+        description: '__MSG_fillNotes__',
       },
       fill_password: {
         description: '__MSG_fillPassword__',

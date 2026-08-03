@@ -3,9 +3,12 @@
     "message": "Auto-fill best matching entry"
   },
   "fillUsername": {
-    "message": "Fill username at current input"
+    "message": "Fill username at cursor"
+  },
+  "fillNotes": {
+    "message": "Fill notes at cursor"
   },
   "fillPassword": {
-    "message": "Fill password at current input"
+    "message": "Fill password at cursor"
   }
 }
