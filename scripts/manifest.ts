@@ -37,7 +37,7 @@ const permissions = [
 const baseManifest: Manifest.WebExtensionManifest = {
   name: 'KeePass Tusk - Password Access and Autofill',
   short_name: 'KeePass Tusk',
-  version: '3.2.2',
+  version: '3.2.3',
   description: 'Readonly KeePass password database integration for Chrome and Firefox',
   icons: {
     '16': '/assets/16x16.png',
