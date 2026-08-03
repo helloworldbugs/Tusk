@@ -94,13 +94,13 @@ function chromeManifestV3(): Manifest.WebExtensionManifest {
         suggested_key: { default: 'Ctrl+Shift+X' },
         description: '__MSG_autofillBestMatch__',
       },
-      fill_username: {
+      fill_1_username: {
         description: '__MSG_fillUsername__',
       },
-      fill_password: {
+      fill_2_password: {
         description: '__MSG_fillPassword__',
       },
-      fill_notes: {
+      fill_3_notes: {
         description: '__MSG_fillNotes__',
       },
     },
@@ -130,13 +130,13 @@ function firefoxManifestV2(): Manifest.WebExtensionManifest {
         suggested_key: { default: 'Ctrl+Shift+X' },
         description: '__MSG_autofillBestMatch__',
       },
-      fill_username: {
+      fill_1_username: {
         description: '__MSG_fillUsername__',
       },
-      fill_password: {
+      fill_2_password: {
         description: '__MSG_fillPassword__',
       },
-      fill_notes: {
+      fill_3_notes: {
         description: '__MSG_fillNotes__',
       },
     },
