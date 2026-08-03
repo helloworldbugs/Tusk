@@ -3,29 +3,18 @@
  * Maps Chrome MV3 APIs to Firefox MV2 equivalents.
  */
 var isFirefox = typeof browser !== 'undefined' && !!browser.runtime;
-
-export function getAction() {
-  // @ts-ignore
-  return isFirefox ? chrome.browserAction : chrome.action;
-}
+var actionApi = (typeof chrome !== 'undefined' && (chrome.action || chrome.browserAction)) || {};
 
 export function openPopup() {
-  if (isFirefox) {
-    // @ts-ignore
-    chrome.browserAction.openPopup();
-  } else {
-    chrome.action.openPopup();
-  }
+  (actionApi).openPopup?.();
 }
 
 export function setBadgeText(details) {
-  // @ts-ignore
-  (isFirefox ? chrome.browserAction : chrome.action).setBadgeText(details);
+  actionApi.setBadgeText?.(details);
 }
 
 export function setBadgeBackgroundColor(details) {
-  // @ts-ignore
-  (isFirefox ? chrome.browserAction : chrome.action).setBadgeBackgroundColor(details);
+  actionApi.setBadgeBackgroundColor?.(details);
 }
 
 /**
