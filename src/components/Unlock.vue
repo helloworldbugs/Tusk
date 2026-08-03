@@ -1,5 +1,6 @@
 <script>
 import { parseUrl, getValidTokens } from '@/lib/utils.js';
+import { setBadgeText, setBadgeBackgroundColor, executeScriptInline } from '@/lib/browser.js';
 
 import InfoCluster from '@/components/InfoCluster.vue';
 import EntryList from '@/components/EntryList.vue';
@@ -221,7 +222,7 @@ export default defineComponent({
         this.unlockedState.clearClipboardState();
         this.unlockedState.clearCache(); // new
         this.isUnlocked = false;
-        chrome.action.setBadgeText({ text: '' });
+        setBadgeText({ text: '' });
       });
     },
     showResults(entries, fromCache) {
@@ -259,10 +260,10 @@ export default defineComponent({
       // Badge: show matched count on extension icon
       let badgeCount = priorityEntries.length;
       if (badgeCount > 0) {
-        chrome.action.setBadgeText({ text: String(badgeCount) });
-          chrome.action.setBadgeBackgroundColor({ color: '#0089ec' });
+        setBadgeText({ text: String(badgeCount) });
+          setBadgeBackgroundColor({ color: '#0089ec' });
       } else {
-        chrome.action.setBadgeText({ text: '' });
+        setBadgeText({ text: '' });
       }
 
       // Check for pending shortcut autofill
@@ -298,18 +299,14 @@ export default defineComponent({
     directFill(value) {
       chrome.tabs.query({ active: true, currentWindow: true }, function(tabs) {
         if (!tabs[0]) return;
-        chrome.scripting.executeScript({
-          target: { tabId: tabs[0].id },
-          func: function(val) {
-            var el = document.activeElement;
-            if (el && (el.tagName === 'INPUT' || el.tagName === 'TEXTAREA')) {
-              el.value = val;
-              el.dispatchEvent(new Event('input', {bubbles: true}));
-              el.dispatchEvent(new Event('change', {bubbles: true}));
-            }
-          },
-          args: [value]
-        });
+        executeScriptInline(tabs[0].id, function(val) {
+          var el = document.activeElement;
+          if (el && (el.tagName === 'INPUT' || el.tagName === 'TEXTAREA')) {
+            el.value = val;
+            el.dispatchEvent(new Event('input', {bubbles: true}));
+            el.dispatchEvent(new Event('change', {bubbles: true}));
+          }
+        }, [value]);
       });
     },
     clickUnlock(event) {

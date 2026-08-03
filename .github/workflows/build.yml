@@ -21,42 +21,81 @@ jobs:
       - name: Install dependencies
         run: npm install --legacy-peer-deps
 
-      - name: Generate manifest
+      # ── Chrome ──
+      - name: Build Chrome (manifest)
         run: npx esno ./scripts/manifest.ts
 
-      - name: Build background
+      - name: Build Chrome (background)
         run: npx vite build --config vite.config.background.mts
 
-      - name: Build content script
+      - name: Build Chrome (content)
         run: npx vite build --config vite.config.content.mts
 
-      - name: Build web
+      - name: Build Chrome (web)
         run: npx vite build
 
-      - name: Ensure web stubs exist
+      - name: Chrome — ensure stubs
         run: |
           if [ ! -f extension/dist/popup.html ]; then
-            echo "Creating fallback popup stub..."
             mkdir -p extension/dist
             echo '<!DOCTYPE html><html><body style="padding:20px;font-family:sans-serif;width:300px"><p>Extension loaded. Web UI build pending.</p></body></html>' > extension/dist/popup.html
             cp extension/dist/popup.html extension/dist/options.html
           fi
 
-      - name: Create release ZIP
-        run: |
-          cd extension
-          zip -r ../tusk-release.zip .
+      - name: Chrome — create ZIP
+        run: cd extension && zip -r ../tusk-release-chrome.zip .
 
-      - name: Upload extension artifact
+      - name: Chrome — upload extension artifact
         uses: actions/upload-artifact@v4
         with:
-          name: tusk-extension
+          name: tusk-extension-chrome
           path: extension/
           retention-days: 30
 
-      - name: Upload release ZIP
+      - name: Chrome — upload release ZIP
         uses: actions/upload-artifact@v4
         with:
-          name: tusk-release-zip
-          path: tusk-release.zip
+          name: tusk-release-zip-chrome
+          path: tusk-release-chrome.zip
+          retention-days: 30
+
+      # ── Firefox ──
+      - name: Firefox — clean build
+        run: rm -rf extension/dist extension/manifest.json
+
+      - name: Firefox — generate manifest
+        run: TARGET=firefox npx esno ./scripts/manifest.ts
+
+      - name: Firefox — build background
+        run: TARGET=firefox npx vite build --config vite.config.background.mts
+
+      - name: Firefox — build content
+        run: TARGET=firefox npx vite build --config vite.config.content.mts
+
+      - name: Firefox — build web
+        run: TARGET=firefox npx vite build
+
+      - name: Firefox — ensure stubs
+        run: |
+          if [ ! -f extension/dist/popup.html ]; then
+            mkdir -p extension/dist
+            echo '<!DOCTYPE html><html><body style="padding:20px;font-family:sans-serif;width:300px"><p>Extension loaded. Web UI build pending.</p></body></html>' > extension/dist/popup.html
+            cp extension/dist/popup.html extension/dist/options.html
+          fi
+
+      - name: Firefox — create ZIP
+        run: cd extension && zip -r ../tusk-release-firefox.zip .
+
+      - name: Firefox — upload extension artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: tusk-extension-firefox
+          path: extension/
+          retention-days: 30
+
+      - name: Firefox — upload release ZIP
+        uses: actions/upload-artifact@v4
+        with:
+          name: tusk-release-zip-firefox
+          path: tusk-release-firefox.zip
           retention-days: 30

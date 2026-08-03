@@ -11,6 +11,7 @@ import { ProtectedMemory } from '$services/protectedMemory';
 import { Settings } from '$services/settings.js';
 import { Notifications } from '$services/notifications';
 import { i18n } from '@/services/i18n';
+import { openPopup, setBadgeText, setBadgeBackgroundColor } from '@/lib/browser.js';
 
 function Background(protectedMemory, localMemory, settings, notifications) {
   console.log('Background worker registered.');
@@ -155,7 +156,7 @@ function Background(protectedMemory, localMemory, settings, notifications) {
       if (!items.autofillShortcut) { console.log('[shortcut] disabled'); return; }
       protectedMemory.getData('secureCache.entries').then(function(entries) {
         if (typeof entries === 'string') entries = protectedMemory.deserialize(entries);
-        if (!entries || !Array.isArray(entries) || !entries.length) { chrome.action.openPopup(); return; }
+        if (!entries || !Array.isArray(entries) || !entries.length) { openPopup(); return; }
         var url = (tab && tab.url) || '';
         var bestMatch = null, bestRank = 0, bestCount = 0;
         for (var i = 0; i < entries.length; i++) {
@@ -173,7 +174,7 @@ function Background(protectedMemory, localMemory, settings, notifications) {
         }
         // Field-specific fills: always fill at cursor, single match only
         // autofill_best_match: require exactly 1 match
-        if (!bestMatch || (cmd === 'autofill_best_match' && bestCount > 1)) { chrome.action.openPopup(); return; }
+        if (!bestMatch || (cmd === 'autofill_best_match' && bestCount > 1)) { openPopup(); return; }
         chrome.storage.local.set({pendingAutofill: {
           title: bestMatch.title,
           userName: bestMatch.userName,
@@ -181,7 +182,7 @@ function Background(protectedMemory, localMemory, settings, notifications) {
           fillMode: (cmd === 'fill_1_username' ? 'user' : cmd === 'fill_2_password' ? 'pw' : cmd === 'fill_3_notes' ? 'notes' : 'both')
         }}, function() {
           console.log('[shortcut] opening popup, mode:', cmd);
-          chrome.action.openPopup();
+          openPopup();
         });
       });
     });
@@ -240,11 +241,11 @@ function Background(protectedMemory, localMemory, settings, notifications) {
         } catch(e) { console.error('[badge] filter error', e); }
       }
       if (count > 0) {
-        chrome.action.setBadgeText({ text: String(count), tabId: tabs[0].id });
-        chrome.action.setBadgeBackgroundColor({ color: '#4688F1', tabId: tabs[0].id });
+        setBadgeText({ text: String(count), tabId: tabs[0].id });
+        setBadgeBackgroundColor({ color: '#4688F1', tabId: tabs[0].id });
         console.log('[badge] set badge to', count, 'on tab', tabs[0].id);
       } else {
-        chrome.action.setBadgeText({ text: '', tabId: tabs[0].id });
+        setBadgeText({ text: '', tabId: tabs[0].id });
         console.log('[badge] cleared badge on tab', tabs[0].id);
       }
     });
@@ -307,7 +308,7 @@ function Background(protectedMemory, localMemory, settings, notifications) {
         }).catch(function() {});
       } else {
         protectedMemory.clearData('secureCache.entries');
-        chrome.action.setBadgeText({ text: '' });
+        setBadgeText({ text: '' });
       }
     });
     settings.getAllForgetTimes().then(function (allTimes) {

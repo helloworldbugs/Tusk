@@ -103,7 +103,11 @@ export default {
       chrome.storage.local.set({ autofillShortcut: this.autofillShortcut });
     },
     openShortcuts() {
-      chrome.tabs.create({ url: 'chrome://extensions/shortcuts' });
+      if (isFirefox()) {
+        chrome.tabs.create({ url: 'about:addons' });
+      } else {
+        chrome.tabs.create({ url: 'chrome://extensions/shortcuts' });
+      }
     },
     toggleOriginPermissions(evt) {
       // Negated because this function will call before the vue model update.
