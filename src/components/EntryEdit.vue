@@ -182,7 +182,7 @@ export default {
       </div>
       <div class="edit-field">
         <label>{{ $t('URL') }}</label>
-        <input v-model="editFields.url" type="text" />
+        <input v-model="editFields.url" type="text" :placeholder="$t('Supports regex: regex:.*\\.domain\\.com/.*')" />
       </div>
       <div class="edit-field">
         <label>{{ $t('Notes') }}</label>
