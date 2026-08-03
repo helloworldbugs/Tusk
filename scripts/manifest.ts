@@ -39,6 +39,7 @@ const baseManifest: Manifest.WebExtensionManifest = {
   short_name: 'KeePass Tusk',
   version: '3.2.3',
   description: 'Readonly KeePass password database integration for Chrome and Firefox',
+  default_locale: 'en',
   icons: {
     '16': '/assets/16x16.png',
     '48': '/assets/48x48.png',
@@ -91,13 +92,13 @@ function chromeManifestV3(): Manifest.WebExtensionManifest {
       _execute_action: executeAction,
       autofill_best_match: {
         suggested_key: { default: 'Ctrl+Shift+X' },
-        description: 'Auto-fill best matching entry',
+        description: '__MSG_autofillBestMatch__',
       },
       fill_username: {
-        description: 'Fill username at current input',
+        description: '__MSG_fillUsername__',
       },
       fill_password: {
-        description: 'Fill password at current input',
+        description: '__MSG_fillPassword__',
       },
     },
     key: 'MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAhoF/A6nYIxSHW2AekTQRJga9QodwEJBTeAA5r0tW9djrTHY3Ei0FdnUE1FrH2Hx03tsj4RjXMWDHtsqMg4REJdFNzndsRKWvliGomXtxE8XByawJf/NGx0/imAtVBrHc846D/Bn4q1dRaRauqkPMKgpcHoPeg+uLTBIfAn5qPgLlvLLqNSKRg6zGYkm0iBYFiyLd1cqWjsDrVhant90W5rE7qmGQPXZudkc2ejtijuMJL4CF9BeQXOVv/9a0XzAwNbArSr+zHnNOicZPyeEnT7mujFDvLRzXvi7OPW+8mdEsm3AeagKZ6bGUuqyzwxs8XlysWqJsXBoX6tjZCGGVpQIDAQAB',
@@ -124,13 +125,13 @@ function firefoxManifestV2(): Manifest.WebExtensionManifest {
       _execute_browser_action: executeAction,
       autofill_best_match: {
         suggested_key: { default: 'Ctrl+Shift+X' },
-        description: 'Auto-fill best matching entry',
+        description: '__MSG_autofillBestMatch__',
       },
       fill_username: {
-        description: 'Fill username at current input',
+        description: '__MSG_fillUsername__',
       },
       fill_password: {
-        description: 'Fill password at current input',
+        description: '__MSG_fillPassword__',
       },
     },
     permissions: [

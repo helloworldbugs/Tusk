@@ -1,0 +1,11 @@
+{
+  "autofillBestMatch": {
+    "message": "自动填充最佳匹配条目"
+  },
+  "fillUsername": {
+    "message": "在当前位置仅填充用户名"
+  },
+  "fillPassword": {
+    "message": "在当前位置仅填充密码"
+  }
+}

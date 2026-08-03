@@ -1,0 +1,11 @@
+{
+  "autofillBestMatch": {
+    "message": "Auto-fill best matching entry"
+  },
+  "fillUsername": {
+    "message": "Fill username at current input"
+  },
+  "fillPassword": {
+    "message": "Fill password at current input"
+  }
+}
