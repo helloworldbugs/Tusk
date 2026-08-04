@@ -118,28 +118,29 @@ export default {
         
         // Update cache
         if (!this.isNew) {
-          // Existing entry: update in-place
-          let allEntries = this.unlockedState.cacheGet('allEntries');
-          let priEntries = this.unlockedState.cacheGet('priorityEntries');
-          let updateEntry = (list) => {
-            if (!list) return;
-            let idx = list.findIndex(e => e.id === this.entry.id);
-            if (idx >= 0) {
-              for (let key in this.editFields) {
-                if (key === 'password') {
-                  list[idx].protectedData = list[idx].protectedData || {};
-                } else {
-                  list[idx][key] = this.editFields[key];
+          var pwChanged = this.editFields.password !== this.unlockedState.getDecryptedAttribute(this.entry, 'password');
+          if (pwChanged) {
+            // Password changed — clear cache so next unlock re-downloads fresh data
+            this.unlockedState.clearCache();
+            if (this.secureCache) this.secureCache.clear('secureCache.entries');
+          } else {
+            // Update non-password fields in-place
+            let allEntries = this.unlockedState.cacheGet('allEntries');
+            let priEntries = this.unlockedState.cacheGet('priorityEntries');
+            let updateEntry = (list) => {
+              if (!list) return;
+              let idx = list.findIndex(e => e.id === this.entry.id);
+              if (idx >= 0) {
+                for (let key in this.editFields) {
+                  if (key !== 'password') list[idx][key] = this.editFields[key];
                 }
               }
-            }
-          };
-          updateEntry(allEntries);
-          updateEntry(priEntries);
-          this.unlockedState.cacheSet('allEntries', allEntries);
-          this.unlockedState.cacheSet('priorityEntries', priEntries);
-          if (this.secureCache) {
-            this.secureCache.save('secureCache.entries', allEntries);
+            };
+            updateEntry(allEntries);
+            updateEntry(priEntries);
+            this.unlockedState.cacheSet('allEntries', allEntries);
+            this.unlockedState.cacheSet('priorityEntries', priEntries);
+            if (this.secureCache) this.secureCache.save('secureCache.entries', allEntries);
           }
         } else {
           // New entry: clear cache so Unlock re-downloads fresh data on next mount
