@@ -82,6 +82,9 @@ const zhCN: Record<string, string> = {
   'Copy password': '复制密码',
   'Edit entry': '编辑条目',
 
+  // ===== Password generator =====
+  'Generate strong password': '生成强密码',
+
   // ===== URL placeholder =====
   'e.g. https://site.com or regex:.*\\.domain\\.com/.*': '例如 https://site.com 或 regex:.*\\.domain\\.com/.*',
 

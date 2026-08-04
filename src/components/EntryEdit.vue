@@ -76,6 +76,28 @@ export default {
     if (this.isNew && this.groups[0]) this.selectedGroup = this.groups[0];
   },
   methods: {
+    generatePassword() {
+      var upper = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+      var lower = 'abcdefghijklmnopqrstuvwxyz';
+      var digits = '0123456789';
+      var specials = '!@#$%^&*()_+-=[]{}|;:,.<>?';
+      var pick = function(str, n) {
+        var result = '';
+        for (var i = 0; i < n; i++) result += str[Math.floor(Math.random() * str.length)];
+        return result;
+      };
+      var len = 16 + Math.floor(Math.random() * 5); // 16-20
+      var extra = len - 16;
+      var chars = pick(upper, 4) + pick(lower, 4) + pick(digits, 4) + pick(specials, 4)
+        + pick(upper + lower + digits + specials, extra);
+      // Shuffle
+      var arr = chars.split('');
+      for (var i = arr.length - 1; i > 0; i--) {
+        var j = Math.floor(Math.random() * (i + 1));
+        var tmp = arr[i]; arr[i] = arr[j]; arr[j] = tmp;
+      }
+      this.editFields.password = arr.join('');
+    },
     async save() {
       this.saving = true;
       this.message = this.$t('Saving...');
@@ -193,7 +215,12 @@ export default {
       </div>
       <div class="edit-field">
         <label>{{ $t('Password') }}</label>
-        <input v-model="editFields.password" type="text" />
+        <div class="password-row">
+          <input v-model="editFields.password" type="text" />
+          <span class="generate-btn selectable" @click="generatePassword" :title="$t('Generate strong password')">
+            <i class="fa fa-key" />
+          </span>
+        </div>
       </div>
       <div class="edit-field">
         <label>{{ $t('URL') }}</label>
@@ -252,6 +279,20 @@ export default {
     color: $text-color;
     background: $light-background-color;
     &:focus { outline: none; border-color: $blue; }
+  }
+}
+
+.password-row {
+  display: flex; align-items: center; gap: 6px;
+  input { flex: 1; }
+  .generate-btn {
+    color: $green;
+    font-size: 16px;
+    cursor: pointer;
+    padding: 6px 8px;
+    border-radius: 3px;
+    flex-shrink: 0;
+    &:hover { background: $light-gray; }
   }
 }
 
