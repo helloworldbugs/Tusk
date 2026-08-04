@@ -190,7 +190,9 @@ export default {
     <div class="box-bar roomy">
       <h4>{{ $t('Autofill Shortcut') }}</h4>
       <p>
-        {{ $t('Three shortcuts available: auto-fill both, fill username only, fill password only. Customize the key combinations in Chrome\'s shortcut settings.') }}
+        {{ $t('Customize the key combinations in Chrome\'s shortcut settings.') }}
+        <br />
+        {{ $t('Currently Chrome only.') }}
         <br />
         <a href="#" @click.prevent="openShortcuts">{{ $t('Open Chrome shortcut settings') }}</a>
       </p>
