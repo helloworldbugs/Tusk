@@ -272,6 +272,8 @@ const zhCN: Record<string, string> = {
   'Autofill Shortcut': '自动填充快捷键',
   'Customize the key combinations in Chrome\'s shortcut settings.': '可在 Chrome 快捷键设置中自定义组合键。',
   'Currently Chrome only.': '目前仅支持 Chrome。',
+  'Open Chrome shortcut settings': '打开 Chrome 快捷键设置',
+  'Open Firefox add-ons': '打开 Firefox 附加组件',
   'Press Ctrl+Shift+X to autofill the best matching entry on the current page. If no match is found or the database is locked, the popup will open instead.': '按下 Ctrl+Shift+X 可自动填充当前页面的最佳匹配条目。若无匹配或数据库已锁定，将打开弹窗。',
 
   // ===== Manage Databases paragraph fragments =====

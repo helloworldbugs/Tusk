@@ -194,7 +194,7 @@ export default {
         <br />
         {{ $t('Currently Chrome only.') }}
         <br />
-        <a href="#" @click.prevent="openShortcuts">{{ $t('Open Chrome shortcut settings') }}</a>
+        <a href="#" @click.prevent="openShortcuts">{{ isFirefox() ? $t('Open Firefox add-ons') : $t('Open Chrome shortcut settings') }}</a>
       </p>
     </div>
     <div class="box-bar roomy lighter">
