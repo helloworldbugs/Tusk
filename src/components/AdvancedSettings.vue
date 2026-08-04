@@ -103,11 +103,7 @@ export default {
       chrome.storage.local.set({ autofillShortcut: this.autofillShortcut });
     },
     openShortcuts() {
-      if (isFirefox()) {
-        chrome.tabs.create({ url: 'about:addons' });
-      } else {
-        chrome.tabs.create({ url: 'chrome://extensions/shortcuts' });
-      }
+      chrome.tabs.create({ url: 'chrome://extensions/shortcuts' });
     },
     toggleOriginPermissions(evt) {
       // Negated because this function will call before the vue model update.
@@ -194,7 +190,7 @@ export default {
         <br />
         {{ $t('Currently Chrome only.') }}
         <br />
-        <a href="#" @click.prevent="openShortcuts">{{ isFirefox() ? $t('Open Firefox add-ons') : $t('Open Chrome shortcut settings') }}</a>
+        <a href="#" @click.prevent="openShortcuts">{{ $t('Open Chrome shortcut settings') }}</a>
       </p>
     </div>
     <div class="box-bar roomy lighter">
