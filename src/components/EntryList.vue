@@ -105,6 +105,12 @@ export default {
         entry.filterKey = filters.join(' ');
       });
     },
+    newEntry() {
+      var title = this.unlockedState.title || '';
+      var url = this.unlockedState.fullUrl || this.unlockedState.url || '';
+      var params = 'title=' + encodeURIComponent(title) + '&url=' + encodeURIComponent(url);
+      this.$router.route('/entry-edit/new?' + params);
+    },
     setActive(index) {
       if (!this.hotkeyNavEnabled) return;
       // Unset the current active entry
@@ -137,7 +143,7 @@ export default {
         type="search"
         :placeholder="$t('search entire database...')"
       />
-      <i class="fa fa-plus add-entry" @click="$router.route('/entry-edit/new')" :title="$t('New entry')" />
+      <i class="fa fa-plus add-entry" @click="newEntry" :title="$t('New entry')" />
     </div>
     <div class="entries">
       <div v-if="allMessages.warn || allMessages.error || allMessages.success" class="no-match-msg">

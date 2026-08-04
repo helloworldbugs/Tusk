@@ -65,7 +65,10 @@ export default {
       this.unlockedState.copyUsername(entry);
     },
     newEntry() {
-      this.$router.route('/entry-edit/new');
+      var title = this.unlockedState.title || '';
+      var url = this.unlockedState.fullUrl || this.unlockedState.url || '';
+      var params = 'title=' + encodeURIComponent(title) + '&url=' + encodeURIComponent(url);
+      this.$router.route('/entry-edit/new?' + params);
     },
     // --- Group management ---
     startRename(group) {

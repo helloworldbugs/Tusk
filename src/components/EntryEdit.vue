@@ -32,9 +32,24 @@ export default {
     let entryId = qIdx >= 0 ? rawEntryId.substring(0, qIdx) : rawEntryId;
     let queryStr = qIdx >= 0 ? rawEntryId.substring(qIdx + 1) : '';
     this.fromBrowse = queryStr.indexOf('from=browse') >= 0;
+    // Parse title and url from query params
+    var queryTitle = '', queryUrl = '';
+    try {
+      queryStr.split('&').forEach(function(p) {
+        var parts = p.split('=');
+        if (parts[0] === 'title') queryTitle = decodeURIComponent(parts.slice(1).join('='));
+        if (parts[0] === 'url') queryUrl = decodeURIComponent(parts.slice(1).join('='));
+      });
+    } catch(e) {}
     if (entryId === 'new') {
       this.isNew = true;
-      this.editFields = { title: '', userName: '', url: '', notes: '', password: '' };
+      this.editFields = {
+        title: queryTitle || '',
+        userName: '',
+        url: queryUrl || '',
+        notes: '',
+        password: ''
+      };
     } else {
       this.entry = this.unlockedState.cacheGet('allEntries').filter((entry) => {
         return entry.id == entryId;
