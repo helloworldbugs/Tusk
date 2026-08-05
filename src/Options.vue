@@ -189,6 +189,7 @@ export default {
 
 body {
   background-color: $background-color;
+  user-select: none;
 }
 
 #overflowbox {

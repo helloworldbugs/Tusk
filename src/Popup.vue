@@ -174,5 +174,6 @@ body {
   width: 100%;
   background-color: $background-color;
   color: $text-color;
+  user-select: none;
 }
 </style>
