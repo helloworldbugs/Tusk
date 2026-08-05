@@ -158,10 +158,6 @@ export default defineComponent({
             let localRaw = await this.secureCache.get('secureCache.entries', 'local');
             if (localRaw !== undefined && localRaw.length > 0) {
               this.showResults(localRaw, true);
-              // Refresh from server in background (no spinner)
-              this.keepassService.refreshFromServer().then(fresh => {
-                this.showResults(fresh, false);
-              }).catch(() => {});
               return;
             }
           } catch (_) {}
@@ -175,9 +171,6 @@ export default defineComponent({
           let localRaw = await this.secureCache.get('secureCache.entries', 'local');
           if (localRaw !== undefined && localRaw.length > 0) {
             this.showResults(localRaw, true);
-            this.keepassService.refreshFromServer().then(fresh => {
-              this.showResults(fresh, false);
-            }).catch(() => {});
             return;
           }
         } catch (_) {}
