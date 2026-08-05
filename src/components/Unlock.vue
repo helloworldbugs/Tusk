@@ -158,8 +158,10 @@ export default defineComponent({
             let localRaw = await this.secureCache.get('secureCache.entries', 'local');
             if (localRaw !== undefined && localRaw.length > 0) {
               this.showResults(localRaw, true);
-              // Load DB in background so getGroups() works for new groups
-              this.keepassService.ensureDbLoaded().catch(() => {});
+              // Load DB in background so getGroups() has fresh data
+              this.keepassService.ensureDbLoaded().then(() => {
+                this.$forceUpdate();
+              }).catch(() => {});
               return;
             }
           } catch (_) {}
@@ -173,7 +175,9 @@ export default defineComponent({
           let localRaw = await this.secureCache.get('secureCache.entries', 'local');
           if (localRaw !== undefined && localRaw.length > 0) {
             this.showResults(localRaw, true);
-            this.keepassService.ensureDbLoaded().catch(() => {});
+            this.keepassService.ensureDbLoaded().then(() => {
+              this.$forceUpdate();
+            }).catch(() => {});
             return;
           }
         } catch (_) {}
