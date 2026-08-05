@@ -30,11 +30,18 @@ export default {
       return this.unlockedState.cacheGet('allEntries') || [];
     },
     groups() {
-      this.entriesVersion; // reactive dep — bump after any group mutation
+      this.entriesVersion;
       let names = {};
       this.allEntries.forEach(e => { if (e.groupName) names[e.groupName] = true; });
-      (this.keepassService.getGroups() || []).forEach(g => { names[g.name] = true; });
-      return Object.keys(names).sort().map(n => ({ name: n }));
+      var dbGroups = this.keepassService.getGroups() || [];
+      // If _db is not loaded, fall back to cached group names (from local/session storage)
+      if (dbGroups.length === 0) {
+        var cached = this.unlockedState.cacheGet('groupNames') || [];
+        cached.forEach(function(n) { names[n] = true; });
+      } else {
+        dbGroups.forEach(function(g) { names[g.name] = true; });
+      }
+      return Object.keys(names).sort().map(function(n) { return { name: n }; });
     },
   },
   methods: {
@@ -86,10 +93,14 @@ export default {
         let buf = await this.keepassService.renameGroup(group.name, newName);
         await this.keepassService.uploadDatabase(buf);
         let fresh = await this.keepassService.refreshFromServer();
+        var groupNames = this.keepassService.getCachedGroupNames();
         this.unlockedState.cacheSet('allEntries', fresh);
+        this.unlockedState.cacheSet('groupNames', groupNames);
         if (this.$parent?.secureCache) {
           this.$parent.secureCache.save('secureCache.entries', fresh);
           this.$parent.secureCache.save('secureCache.entries', fresh, 'local');
+          this.$parent.secureCache.save('groupCache', groupNames);
+          this.$parent.secureCache.save('groupCache', groupNames, 'local');
         }
         this.entriesVersion++;
         this.renamingGroup = null;
@@ -115,10 +126,14 @@ export default {
         let buf = await this.keepassService.deleteGroup(group.name);
         await this.keepassService.uploadDatabase(buf);
         let fresh = await this.keepassService.refreshFromServer();
+        var groupNames = this.keepassService.getCachedGroupNames();
         this.unlockedState.cacheSet('allEntries', fresh);
+        this.unlockedState.cacheSet('groupNames', groupNames);
         if (this.$parent?.secureCache) {
           this.$parent.secureCache.save('secureCache.entries', fresh);
           this.$parent.secureCache.save('secureCache.entries', fresh, 'local');
+          this.$parent.secureCache.save('groupCache', groupNames);
+          this.$parent.secureCache.save('groupCache', groupNames, 'local');
         }
         this.entriesVersion++;
         this.message = this.$t('Deleted.');
@@ -144,10 +159,14 @@ export default {
         await this.keepassService.uploadDatabase(buf);
         // Refresh cache from server (same as entry save)
         let fresh = await this.keepassService.refreshFromServer();
+        var groupNames = this.keepassService.getCachedGroupNames();
         this.unlockedState.cacheSet('allEntries', fresh);
+        this.unlockedState.cacheSet('groupNames', groupNames);
         if (this.$parent?.secureCache) {
           this.$parent.secureCache.save('secureCache.entries', fresh);
           this.$parent.secureCache.save('secureCache.entries', fresh, 'local');
+          this.$parent.secureCache.save('groupCache', groupNames);
+          this.$parent.secureCache.save('groupCache', groupNames, 'local');
         }
         this.entriesVersion++;
         this.showNewGroup = false;

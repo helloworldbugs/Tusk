@@ -157,6 +157,11 @@ export default defineComponent({
           try {
             let localRaw = await this.secureCache.get('secureCache.entries', 'local');
             if (localRaw !== undefined && localRaw.length > 0) {
+              // Also restore cached group names so empty groups appear
+              try {
+                var cachedGroups = await this.secureCache.get('groupCache', 'local');
+                if (cachedGroups) this.unlockedState.cacheSet('groupNames', cachedGroups);
+              } catch (_) {}
               this.showResults(localRaw, true);
               return;
             }
@@ -170,6 +175,10 @@ export default defineComponent({
         try {
           let localRaw = await this.secureCache.get('secureCache.entries', 'local');
           if (localRaw !== undefined && localRaw.length > 0) {
+            try {
+              var cachedGroups = await this.secureCache.get('groupCache', 'local');
+              if (cachedGroups) this.unlockedState.cacheSet('groupNames', cachedGroups);
+            } catch (_) {}
             this.showResults(localRaw, true);
             return;
           }
@@ -218,6 +227,8 @@ export default defineComponent({
       this.unlockedState.clearBackgroundState();
       this.secureCache.clear('secureCache.entries');
       this.secureCache.clear('secureCache.entries', 'local');
+      this.secureCache.clear('groupCache');
+      this.secureCache.clear('groupCache', 'local');
       this.$router.route('/choose');
     },
     toggleBrowse() {
@@ -234,6 +245,8 @@ export default defineComponent({
         }
         this.secureCache.clear('secureCache.entries');
         this.secureCache.clear('secureCache.entries', 'local');
+        this.secureCache.clear('groupCache');
+        this.secureCache.clear('groupCache', 'local');
         this.unlockedState.clearClipboardState();
         this.unlockedState.clearCache(); // new
         this.isUnlocked = false;
@@ -268,6 +281,13 @@ export default defineComponent({
         if (this.rememberPeriod === -2) {
           this.secureCache.save('secureCache.entries', entries, 'local');
         }
+        // Also cache group names so empty groups persist
+        var groupNames = this.keepassService.getCachedGroupNames();
+        this.secureCache.save('groupCache', groupNames);
+        if (this.rememberPeriod === -2) {
+          this.secureCache.save('groupCache', groupNames, 'local');
+        }
+        this.unlockedState.cacheSet('groupNames', groupNames);
       }
       this.busy = false;
       this.isUnlocked = true;

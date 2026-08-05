@@ -346,12 +346,29 @@ function KeepassService(keepassHeader, settings, passwordFileStoreRegistry, keep
   };
 
   my.refreshFromServer = function () {
-    // Force re-download and decrypt to get fresh entries after save
     _db = null;
     return my.ensureDbLoaded().then(function () {
       var entries = parseKdbxDb(_db.groups);
       return processReferences(entries, _db.header.versionMajor);
     });
+  };
+
+  my.getCachedGroupNames = function () {
+    if (!_db) return [];
+    var result = [];
+    var defaultGroup = _db.getDefaultGroup();
+    var recycleUuid = _db.meta.recycleBinUuid;
+    function isRecycleBin(group) {
+      return !!(recycleUuid && group.uuid && group.uuid.equals(recycleUuid));
+    }
+    function collect(group) {
+      if (group !== defaultGroup && !isRecycleBin(group)) {
+        result.push(group.name);
+      }
+      if (group.groups) group.groups.forEach(collect);
+    }
+    _db.groups.forEach(collect);
+    return result;
   };
 
   my.getGroups = function () {
