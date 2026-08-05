@@ -157,15 +157,10 @@ export default defineComponent({
           try {
             let localRaw = await this.secureCache.get('secureCache.entries', 'local');
             if (localRaw !== undefined && localRaw.length > 0) {
-              // Also restore cached group names so empty groups appear
-              try {
-                var cachedGroups = await this.secureCache.get('groupCache', 'local');
-                if (cachedGroups) this.unlockedState.cacheSet('groupNames', cachedGroups);
-              } catch (_) {}
               this.showResults(localRaw, true);
-              return;
             }
           } catch (_) {}
+          // Always trigger full unlock to load _db for getGroups()
           try_autounlock();
         }
       } catch (err) {
@@ -175,12 +170,7 @@ export default defineComponent({
         try {
           let localRaw = await this.secureCache.get('secureCache.entries', 'local');
           if (localRaw !== undefined && localRaw.length > 0) {
-            try {
-              var cachedGroups = await this.secureCache.get('groupCache', 'local');
-              if (cachedGroups) this.unlockedState.cacheSet('groupNames', cachedGroups);
-            } catch (_) {}
             this.showResults(localRaw, true);
-            return;
           }
         } catch (_) {}
         try_autounlock();
