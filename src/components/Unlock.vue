@@ -152,6 +152,8 @@ export default defineComponent({
         let entries = await this.secureCache.get('secureCache.entries');
         if (entries !== undefined && entries.length > 0) {
           this.showResults(entries, true);
+          // Load DB in background so getGroups() works for empty groups
+          this.keepassService.ensureDbLoaded().catch(function() {});
         } else {
           // Session empty — try local storage for instant display
           try {
