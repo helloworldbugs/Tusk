@@ -126,6 +126,7 @@ export default {
         }
         this.entriesVersion++;
         this.message = this.$t('Deleted.');
+        this.$nextTick(() => this.$forceUpdate());
         setTimeout(() => this.message = '', 1500);
       } catch (err) {
         this.message = this.$t('Error: ') + err.message;
@@ -151,6 +152,7 @@ export default {
         }
         this.entriesVersion++;
         this.showNewGroup = false;
+        this.$nextTick(() => this.$forceUpdate());
         this.message = this.$t('Created.');
         setTimeout(() => this.message = '', 1500);
       } catch (err) {
