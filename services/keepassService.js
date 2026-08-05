@@ -338,7 +338,6 @@ function KeepassService(keepassHeader, settings, passwordFileStoreRegistry, keep
         m: 'uploadDatabase',
         data: base64,
       }, (response) => {
-        console.log('[keepassService] upload response:', JSON.stringify(response), 'error:', chrome.runtime.lastError);
         if (chrome.runtime.lastError) reject(chrome.runtime.lastError);
         else if (response && response.error) reject(new Error(response.error));
         else resolve(response);
