@@ -116,40 +116,16 @@ export default {
         this.message = this.$t('Uploading...');
         await this.keepassService.uploadDatabase(newBuffer);
         
-        // Update cache
-        if (!this.isNew) {
-          var pwChanged = this.editFields.password !== this.unlockedState.getDecryptedAttribute(this.entry, 'password');
-          if (pwChanged) {
-            // Password changed — clear both caches so next unlock re-downloads fresh data
-            this.unlockedState.clearCache();
-            if (this.secureCache) {
-              this.secureCache.clear('secureCache.entries');
-              this.secureCache.clear('secureCache.entries', 'local');
-            }
-          } else {
-            // Update non-password fields in-place
-            let allEntries = this.unlockedState.cacheGet('allEntries');
-            let priEntries = this.unlockedState.cacheGet('priorityEntries');
-            let updateEntry = (list) => {
-              if (!list) return;
-              let idx = list.findIndex(e => e.id === this.entry.id);
-              if (idx >= 0) {
-                for (let key in this.editFields) {
-                  if (key !== 'password') list[idx][key] = this.editFields[key];
-                }
-              }
-            };
-            updateEntry(allEntries);
-            updateEntry(priEntries);
-            this.unlockedState.cacheSet('allEntries', allEntries);
-            this.unlockedState.cacheSet('priorityEntries', priEntries);
-            if (this.secureCache) {
-              this.secureCache.save('secureCache.entries', allEntries);
-              this.secureCache.save('secureCache.entries', allEntries, 'local');
-            }
+        // Refresh cache from server to avoid re-unlock spinner
+        try {
+          let freshEntries = await this.keepassService.refreshFromServer();
+          this.unlockedState.cacheSet('allEntries', freshEntries);
+          if (this.secureCache) {
+            this.secureCache.save('secureCache.entries', freshEntries);
+            this.secureCache.save('secureCache.entries', freshEntries, 'local');
           }
-        } else {
-          // New entry: clear both session and local cache so Unlock re-downloads fresh data
+        } catch (e) {
+          // Fallback: clear cache so next open re-downloads
           this.unlockedState.clearCache();
           if (this.secureCache) {
             this.secureCache.clear('secureCache.entries');
@@ -178,14 +154,24 @@ export default {
       try {
         let newBuffer = await this.keepassService.deleteEntry(this.entry.id);
         await this.keepassService.uploadDatabase(newBuffer);
-        // Remove from cache
-        let allEntries = this.unlockedState.cacheGet('allEntries') || [];
-        let idx = allEntries.findIndex(e => e.id === this.entry.id);
-        if (idx >= 0) allEntries.splice(idx, 1);
-        this.unlockedState.cacheSet('allEntries', allEntries);
-        if (this.secureCache) {
-          this.secureCache.save('secureCache.entries', allEntries);
-          this.secureCache.save('secureCache.entries', allEntries, 'local');
+        // Refresh cache from server
+        try {
+          let freshEntries = await this.keepassService.refreshFromServer();
+          this.unlockedState.cacheSet('allEntries', freshEntries);
+          if (this.secureCache) {
+            this.secureCache.save('secureCache.entries', freshEntries);
+            this.secureCache.save('secureCache.entries', freshEntries, 'local');
+          }
+        } catch (e) {
+          // Fallback: remove from cache
+          let allEntries = this.unlockedState.cacheGet('allEntries') || [];
+          let idx = allEntries.findIndex(e => e.id === this.entry.id);
+          if (idx >= 0) allEntries.splice(idx, 1);
+          this.unlockedState.cacheSet('allEntries', allEntries);
+          if (this.secureCache) {
+            this.secureCache.save('secureCache.entries', allEntries);
+            this.secureCache.save('secureCache.entries', allEntries, 'local');
+          }
         }
         this.$router.goBack();
       } catch (err) {

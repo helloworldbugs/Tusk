@@ -345,6 +345,15 @@ function KeepassService(keepassHeader, settings, passwordFileStoreRegistry, keep
     });
   };
 
+  my.refreshFromServer = function () {
+    // Force re-download and decrypt to get fresh entries after save
+    _db = null;
+    return my.ensureDbLoaded().then(function () {
+      var entries = parseKdbxDb(_db.groups);
+      return processReferences(entries, _db.header.versionMajor);
+    });
+  };
+
   my.getGroups = function () {
     if (!_db) return [];
     var result = [];
