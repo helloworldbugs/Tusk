@@ -1,7 +1,7 @@
 {
   "name": "Tusk",
   "description": "A modern keepass extension",
-  "version": "3.3.6",
+  "version": "3.3.7",
   "type": "module",
   "author": "Brandon Davis <brandon@subdavis.com>",
   "license": "MIT",
