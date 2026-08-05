@@ -328,10 +328,7 @@ function KeepassService(keepassHeader, settings, passwordFileStoreRegistry, keep
   };
 
   my.uploadDatabase = function (arrayBuffer) {
-    console.log('[keepassService] uploadDatabase type:', typeof arrayBuffer, 
-      'isArrayBuffer:', arrayBuffer instanceof ArrayBuffer,
-      'isUint8Array:', arrayBuffer instanceof Uint8Array,
-      'byteLength:', arrayBuffer && arrayBuffer.byteLength);
+    console.log('[keepassService] uploadDatabase size:', arrayBuffer && arrayBuffer.byteLength);
     var bytes = new Uint8Array(arrayBuffer);
     var binary = '';
     for (var i = 0; i < bytes.length; i++) binary += String.fromCharCode(bytes[i]);
@@ -341,6 +338,7 @@ function KeepassService(keepassHeader, settings, passwordFileStoreRegistry, keep
         m: 'uploadDatabase',
         data: base64,
       }, (response) => {
+        console.log('[keepassService] upload response:', JSON.stringify(response), 'error:', chrome.runtime.lastError);
         if (chrome.runtime.lastError) reject(chrome.runtime.lastError);
         else if (response && response.error) reject(new Error(response.error));
         else resolve(response);
