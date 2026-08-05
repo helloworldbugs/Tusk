@@ -120,9 +120,12 @@ export default {
         if (!this.isNew) {
           var pwChanged = this.editFields.password !== this.unlockedState.getDecryptedAttribute(this.entry, 'password');
           if (pwChanged) {
-            // Password changed — clear cache so next unlock re-downloads fresh data
+            // Password changed — clear both caches so next unlock re-downloads fresh data
             this.unlockedState.clearCache();
-            if (this.secureCache) this.secureCache.clear('secureCache.entries');
+            if (this.secureCache) {
+              this.secureCache.clear('secureCache.entries');
+              this.secureCache.clear('secureCache.entries', 'local');
+            }
           } else {
             // Update non-password fields in-place
             let allEntries = this.unlockedState.cacheGet('allEntries');
@@ -140,7 +143,10 @@ export default {
             updateEntry(priEntries);
             this.unlockedState.cacheSet('allEntries', allEntries);
             this.unlockedState.cacheSet('priorityEntries', priEntries);
-            if (this.secureCache) this.secureCache.save('secureCache.entries', allEntries);
+            if (this.secureCache) {
+              this.secureCache.save('secureCache.entries', allEntries);
+              this.secureCache.save('secureCache.entries', allEntries, 'local');
+            }
           }
         } else {
           // New entry: clear both session and local cache so Unlock re-downloads fresh data
