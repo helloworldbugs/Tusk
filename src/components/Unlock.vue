@@ -153,12 +153,27 @@ export default defineComponent({
         if (entries !== undefined && entries.length > 0) {
           this.showResults(entries, true);
         } else {
+          // Session empty — try local storage (forever mode)
+          try {
+            let localRaw = await this.secureCache.get('secureCache.entries', 'local');
+            if (localRaw !== undefined && localRaw.length > 0) {
+              this.showResults(localRaw, true);
+              return;
+            }
+          } catch (_) {}
           try_autounlock();
         }
       } catch (err) {
         console.error(err);
-        //this is fine - it just means the cache expired.  Clear the cache to be sure.
         this.secureCache.clear('secureCache.entries');
+        // Session failed — try local before full unlock
+        try {
+          let localRaw = await this.secureCache.get('secureCache.entries', 'local');
+          if (localRaw !== undefined && localRaw.length > 0) {
+            this.showResults(localRaw, true);
+            return;
+          }
+        } catch (_) {}
         try_autounlock();
       }
       this.busy = false;
