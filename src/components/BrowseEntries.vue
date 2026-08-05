@@ -89,7 +89,10 @@ export default {
         let all = this.unlockedState.cacheGet('allEntries') || [];
         all.forEach(e => { if (e.groupName === group.name) e.groupName = newName; });
         this.unlockedState.cacheSet('allEntries', all);
-        if (this.$parent?.secureCache) this.$parent.secureCache.save('secureCache.entries', all);
+        if (this.$parent?.secureCache) {
+          this.$parent.secureCache.save('secureCache.entries', all);
+          this.$parent.secureCache.save('secureCache.entries', all, 'local');
+        }
         this.entriesVersion++;
         this.renamingGroup = null;
         this.message = this.$t('Renamed.');
@@ -117,7 +120,10 @@ export default {
         let all = this.unlockedState.cacheGet('allEntries') || [];
         all = all.filter(e => e.groupName !== group.name);
         this.unlockedState.cacheSet('allEntries', all);
-        if (this.$parent?.secureCache) this.$parent.secureCache.save('secureCache.entries', all);
+        if (this.$parent?.secureCache) {
+          this.$parent.secureCache.save('secureCache.entries', all);
+          this.$parent.secureCache.save('secureCache.entries', all, 'local');
+        }
         this.entriesVersion++;
         this.message = this.$t('Deleted.');
         setTimeout(() => this.message = '', 1500);
@@ -139,7 +145,10 @@ export default {
       try {
         let buf = await this.keepassService.createGroup(name);
         await this.keepassService.uploadDatabase(buf);
-        // No entry changes needed — getGroups() reads from _db which is already updated
+        // Clear local cache so next open re-downloads fresh data
+        if (this.$parent?.secureCache) {
+          this.$parent.secureCache.clear('secureCache.entries', 'local');
+        }
         this.entriesVersion++;
         this.showNewGroup = false;
         this.message = this.$t('Created.');

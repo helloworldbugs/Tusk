@@ -143,10 +143,11 @@ export default {
             if (this.secureCache) this.secureCache.save('secureCache.entries', allEntries);
           }
         } else {
-          // New entry: clear cache so Unlock re-downloads fresh data on next mount
+          // New entry: clear both session and local cache so Unlock re-downloads fresh data
           this.unlockedState.clearCache();
           if (this.secureCache) {
             this.secureCache.clear('secureCache.entries');
+            this.secureCache.clear('secureCache.entries', 'local');
           }
         }
         
