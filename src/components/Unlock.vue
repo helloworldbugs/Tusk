@@ -153,14 +153,14 @@ export default defineComponent({
         if (entries !== undefined && entries.length > 0) {
           this.showResults(entries, true);
         } else {
-          // Session empty — try local storage (forever mode)
+          // Session empty — try local storage for instant display
           try {
             let localRaw = await this.secureCache.get('secureCache.entries', 'local');
             if (localRaw !== undefined && localRaw.length > 0) {
               this.showResults(localRaw, true);
-              // Load DB in background so getGroups() has fresh data
-              this.keepassService.ensureDbLoaded().then(() => {
-                this.$forceUpdate();
+              // Refresh from server in background (no spinner)
+              this.keepassService.refreshFromServer().then(fresh => {
+                this.showResults(fresh, false);
               }).catch(() => {});
               return;
             }
@@ -175,8 +175,8 @@ export default defineComponent({
           let localRaw = await this.secureCache.get('secureCache.entries', 'local');
           if (localRaw !== undefined && localRaw.length > 0) {
             this.showResults(localRaw, true);
-            this.keepassService.ensureDbLoaded().then(() => {
-              this.$forceUpdate();
+            this.keepassService.refreshFromServer().then(fresh => {
+              this.showResults(fresh, false);
             }).catch(() => {});
             return;
           }
