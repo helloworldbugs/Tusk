@@ -91,7 +91,6 @@ export default {
           this.$parent.secureCache.save('secureCache.entries', fresh);
           this.$parent.secureCache.save('secureCache.entries', fresh, 'local');
         }
-        }
         this.entriesVersion++;
         this.renamingGroup = null;
         this.message = this.$t('Renamed.');
