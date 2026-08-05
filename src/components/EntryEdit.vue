@@ -183,7 +183,10 @@ export default {
         let idx = allEntries.findIndex(e => e.id === this.entry.id);
         if (idx >= 0) allEntries.splice(idx, 1);
         this.unlockedState.cacheSet('allEntries', allEntries);
-        if (this.secureCache) this.secureCache.save('secureCache.entries', allEntries);
+        if (this.secureCache) {
+          this.secureCache.save('secureCache.entries', allEntries);
+          this.secureCache.save('secureCache.entries', allEntries, 'local');
+        }
         this.$router.goBack();
       } catch (err) {
         this.message = this.$t('Delete error: ') + err.message;
