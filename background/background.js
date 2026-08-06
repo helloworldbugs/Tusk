@@ -33,6 +33,8 @@ function Background(protectedMemory, localMemory, settings, notifications) {
         case 'get':
           (msg.storageType === 'local' ? localMemory : protectedMemory).getData(msg.key).then(function (value) {
             port.postMessage(value);
+          }).catch(function () {
+            port.postMessage(undefined);
           });
           break;
         case 'forgetStuff':
