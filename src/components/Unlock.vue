@@ -167,6 +167,8 @@ export default defineComponent({
               // Silently load _db for getGroups() — no spinner
               this.keepassService.ensureDbLoaded().catch(function() {});
             }
+          } catch (_) {}
+          if (!this.isUnlocked) try_autounlock();
         }
       } catch (err) {
         console.error(err);
