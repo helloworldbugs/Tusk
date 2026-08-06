@@ -152,26 +152,33 @@ export default defineComponent({
       };
 
       this.busy = true;
+      console.log('[unlock-mount] starting, session get...');
       try {
         let entries = await this.secureCache.get('secureCache.entries');
+        console.log('[unlock-mount] session result:', entries ? entries.length + ' entries' : 'empty');
         if (entries !== undefined && entries.length > 0) {
+          console.log('[unlock-mount] session OK, showResults + ensureDbLoaded');
           this.showResults(entries, true);
-          // Load DB in background so getGroups() works for empty groups
           this.keepassService.ensureDbLoaded().catch(function() {});
         } else {
+          console.log('[unlock-mount] session empty, trying local...');
           // Session empty — try local storage for instant display
           try {
             let localRaw = await this.secureCache.get('secureCache.entries', 'local');
+            console.log('[unlock-mount] local result:', localRaw ? localRaw.length + ' entries' : 'empty');
             if (localRaw !== undefined && localRaw.length > 0) {
+              console.log('[unlock-mount] local OK, showResults + ensureDbLoaded');
               this.showResults(localRaw, true);
-              // Silently load _db for getGroups() — no spinner
               this.keepassService.ensureDbLoaded().catch(function() {});
             }
-          } catch (_) {}
+          } catch (e) {
+            console.error('[unlock-mount] local get failed:', e);
+          }
+          console.log('[unlock-mount] isUnlocked:', this.isUnlocked, '— try_autounlock?', !this.isUnlocked);
           if (!this.isUnlocked) try_autounlock();
         }
       } catch (err) {
-        console.error(err);
+        console.error('[unlock-mount] session get crashed:', err);
         this.secureCache.clear('secureCache.entries');
         // Session failed — try local before full unlock
         try {
@@ -180,9 +187,9 @@ export default defineComponent({
             this.showResults(localRaw, true);
           }
         } catch (_) {}
-          // If local also empty, trigger full unlock
           if (!this.isUnlocked) try_autounlock();
       }
+      console.log('[unlock-mount] done, busy:', this.busy);
       this.busy = false;
       focus();
     }
@@ -248,6 +255,7 @@ export default defineComponent({
       });
     },
     showResults(entries, fromCache) {
+      console.log('[showResults] entries:', entries ? entries.length : 0, 'fromCache:', fromCache);
       this.unlockedMessages.warn = '';
       this.unlockedMessages.error = '';
       let siteUrl = parseUrl(this.unlockedState.fullUrl || this.unlockedState.url);
