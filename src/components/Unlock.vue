@@ -119,24 +119,28 @@ export default defineComponent({
             return this.settings.getCurrentDatabaseUsage();
           })
           .then((usage) => {
-            // tweak UI based on what we know about the db file
             this.hidePassword = usage.requiresPassword === false;
             this.hideKeyFile = usage.requiresKeyfile === false;
             this.rememberedPassword = usage.passwordKey !== undefined;
             this.setRememberPeriod(usage.rememberPeriod);
 
             if (usage.passwordKey !== undefined && usage.requiresKeyfile === false) {
-              this.unlock(usage.passwordKey); // Autologin if no keyfile
+              this.unlock(usage.passwordKey);
             } else if (usage.keyFileName !== undefined) {
-              let matches = this.keyFiles.filter((kf) => {
-                return kf.name === usage.keyFileName;
-              });
+              let matches = this.keyFiles.filter((kf) => kf.name === usage.keyFileName);
               if (matches.length > 0) {
                 this.selectedKeyFile = matches[0];
                 if (this.hidePassword === true || usage.passwordKey !== undefined)
                   this.unlock(usage.passwordKey);
               }
+            } else {
+              // No cached credentials — show unlock UI
+              this.busy = false;
             }
+          })
+          .catch((err) => {
+            console.error('[autounlock] failed:', err);
+            this.busy = false;
           });
       };
 
@@ -160,10 +164,9 @@ export default defineComponent({
             let localRaw = await this.secureCache.get('secureCache.entries', 'local');
             if (localRaw !== undefined && localRaw.length > 0) {
               this.showResults(localRaw, true);
+              // Silently load _db for getGroups() — no spinner
+              this.keepassService.ensureDbLoaded().catch(function() {});
             }
-          } catch (_) {}
-          // Always trigger full unlock to load _db for getGroups()
-          try_autounlock();
         }
       } catch (err) {
         console.error(err);
@@ -175,6 +178,8 @@ export default defineComponent({
             this.showResults(localRaw, true);
           }
         } catch (_) {}
+          // If local also empty, trigger full unlock
+          if (!this.isUnlocked) try_autounlock();
         try_autounlock();
       }
       this.busy = false;
