@@ -40,10 +40,15 @@ function SecureCacheMemory(protectedMemory) {
 
   ready.then(function (port) {
     port.onMessage.addListener(function (serializedSavedState) {
-      //called from the background when we get a response, i.e. some saved state.
-      var savedState = protectedMemory.hydrate(serializedSavedState);
-      var notifier = awaiting.shift();
-      notifier(savedState); //notify others
+      try {
+        var savedState = protectedMemory.hydrate(serializedSavedState);
+        var notifier = awaiting.shift();
+        notifier(savedState);
+      } catch (e) {
+        console.error('[secureCache] hydrate failed:', e);
+        var notifier = awaiting.shift();
+        notifier(undefined);
+      }
     });
     port.onDisconnect.addListener(function (p) {
       // Nothing to do here yet...
