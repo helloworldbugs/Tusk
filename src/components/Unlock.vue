@@ -182,7 +182,6 @@ export default defineComponent({
         } catch (_) {}
           // If local also empty, trigger full unlock
           if (!this.isUnlocked) try_autounlock();
-        try_autounlock();
       }
       this.busy = false;
       focus();
