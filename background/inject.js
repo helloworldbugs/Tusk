@@ -83,11 +83,28 @@ var filler = (function () {
       if (focusedIndex >= 0) {
         if (focusedPassword && focusedIndex > 0) {
           //field before the password is the username
-          pair.u = inputList[focusedIndex - 1];
+          //skip over hidden/invisible inputs to find the real username
+          for (var j = focusedIndex - 1; j >= 0; j--) {
+            var candidate = inputList[j];
+            if (!isPasswordField(candidate) && isElementInViewport(candidate) && isVisible(candidate)) {
+              pair.u = candidate;
+              break;
+            }
+          }
         } else if (!focusedPassword && focusedIndex < inputList.length - 1) {
           //field after the username is the password
-          let passwordFieldCandidate = inputList[focusedIndex + 1];
-          if (isPasswordField(passwordFieldCandidate)) pair.p = passwordFieldCandidate;
+          //skip over hidden/invisible inputs to find the real password field
+          for (var j = focusedIndex + 1; j < inputList.length; j++) {
+            var candidate = inputList[j];
+            if (isPasswordField(candidate) && isElementInViewport(candidate) && isVisible(candidate)) {
+              pair.p = candidate;
+              break;
+            }
+            //stop searching if we encounter another visible non-password field (likely next form section)
+            if (!isPasswordField(candidate) && isElementInViewport(candidate) && isVisible(candidate)) {
+              break;
+            }
+          }
         }
       }
       priorityPair = pair;
