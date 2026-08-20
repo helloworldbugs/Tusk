@@ -198,6 +198,7 @@ var filler = (function () {
     field.focus();
 
     var eventsToFire = {
+      input: 'Event',
       keydown: 'KeyboardEvent',
       keyup: 'KeyboardEvent',
       change: 'HTMLEvents',
