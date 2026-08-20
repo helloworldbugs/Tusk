@@ -1,77 +1,444 @@
-# Tusk — KeePass Browser Extension (Fork)
+# 🐘 Tusk — KeePass Browser Extension
 
-> 🐘 🔒 Readonly KeePass password database integration for Chrome and Firefox
+> 🔒 只读 KeePass 密码数据库浏览器集成 · Chrome & Firefox 双平台支持
 
-A fork of [subdavis/Tusk](https://github.com/subdavis/Tusk) with significant improvements.
+[![Version](https://img.shields.io/badge/version-3.4.1-blue)](https://github.com/helloworldbugs/Tusk/releases)
+[![License](https://img.shields.io/badge/license-MIT-green)](LICENSE)
+[![CI](https://img.shields.io/badge/build-passing-brightgreen)](https://github.com/helloworldbugs/Tusk/actions)
 
----
-
-## What's New vs Original
-
-### 🔒 Auto-Unlock on Browser Start
-
-The extension now auto-decrypts your database when Chrome starts if you selected "Remember Forever" on the unlock slider. No need to click the icon — matched entry count appears on the badge immediately.
-
-### 🔢 Badge Count
-
-The extension icon badge shows how many password entries match the current page's URL. Updates automatically when switching tabs.
-
-### ⚡ Click-to-Autofill
-
-Click a password entry directly to auto-fill — no need to open the detail page first.
-
-### ✏️ Edit & Save Entries
-
-Click the pencil icon on any entry to edit title, username, password, URL, or notes. Changes are saved back to the KDBX file and uploaded to your cloud storage.
-
-### 🔗 External Link Button
-
-Each entry has a link button that opens the entry's URL in a new tab.
-
-### 🧩 Unified URL Matching
-
-The old multi-level ranking algorithm (token matching, title matching, phishing detection) has been replaced with a clean 4-level system used by both the badge and popup:
-
-| Level | Condition | Example |
-|-------|-----------|---------|
-| 4 | Entry URI is contained in page URL | `a.com/admin` ∈ `a.com/admin/login` |
-| 3 | Exact origin match | `https://a.com` = `https://a.com` |
-| 2 | Same domain (last 2 parts) | `a.example.com` ≈ `b.example.com` |
-| 1 | Regex match (`regex:` prefix) | custom pattern |
-
-### 🧾 Regex URL Matching
-
-Put `regex:` in the URL field to use regular expressions:
-- `regex:login\..*\.com` matches all `login.*.com` subdomains
-- `regex:10\.0\.\d+\.\d+` matches all `10.0.x.x` IPs
-
-### 🪟 Iframe Autofill
-
-Cross-origin login forms (Aliyun, banks, etc.) now work correctly. Each frame receives autofill with its own origin.
-
-### 🛡️ Manifest V3 Compatibility
-
-- `window.crypto` → `globalThis.crypto` (service worker fix)
-- `optional_host_permissions` → `host_permissions` (CORS fix)
-- `webNavigation` and `tabs` permissions added
-
-### 🗄️ Permanent Password Storage
-
-"Remember forever" uses `storage.local` instead of `storage.session`, surviving browser restarts. Ttime-based durations still use session storage.
-
-### 🧪 CI/CD
-
-GitHub Actions auto-builds the extension on every push.
+Fork 自 [subdavis/Tusk](https://github.com/subdavis/Tusk)，在原始项目基础上进行了大量功能增强和体验优化。
 
 ---
 
-## Quick Start
+## 📋 目录
 
-Load `dist/` folder in `chrome://extensions` (Developer mode).
+- [✨ 功能特性](#-功能特性)
+- [🧠 核心设计：分级 URL 匹配策略](#-核心设计分级-url-匹配策略)
+- [⚡ 自动填充引擎](#-自动填充引擎)
+- [☁️ 云端存储支持](#️-云端存储支持)
+- [🔐 安全设计](#-安全设计)
+- [🗄️ 数据库管理](#️-数据库管理)
+- [⌨️ 键盘快捷键](#️-键盘快捷键)
+- [🚀 快速开始](#-快速开始)
+- [🏗️ 技术栈](#️-技术栈)
+- [📐 架构概览](#-架构概览)
+- [🧪 测试](#-测试)
+- [🙏 致谢](#-致谢)
 
 ---
 
-## Credits
+## ✨ 功能特性
 
-- Original: [subdavis/Tusk](https://github.com/subdavis/Tusk)
-- Fork maintained by [helloworldbugs](https://github.com/helloworldbugs)
+| 功能 | 说明 |
+|------|------|
+| 🔒 **自动解锁** | 浏览器启动时自动解密数据库，记住密码后无需手动输入 |
+| 🔢 **徽章计数** | 扩展图标右上角实时显示当前页面匹配的密码条目数量 |
+| ⚡ **一键填充** | 点击条目或按回车键即可自动填充用户名和密码 |
+| 🧠 **分级匹配** | 独创的 4 级 URL 匹配算法，精准排序最佳匹配条目 |
+| ✏️ **编辑保存** | 直接在弹窗中编辑标题、用户名、密码、URL、备注，保存回 KDBX 文件 |
+| 🔗 **外部链接** | 每个条目都有一键打开 URL 按钮，新标签页直达网站 |
+| 🪟 **Iframe 填充** | 支持跨域 iframe 登录表单（如阿里云、银行等） |
+| 🔐 **TOTP 双因素** | 实时显示 TOTP 动态验证码，带倒计时进度条 |
+| 🌍 **中文国际化** | 完整的中文界面翻译，自动检测浏览器语言 |
+| 🔑 **随机密码生成** | 新建/编辑条目时一键生成高强度随机密码 |
+| 🔄 **多云端同步** | 支持 9 种存储后端，覆盖主流云服务和私有部署 |
+| 📂 **分组管理** | 创建、重命名、删除分组，条目在分组间自由移动 |
+| 🕐 **遗忘定时器** | 可配置密码记忆时长：30 分钟 → 永久，到期自动清除 |
+| 🛡️ **Manifest V3** | 完整兼容 Chrome MV3，同时支持 Firefox MV2 |
+
+---
+
+## 🧠 核心设计：分级 URL 匹配策略
+
+Tusk 的核心竞争力在于**4 级 URL 匹配算法**，它同时驱动**徽章计数**和**自动填充优先排序**，确保最相关的密码条目始终排在第一位。
+
+### 匹配等级
+
+| 级别 | 条件 | 示例 | 得分 |
+|:---:|---|---|:---:|
+| **4** | 条目的 URL 完整包含在页面 URL 中 | 条目 `a.com/admin` → 页面 `a.com/admin/login` | **100** |
+| **3** | 协议 + 主机名 + 端口完全一致 | 条目 `https://a.com` → 页面 `https://a.com/any` | **75** |
+| **2** | 相同域名（最后两段） | 条目 `a.example.com` → 页面 `b.example.com` | **50** |
+| **1** | 正则表达式匹配 | 条目 `regex:login\..*\.com` → 页面 `login.test.com` | **25** |
+| **0** | 无匹配 | 任意不相关 URL | **0** |
+
+### 匹配流程
+
+```
+页面 URL  ──→  Level 4: 包含匹配?  ──→  ✅ 优先展示
+    │              │
+    │              └──→  Level 3: 同源匹配?  ──→  ✅ 第二优先
+    │                       │
+    │                       └──→  Level 2: 同域名?  ──→  ✅ 第三优先
+    │                                │
+    │                                └──→  Level 1: 正则匹配?  ──→  ✅ 兜底
+    │                                         │
+    │                                         └──→  Level 0: 无匹配
+```
+
+### 徽章计数逻辑
+
+```
+1. 遍历所有缓存条目，对每个条目计算最高匹配等级
+2. 统计达到最高等级的所有条目数量
+3. 在扩展图标上显示该数字
+4. 切换标签页时自动更新
+```
+
+### 正则表达式匹配
+
+在条目 URL 字段以 `regex:` 前缀开头即可使用正则：
+
+```
+regex:login\..*\.com    →  匹配所有 login.*.com 子域名
+regex:10\.0\.\d+\.\d+   →  匹配所有 10.0.x.x 内网 IP
+regex:192\.168\.\d+\.\d+:8080  →  匹配特定网段和端口
+```
+
+---
+
+## ⚡ 自动填充引擎
+
+### 三种触发方式
+
+| 方式 | 操作 | 适用场景 |
+|------|------|----------|
+| 🖱️ **弹窗点击** | 打开 Tusk 弹窗，点击条目 | 最常用，可浏览选择 |
+| ⌨️ **快捷键** | `Ctrl+Shift+X` | 快速填充，无需鼠标 |
+| 🎯 **字段级填充** | `Ctrl+Shift+1/2/3` | 只填充用户名/密码/备注 |
+
+### 字段检测算法
+
+Tusk 使用**双方法检测**来定位页面上的用户名和密码输入框：
+
+**方法一：焦点法（优先）**
+```
+用户光标所在位置 → 检测相邻输入框 → 跳过隐藏/不可见元素 → 精准定位
+```
+- 如果聚焦在用户名框 → 向后搜索找到第一个可见的 `type="password"` 输入框
+- 如果聚焦在密码框 → 向前搜索找到第一个可见的非密码输入框
+- 自动跳过 `type="hidden"` 等不可见元素
+
+**方法二：全局扫描法（兜底）**
+```
+遍历所有可见 input → 按类型配对 → 生成 用户名-密码 对列表
+```
+- 识别注册表单（连续两个密码框）并自动排除
+- 处理独立密码框（无用户名配对的情况）
+
+### Iframe 跨域填充
+
+```
+┌─────────────────────────────────┐
+│  主页面 (gitee.com)              │
+│  ┌───────────────────────────┐  │
+│  │  iframe (udesk.cn)         │  │
+│  │  [用户名] [密码] [登录]     │  │  ← 也能填充！
+│  └───────────────────────────┘  │
+└─────────────────────────────────┘
+```
+
+- 内容脚本注入到**所有 frame**
+- 每个 frame 独立进行**来源安全检查**
+- 白名单机制解决已知的跨域场景（如银行网站）
+
+---
+
+## ☁️ 云端存储支持
+
+Tusk 支持 **9 种存储后端**，覆盖所有主流场景：
+
+| 存储后端 | 类型 | 说明 |
+|----------|------|------|
+| 🔗 **WebDAV** | 私有部署 | 支持坚果云等 WebDAV 服务，扫描目录自动发现 `.kdbx` 文件，支持上传保存 |
+| 📁 **本地文件** | 浏览器存储 | 上传 `.kdbx` 文件到浏览器本地存储，Base64 编码持久化 |
+| 🔗 **共享链接** | 直链访问 | 通过 HTTP/HTTPS 直接链接访问数据库文件 |
+| 📦 **示例数据库** | 演示 | 内置示例数据库（密码 `123`），无需配置即可体验 |
+| ☁️ **Google Drive** | OAuth | 搜索 `.kdbx` 文件，支持文件选择器或直接搜索 |
+| 🗂️ **Dropbox** | OAuth | 搜索 `.kdbx` 文件，支持直接下载 |
+| 💼 **OneDrive** | OAuth | 搜索 `.kdbx` 文件，完整路径显示 |
+| 🌐 **pCloud** | OAuth | 递归搜索所有文件夹，支持直接下载链接 |
+| 🔐 **自建 OAuth** | 可扩展 | 通过 `OauthManager` 通用框架，可轻松接入任何 OAuth2 服务 |
+
+### 存储后端架构
+
+```
+PasswordFileStoreRegistry (注册中心)
+    ├── LocalChromePasswordFileManager   (本地文件)
+    ├── GoogleDrivePasswordFileManager   (Google Drive)
+    ├── DropboxFileManager               (Dropbox)
+    ├── OneDriveFileManager              (OneDrive)
+    ├── PCloudFileManager                (pCloud)
+    ├── SharedUrlFileManager             (共享链接)
+    ├── SampleDatabaseFileManager        (示例数据库)
+    └── WebdavFileManager                (WebDAV)
+```
+
+所有后端统一实现 `FileManager` 接口，通过 `PasswordFileStoreRegistry` 注册和调度。
+
+---
+
+## 🔐 安全设计
+
+### 加密存储
+
+```
+┌──────────────┐     AES-CBC      ┌──────────────────┐
+│  明文数据     │  ──────────────→  │  chrome.storage   │
+│  (密码/条目)  │   256-bit key    │  (加密态)          │
+└──────────────┘                  └──────────────────┘
+```
+
+- 使用 **AES-CBC 256 位**加密存储在 `chrome.storage.session` 或 `chrome.storage.local`
+- 密钥在运行时通过 Web Crypto API 生成，不落盘
+- 自定义序列化协议处理二进制数据（ArrayBuffer → Base64）
+
+### 双层记忆系统
+
+| 存储层 | 存储介质 | 生命周期 | 用途 |
+|--------|----------|----------|------|
+| **Session 层** | `storage.session` | 浏览器会话 | 临时缓存，会话结束自动清除 |
+| **Local 层** | `storage.local` | 持久化 | "永久记住"模式，跨浏览器重启 |
+
+### 遗忘定时器
+
+```
+记住时长:  [不记住]  [30分钟]  [2小时]  [4小时]  [8小时]  [24小时]  [本次会话]  [永久]
+           ──────────────────────────────────────────────────────────────────────────→
+```
+
+- 到期后自动清除主密码和缓存的条目数据
+- 每 2 分钟检查一次过期定时器
+- 支持密码过期、剪贴板过期两种通知类型
+
+### 安全原则
+
+- 🔒 主密码只在内存中解密，**不持久化明文**
+- 🚫 不在控制台输出敏感信息
+- ✅ 只读模式，不修改原始 KDBX 文件（除非用户主动编辑保存）
+- 🛡️ 来源检查：填充前验证 frame 与目标页面的 hostname 一致性
+
+---
+
+## 🗄️ 数据库管理
+
+### 条目操作
+
+| 操作 | 说明 |
+|------|------|
+| ➕ **新建** | 填写标题、用户名、密码、URL、备注，选择分组 |
+| ✏️ **编辑** | 点击铅笔图标，修改任意字段，点击保存 |
+| 🗑️ **删除** | 二次确认防误删，删除后自动上传更新 |
+| 📋 **复制** | 一键复制用户名或密码到剪贴板 |
+| 🔗 **打开** | 点击地球图标，新标签页打开条目 URL |
+| 🔑 **生成密码** | 编辑时点击钥匙图标，生成 16-20 位混合密码 |
+
+### 分组管理
+
+```
+📁 社交
+  ├── 🔑 Twitter
+  ├── 🔑 Facebook
+  └── 🔑 Instagram
+📁 工作
+  ├── 🔑 公司邮箱
+  ├── 🔑 内部系统
+  └── 🔑 VPN
+📁 银行
+  ├── 🔑 工商银行
+  └── 🔑 招商银行
+```
+
+- 创建 / 重命名 / 删除分组
+- 条目在分组间自由移动
+- 树形结构浏览，支持展开/折叠
+
+### TOTP 双因素认证
+
+```
+┌──────────────────────────────────┐
+│  🔐 验证码: 482 391             │
+│  ████████████░░░░░░░░  18s      │
+│  (倒计时进度条)                   │
+└──────────────────────────────────┘
+```
+
+- 支持 `otpauth://` 标准格式
+- 兼容 KeePassXC 的 `tOTPSeed` + `tOTPSettings` 格式
+- 支持 SHA1 / SHA256 / SHA512 算法
+- 6-8 位验证码，含 Steam 格式
+- 每秒自动刷新，绿色进度条可视化倒计时
+
+---
+
+## ⌨️ 键盘快捷键
+
+| 快捷键 | 命令 | 说明 |
+|--------|------|------|
+| `Ctrl+Shift+Space` | 打开弹窗 | 打开 Tusk 弹窗 |
+| `Ctrl+Shift+X` | 最佳匹配填充 | 自动填充当前页面最佳匹配条目 |
+| `Ctrl+Shift+1` | 填充用户名 | 仅填充用户名到当前焦点输入框 |
+| `Ctrl+Shift+2` | 填充密码 | 仅填充密码到当前焦点输入框 |
+| `Ctrl+Shift+3` | 填充备注 | 仅填充备注到当前焦点输入框 |
+
+> 快捷键可在 Chrome 扩展管理页面 `chrome://extensions/shortcuts` 自定义。
+
+---
+
+## 🚀 快速开始
+
+### 安装
+
+1. 从 [Releases](https://github.com/helloworldbugs/Tusk/releases) 下载最新版本
+2. 解压到本地目录
+3. 打开 `chrome://extensions`，开启「开发者模式」
+4. 点击「加载已解压的扩展程序」，选择解压目录
+
+### 开发
+
+```bash
+# 克隆仓库
+git clone https://github.com/helloworldbugs/Tusk.git
+cd Tusk
+
+# 安装依赖
+npm install --legacy-peer-deps
+
+# 开发模式（热重载）
+npm run dev
+
+# 生产构建
+npm run build
+
+# 仅构建内容脚本
+npm run build:js
+
+# 仅构建后台脚本
+npm run build:background
+```
+
+### 构建产物
+
+| 命令 | 输入 | 输出 |
+|------|------|------|
+| `build:web` | `src/` (Vue 弹窗/选项页) | `extension/dist/` |
+| `build:background` | `background/background.js` | `extension/dist/background/index.mjs` |
+| `build:js` | `background/inject.js` (内容脚本) | `extension/dist/contentScripts/index.global.js` |
+
+---
+
+## 🏗️ 技术栈
+
+| 技术 | 用途 |
+|------|------|
+| [Vue 3](https://vuejs.org/) (`@vue/compat`) | 弹窗 UI 框架 |
+| [Vite](https://vitejs.dev/) | 构建工具 |
+| [kdbxweb](https://github.com/keeweb/kdbxweb) | KeePass 数据库解析 |
+| [Argon2](https://github.com/antelle/argon2-browser) | KDF 密钥派生 |
+| [webdav](https://github.com/perry-mitchell/webdav-client) | WebDAV 客户端 |
+| [Mocha](https://mochajs.org/) + [should.js](https://shouldjs.github.io/) | 测试框架 |
+| [Chrome Extensions API](https://developer.chrome.com/docs/extensions/reference/) | 浏览器扩展 API |
+| GitHub Actions | CI/CD 自动构建 |
+
+---
+
+## 📐 架构概览
+
+```
+┌─────────────────────────────────────────────────────┐
+│                    Popup (Vue 3)                      │
+│  ┌─────────┐ ┌──────────┐ ┌──────────┐ ┌─────────┐ │
+│  │ Startup │ │FilePicker│ │  Unlock  │ │ Edit    │ │
+│  │         │ │          │ │          │ │         │ │
+│  └─────────┘ └──────────┘ └──────────┘ └─────────┘ │
+│                        │                             │
+│                  UnlockedState                       │
+│              (状态管理 + 剪贴板 + 自动填充)              │
+├────────────────────────┼─────────────────────────────┤
+│               SecureCacheMemory                       │
+│          (端口通信桥接 popup ↔ background)              │
+├────────────────────────┼─────────────────────────────┤
+│              Background Service Worker                │
+│  ┌──────────────────────────────────────────────┐   │
+│  │  ProtectedMemory  │  Settings  │ Badge 更新   │   │
+│  │  (AES-CBC 加密)    │  (配置)    │ (图标计数)    │   │
+│  │  LocalMemory       │            │ 快捷键处理    │   │
+│  │  (持久化加密)       │            │ 会话管理      │   │
+│  └──────────────────────────────────────────────┘   │
+├────────────────────────┼─────────────────────────────┤
+│             Content Script (inject.js)                │
+│  ┌──────────────────────────────────────────────┐   │
+│  │  字段检测  │  fillPassword  │  来源安全检查    │   │
+│  │  (焦点法+  │  (值填充+      │  (hostname      │   │
+│  │   全局扫描) │   DOM事件触发)  │   验证)         │   │
+│  └──────────────────────────────────────────────┘   │
+├────────────────────────┼─────────────────────────────┤
+│                    Services                           │
+│  ┌──────────┐ ┌────────────┐ ┌──────────────────┐  │
+│  │ Keepass  │ │ Keepass    │ │ PasswordFileStore│  │
+│  │ Service  │ │ Reference  │ │ Registry (9后端) │  │
+│  └──────────┘ └────────────┘ └──────────────────┘  │
+└─────────────────────────────────────────────────────┘
+```
+
+### 数据流
+
+```
+用户点击条目
+    │
+    ▼
+UnlockedState.autofill(entry)
+    │
+    ▼
+Background: autofill 消息
+    │
+    ├──→ 注入 content script 到所有 frame
+    │
+    └──→ 向每个 frame 发送 fillPassword
+            │
+            ├── 来源安全检查 (hostname 匹配)
+            │
+            └── filler.fillPassword(user, pass)
+                    │
+                    ├── 方法1: 焦点法 (优先)
+                    │   └── 跳过隐藏元素，搜索真正的密码框
+                    │
+                    └── 方法2: 全局扫描 (兜底)
+                        └── 遍历所有可见 input，配对填充
+```
+
+---
+
+## 🧪 测试
+
+```bash
+npm test
+```
+
+测试覆盖：
+
+| 测试模块 | 内容 |
+|----------|------|
+| `keepassReference` | KeePass 字段引用解析（`{REF:...}` 跨条目引用） |
+| `protectedMemory` | AES-CBC 序列化/反序列化/清除 |
+| `secureCache` | 加密缓存读写，Mock Chrome API |
+| `settings` | 遗忘定时器、剪贴板过期、配置读写 |
+| `oneDriveFileManager` | OneDrive 文件列表过滤 |
+| `unlock.vue` | Vue 解锁组件状态测试 |
+
+测试资产包含多种登录表单 HTML（简单表单、注册表单、iframe、隐藏字段等），用于覆盖所有自动填充场景。
+
+---
+
+## 🙏 致谢
+
+- 原始项目：[subdavis/Tusk](https://github.com/subdavis/Tusk)
+- Fork 维护：[helloworldbugs](https://github.com/helloworldbugs)
+- KeePass 数据库解析：[keeweb/kdbxweb](https://github.com/keeweb/kdbxweb)
+- 构建于 [Vue 3](https://vuejs.org/) · [Vite](https://vitejs.dev/) · [Chrome Extensions](https://developer.chrome.com/docs/extensions/)
+
+---
+
+<p align="center">
+  <sub>Made with ❤️ by the Tusk community</sub>
+</p>
