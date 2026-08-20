@@ -8,6 +8,7 @@ export default {
     return {
       searchTerm: '',
       expandedGroups: {},
+      savedExpandedGroups: null,
       renamingGroup: null,
       renameInput: '',
       showNewGroup: false,
@@ -16,6 +17,23 @@ export default {
       message: '',
       entriesVersion: 0,
     };
+  },
+  watch: {
+    searchTerm(val) {
+      if (val.length > 0) {
+        // Save current expansion state before modifying
+        if (this.savedExpandedGroups === null) {
+          this.savedExpandedGroups = { ...this.expandedGroups };
+        }
+        this.autoExpandGroups();
+      } else {
+        // Restore saved expansion state when search is cleared
+        if (this.savedExpandedGroups !== null) {
+          this.expandedGroups = this.savedExpandedGroups;
+          this.savedExpandedGroups = null;
+        }
+      }
+    },
   },
   mounted() {
     this.$nextTick(() => {
@@ -40,6 +58,12 @@ export default {
   methods: {
     toggleGroup(name) {
       this.$set(this.expandedGroups, name, !this.expandedGroups[name]);
+    },
+    autoExpandGroups() {
+      this.groups.forEach(g => {
+        const hasMatches = this.getGroupEntries(g.name).length > 0;
+        this.$set(this.expandedGroups, g.name, hasMatches);
+      });
     },
     getGroupEntries(name) {
       let result = this.allEntries.filter(e => e.groupName === name);
