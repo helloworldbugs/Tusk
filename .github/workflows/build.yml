@@ -45,13 +45,6 @@ jobs:
       - name: Chrome — create ZIP
         run: cd extension && zip -r ../tusk-release-chrome.zip .
 
-      - name: Chrome — upload extension artifact
-        uses: actions/upload-artifact@v4
-        with:
-          name: tusk-extension-chrome
-          path: extension/
-          retention-days: 30
-
       - name: Chrome — upload release ZIP
         uses: actions/upload-artifact@v4
         with:
@@ -85,13 +78,6 @@ jobs:
 
       - name: Firefox — create ZIP
         run: cd extension && zip -r ../tusk-release-firefox.zip .
-
-      - name: Firefox — upload extension artifact
-        uses: actions/upload-artifact@v4
-        with:
-          name: tusk-extension-firefox
-          path: extension/
-          retention-days: 30
 
       - name: Firefox — upload release ZIP
         uses: actions/upload-artifact@v4
