@@ -203,11 +203,11 @@ const zhCN: Record<string, string> = {
   'pCloud': 'pCloud',
   'Access password files stored on pCloud. Files will be retrieved from pCloud each time they are used.': '访问存储在 pCloud 上的密码文件。每次使用时从 pCloud 获取。',
   'Local Storage': '本地存储',
-  'File System (not recommended)': '文件系统（不推荐）',
+  'Local File': '本地文件',
   'Upload files from your local or remote file-system. A one-time copy of the file(s) will be saved in your browser\'s local storage. If you update the database on your local system then you will have to re-import it in order to see the changes.': '从本地或远程文件系统上传文件。文件的一次性副本将保存在浏览器本地存储中。若更新了本地数据库，需要重新导入才能看到更改。',
   'Shared Link': '共享链接',
   'Rather than granting full access to your cloud storage provider, get a shared link and paste it in. Any direct HTTP link will do, and Dropbox and Google Drive are supported.': '无需授予云存储的全部权限，获取共享链接并粘贴即可。支持任何直接 HTTP 链接，以及 Dropbox 和 Google Drive。',
-  'WebDAV (beta)': 'WebDAV (测试版)',
+  'WebDAV': 'WebDAV',
   'Choose a database from any WebDAV file server. Tusk will always keep your database in sync with the server and automatically pull new versions. WARNING: If you require username/password to use webdav, Tusk will store them unencrypted on disk.': '从任意 WebDAV 文件服务器选择数据库。Tusk 将始终保持数据库与服务器同步，自动拉取最新版本。警告：如需用户名/密码访问 WebDAV，Tusk 会以未加密形式存储到磁盘。',
   'Sample': '示例',
   'Sample Database': '示例数据库',
@@ -249,6 +249,7 @@ const zhCN: Record<string, string> = {
   'remove': '移除',
   'Add new server': '添加新服务器',
   'Add server': '添加服务器',
+  'URL points to a file, not a folder. Please enter the parent folder path instead.': 'URL 指向的是文件而非文件夹，请输入父文件夹路径',
 
   // ===== Providers: Google Drive extras =====
   'Google Drive support has updated!': 'Google Drive 支持已更新！',
