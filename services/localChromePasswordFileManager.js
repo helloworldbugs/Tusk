@@ -15,7 +15,7 @@ function LocalChromePasswordFileManager() {
     supportedFeatures: ['incognito', 'listDatabases', 'saveDatabase', 'deleteDatabase'],
     title: 'Local Storage',
     icon: 'icon-upload',
-    chooseTitle: 'File System (not recommended)',
+    chooseTitle: 'Local File',
     chooseDescription:
       "Upload files from your local or remote file-system.  A one-time copy of the file(s) will be saved in your browser's local storage.  If you update the database on your local system then you will have to re-import it in order to see the changes.",
     login: enable,

@@ -10,5 +10,14 @@
   },
   "fillPassword": {
     "message": "在光标处填充密码"
+  },
+  "WebDAV": {
+    "message": "WebDAV"
+  },
+  "Local File": {
+    "message": "本地文件"
+  },
+  "URL points to a file, not a folder. Please enter the parent folder path instead.": {
+    "message": "URL 指向的是文件而非文件夹，请输入父文件夹路径"
   }
 }

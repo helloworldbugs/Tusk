@@ -42,7 +42,7 @@ function WebdavFileManager(settings) {
     getDatabaseChoiceData: getDatabaseChoiceData,
     getChosenDatabaseFile: getChosenDatabaseFile,
     supportedFeatures: ['incognito', 'listDatabases'],
-    title: 'WebDAV (beta)',
+    title: 'WebDAV',
     icon: 'icon-folder',
     chooseTitle: 'WebDAV (beta)',
     chooseDescription:

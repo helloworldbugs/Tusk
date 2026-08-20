@@ -41,6 +41,14 @@ export default {
   },
   methods: {
     addServer() {
+      // Validate: URL must be a folder, not a file
+      const url = this.webdav.url.trim();
+      const lastSegment = url.replace(/\/+$/, '').split('/').pop() || '';
+      if (lastSegment.includes('.') && /\.(kdbx?|kdb)$/i.test(lastSegment)) {
+        this.messages.error = this.$t('URL points to a file, not a folder. Please enter the parent folder path instead.');
+        return;
+      }
+      this.messages.error = '';
       chromePromise.permissions
         .request({
           origins: [this.webdav.url], //FLAGHERE TODO
